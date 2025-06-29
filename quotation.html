@@ -295,7 +295,7 @@
     function loadPayload() {
       if (location.hash.startsWith('#data=')) {
         try {
-            return JSON.parse(atob(decodeURIComponent(location.hash.slice(6))));
+            return JSON.parse(atob(decodeURIComponent(location.hash.slice(6)));
         } catch (e) {
             console.error("Error decoding URL hash:", e);
         }
@@ -367,10 +367,9 @@
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
 
-        // กำหนดตำแหน่ง X และ Y โดยไม่จัดกึ่งกลาง
-        // เริ่มต้นที่ 10 มม. จากขอบซ้าย และ 10 มม. จากขอบบน
-        const xPos = 10; 
-        const yPos = 10; 
+        // กำหนดตำแหน่ง X และ Y เพื่อให้รูปภาพอยู่กึ่งกลางหน้า
+        const xPos = (pdfW - imgPdfWidth) / 2;
+        const yPos = (pdfH - imgPdfHeight) / 2;
 
         pdf.addImage(img, 'PNG', xPos, yPos, imgPdfWidth, imgPdfHeight);
         pdf.save("ใบเสนอราคา_ORIX.pdf"); // ตั้งชื่อไฟล์ที่สื่อความหมาย
