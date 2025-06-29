@@ -446,11 +446,16 @@ function calculate() {
   const leaseInVat = Math.ceil(financeTotalWithInterest / months);
   const leaseExVat = leaseInVat / 1.07;
 
-  const pvForIRR = -(finance + commission + extra);
-  const tr = calculateIRR(months, leaseInVat, pvForIRR) * 12 * 100;
+  // TR Calculation (Effective %)
+  // Based on the user's explicit formula: RATE((จำนวนปี*12),ค่างวด InVAT,(-ยอดจัด+-ค่าคอม*1.07+-extra*1.07),0,0)*12
+  const pvForIRR = -(finance + (commission * 1.07) + (extra * 1.07));
+  const tr = calculateIRR(months, leaseInVat, pvForIRR, 0, 0) * 12 * 100;
 
+  // TR Dep Calculation (ปรับปรุงตามสูตรใหม่ล่าสุด)
+  // TR Dep = RATE((จำนวนปี*12),ค่างวดInVAT,((-total)+(-ค่าคอมที่คำนวน*1.07)+(-extra*1.07)),เงินดาวน์,0)*12
   const pvForTRDep = -(total + (commission * 1.07) + (extra * 1.07));
   const trDep = calculateIRR(months, leaseInVat, pvForTRDep, down, 0) * 12 * 100;
+
 
   document.getElementById('financeAmt').value = format(finance);
   document.getElementById('intPA').value = format(intPA);
