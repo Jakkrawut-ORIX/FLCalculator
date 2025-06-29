@@ -35,7 +35,7 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        h1, h2 {
+        h1 {
             text-align: center;
             color: var(--orix-logo-blue);
             margin-bottom: 25px;
@@ -209,6 +209,8 @@
             financeAmt: financeAmt,
             interestRate: interestRate,
             termYears: termYears,
+            // คำนวณ termMonths จาก termYears เพื่อให้ quotation.html ไม่ต้องคำนวณซ้ำ
+            termMonths: termYears * 12,
             leaseInVat: leaseInVat
         };
 
