@@ -125,17 +125,17 @@
         border: none; /* ลบเส้นขอบบนหน้าจอขนาดเล็กมากเพื่อให้ดูสะอาดขึ้น */
       }
       .header {
-        flex-direction: column; /* จัดเรียงส่วนประกอบใน header ในแนวตั้ง */
-        align-items: center; /* จัดกึ่งกลางเมื่อจัดเรียงแบบแนวตั้ง */
+        flex-direction: row; /* เปลี่ยนเป็น row เพื่อให้โลโก้และข้อมูลบริษัทอยู่ข้างกัน */
+        justify-content: space-between; /* รักษาการจัดระยะห่างระหว่างองค์ประกอบ */
+        align-items: flex-start; /* จัดชิดด้านบน */
         padding-bottom: 5px;
         margin-bottom: 10px;
       }
       .logo img {
         max-width: 100px; /* โลโก้เล็กลงเล็กน้อยสำหรับมือถือ */
-        margin-bottom: 5px;
       }
       .company-info {
-        text-align: center; /* จัดกึ่งกลางข้อมูลบริษัท */
+        text-align: right; /* จัดชิดขวาข้อมูลบริษัท */
         font-size: 9pt; /* ขนาดฟอนต์ข้อมูลบริษัทเล็กลง */
         line-height: 1.3; /* ระยะห่างระหว่างบรรทัดกว้างขึ้นเล็กน้อยเพื่อให้อ่านง่ายบนมือถือ */
         margin-top: 0; /* ลบการปรับ margin-top เมื่ออยู่บนมือถือ */
@@ -292,7 +292,7 @@
     // ฟังก์ชันโหลดข้อมูลใบเสนอราคาจาก URL hash หรือ localStorage
     function loadPayload() {
       if (location.hash.startsWith('#data=')) {
-        try { return JSON.parse(atob(decodeURIComponent(location.hash.slice(6)))); } catch (e) {console.error("Error decoding URL hash:", e);}
+        try { return JSON.parse(atob(decodeURIComponent(location.hash.slice(6))); } catch (e) {console.error("Error decoding URL hash:", e);}
       }
       try { return JSON.parse(localStorage.getItem('quotationData')); } catch (e) {console.error("Error parsing localStorage data:", e);}
       return null;
