@@ -5,6 +5,8 @@
   <title>ใบเสนอราคา - ORIX Lease</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     /* ORIX Logo Colors for consistent theme variables */
     :root {
@@ -140,6 +142,32 @@
       padding-top: 10px; /* Adjusted padding */
     }
 
+    /* New style for the export button */
+    .export-button-container {
+        text-align: center;
+        margin-top: 25px;
+        margin-bottom: 15px;
+    }
+    .export-button {
+        padding: 12px 25px;
+        font-size: 1.1em;
+        background-color: var(--orix-logo-blue);
+        color: var(--orix-white);
+        border: none;
+        border-radius: 7px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        font-weight: 600;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .export-button:hover {
+        background-color: #002244;
+        transform: translateY(-1px);
+    }
+    .export-button:active {
+        transform: translateY(0);
+    }
+
     /* --- Media Queries for Mobile Responsiveness --- */
     @media (max-width: 600px) {
       body {
@@ -184,21 +212,35 @@
         margin-bottom: 5px;
       }
 
+      /* *** ปรับปรุง CSS สำหรับ Mobile (ข้อความและตัวเลขในแถวเดียวกัน) *** */
+      .data-table tr {
+        display: flex; /* ใช้ Flexbox เพื่อจัดเรียง td ในแนวนอน */
+        justify-content: space-between; /* กระจายช่องไฟระหว่าง label และ value */
+        align-items: baseline; /* จัดแนวบนของข้อความ */
+        margin-bottom: 8px; /* เพิ่มระยะห่างระหว่างแถว */
+        border-bottom: 1px solid var(--orix-border-color); /* เพิ่มเส้นแบ่งแถว */
+        padding-bottom: 4px;
+      }
+
       .data-table td {
-        padding: 5px 0; /* Adjust table cell padding */
-        display: block; /* Make table cells stack for better readability */
-        width: 100% !important; /* Override explicit width */
-        text-align: left !important; /* Align text left when stacked */
+        display: block; /* ยังคงเป็น block แต่ถูกควบคุมด้วย flex ใน tr */
+        padding: 2px 0; /* ลด padding แนวตั้ง */
+        width: auto !important; /* ยกเลิก width เดิม */
+        flex-grow: 1; /* ให้ td ขยายเพื่อแบ่งพื้นที่ */
+        text-align: left; /* จัดชิดซ้ายโดย default */
       }
 
       .data-table .label {
-        font-weight: 600; /* Bold labels when stacked */
-        margin-bottom: 2px;
+        font-weight: 600; /* Bold labels */
+        /* ไม่ต้องมี margin-bottom แล้ว เพราะอยู่แถวเดียวกัน */
       }
 
       .data-table .value {
-        margin-bottom: 10px; /* Space after each value when stacked */
+        text-align: right; /* จัดชิดขวาสำหรับตัวเลข */
+        /* ไม่ต้องมี margin-bottom แล้ว */
       }
+      /* *** สิ้นสุดการปรับปรุง CSS สำหรับ Mobile *** */
+
 
       .summary-section .data-table .label {
         font-size: 1em; /* Adjust summary label size */
@@ -210,6 +252,10 @@
       .footer {
         margin-top: 20px;
         font-size: 0.75em;
+      }
+      .export-button {
+          padding: 10px 20px;
+          font-size: 1em;
       }
     }
 
@@ -246,6 +292,11 @@
       h1, .section-title { color: #000000; } /* Often printers convert dark blue to black */
       .highlight-value { color: #CC0000; } /* Darker red for print */
       .company-info, .footer { color: #444444; }
+
+      /* Hide export button when printing */
+      .export-button-container {
+          display: none;
+      }
     }
   </style>
 </head>
@@ -298,6 +349,10 @@
     <p>ใบเสนอราคานี้เป็นข้อมูลเบื้องต้นและอาจมีการเปลี่ยนแปลงตามเงื่อนไขของบริษัท</p>
     <p>วันที่ออกใบเสนอราคา: <span id="currentDate"></span></p>
   </div>
+
+  <div class="export-button-container">
+      <button class="export-button" onclick="exportQuotationAsPdf()">Export PDF</button>
+  </div>
 </div>
 
 <script>
@@ -326,10 +381,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('q_totalAmount').innerText = format(data.totalAmount) + ' บาท';
 
         document.getElementById('q_downAmount_condition').innerText = format(data.downAmount) + ' บาท';
-        // Ensure downPercent is formatted correctly. It's already a number from index.html.
         document.getElementById('q_downPercent').innerText = formatPercent(data.downPercent) + '%';
         document.getElementById('q_financeAmt').innerText = format(data.financeAmt) + ' บาท';
-        document.getElementById('q_interestRate').innerText = formatPercent(data.interestRate) + '%'; // Use formatPercent for interestRate
+        document.getElementById('q_interestRate').innerText = formatPercent(data.interestRate) + '%';
         document.getElementById('q_termYears').innerText = data.termYears + ' ปี';
         document.getElementById('q_termMonths').innerText = (parseInt(data.termYears || 0) * 12) + ' งวด';
 
@@ -347,6 +401,58 @@ document.addEventListener('DOMContentLoaded', () => {
         // window.close(); // You might want to comment this out during development to see the alert.
     }
 });
+
+// ฟังก์ชันสำหรับ Export PDF
+async function exportQuotationAsPdf() {
+    const quotationContainer = document.querySelector('.quotation-container');
+
+    // ซ่อนปุ่ม Export PDF ชั่วคราวไม่ให้แสดงใน PDF
+    const exportButtonContainer = document.querySelector('.export-button-container');
+    exportButtonContainer.style.display = 'none';
+
+    // กำหนดขนาด A4 ในหน่วย mm (A4: 210mm x 297mm)
+    const pdfWidth = 210; // mm
+    const pdfHeight = 297; // mm
+
+    // สร้าง Canvas จาก HTML content
+    const canvas = await html2canvas(quotationContainer, {
+        scale: 2, // เพิ่ม scale เพื่อคุณภาพที่ดีขึ้น
+        useCORS: true, // สำคัญหากมีรูปภาพจากภายนอก (เช่น logo.png)
+        logging: true // เปิด logging สำหรับ debugging
+    });
+
+    // กำหนดอัตราส่วนความกว้างต่อความสูงของเนื้อหา
+    const imgData = canvas.toDataURL('image/png');
+    const imgWidth = pdfWidth;
+    const pageHeight = pdfHeight;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let heightLeft = imgHeight;
+
+    // สร้าง PDF object
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'mm', 'a4'); // 'p' for portrait, 'mm' for millimeters, 'a4' for A4 size
+
+    let position = 0;
+
+    // เพิ่มรูปภาพลงใน PDF
+    doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    // หากเนื้อหามีหลายหน้า ให้เพิ่มหน้าใหม่
+    while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        doc.addPage();
+        doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+    }
+
+    // กำหนดชื่อไฟล์ PDF
+    const fileName = `Quotation_${document.getElementById('q_carInfo').innerText.replace(/[^a-zA-Z0-9ก-ฮเ-ะแ-็โ-๋]/g, '_')}_${new Date().toLocaleDateString('en-CA').replace(/-/g, '')}.pdf`;
+    doc.save(fileName);
+
+    // แสดงปุ่ม Export PDF กลับมา
+    exportButtonContainer.style.display = 'block';
+}
 </script>
 
 </body>
