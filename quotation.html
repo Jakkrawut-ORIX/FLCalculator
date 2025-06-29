@@ -295,7 +295,7 @@
     function loadPayload() {
       if (location.hash.startsWith('#data=')) {
         try {
-            return JSON.parse(atob(decodeURIComponent(location.hash.slice(6)));
+            return JSON.parse(atob(decodeURIComponent(location.hash.slice(6))));
         } catch (e) {
             console.error("Error decoding URL hash:", e);
         }
