@@ -36,21 +36,25 @@
     .header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-end; /* จัดเรียงส่วนประกอบให้อยู่ด้านล่างสุดของ header เพื่อให้เหมือนหัวจดหมาย */
+      align-items: center; /* จัดกึ่งกลางโลโก้และข้อมูลบริษัทในแนวตั้ง */
       flex-wrap: wrap;
       border-bottom: 2px solid var(--orix-logo-blue);
       padding-bottom: 10px;
       margin-bottom: 15px;
     }
     .logo img {
-      max-width: 120px; /* ขยายโลโก้ให้ใหญ่ขึ้นเล็กน้อยสำหรับหัวจดหมาย */
+      max-width: 150px; /* โลโก้ใหญ่ขึ้น */
       height: auto;
     }
     .company-info {
       text-align: right;
-      font-size: 10pt;
+      font-size: 9pt; /* ลดขนาดฟอนต์ของข้อมูลบริษัท */
       color: var(--orix-mid-grey);
-      line-height: 1.3; /* ทำให้ระยะห่างระหว่างบรรทัดของที่อยู่กระชับขึ้น */
+      line-height: 1.1; /* ทำให้ระยะห่างระหว่างบรรทัดของที่อยู่กระชับขึ้น */
+    }
+    .company-info p {
+        margin: 0; /* ลบ margin เริ่มต้นของ p เพื่อให้ชิดกัน */
+        white-space: nowrap; /* ป้องกันไม่ให้ข้อความขึ้นบรรทัดใหม่โดยไม่จำเป็น */
     }
     h1 {
       text-align: center;
@@ -126,13 +130,16 @@
         margin-bottom: 10px;
       }
       .logo img {
-        max-width: 80px; /* โลโก้เล็กลงเล็กน้อย */
+        max-width: 100px; /* โลโก้เล็กลงเล็กน้อยสำหรับมือถือ */
         margin-bottom: 5px;
       }
       .company-info {
         text-align: center; /* จัดกึ่งกลางข้อมูลบริษัท */
         font-size: 9pt; /* ขนาดฟอนต์ข้อมูลบริษัทเล็กลง */
-        line-height: 1.4; /* ระยะห่างระหว่างบรรทัดกว้างขึ้นเล็กน้อยเพื่อให้อ่านง่ายบนมือถือ */
+        line-height: 1.3; /* ระยะห่างระหว่างบรรทัดกว้างขึ้นเล็กน้อยเพื่อให้อ่านง่ายบนมือถือ */
+      }
+      .company-info p {
+        white-space: normal; /* อนุญาตให้ข้อความที่อยู่ขึ้นบรรทัดใหม่บนมือถือ */
       }
       h1 {
         font-size: 1.2em; /* หัวข้อหลักเล็กลง */
@@ -182,14 +189,18 @@
       .header {
         margin-bottom: 15mm; /* เพิ่มระยะขอบ header สำหรับการพิมพ์ */
         padding-bottom: 5mm;
-        align-items: flex-end; /* ให้รูปแบบหัวจดหมายยังคงอยู่ในการพิมพ์ */
+        align-items: center; /* ให้รูปแบบจัดกึ่งกลางในแนวตั้งสำหรับการพิมพ์ */
       }
       .logo img {
-        max-width: 100px; /* ปรับขนาดโลโก้ให้เหมาะสมกับการพิมพ์ */
+        max-width: 120px; /* ปรับขนาดโลโก้ให้เหมาะสมกับการพิมพ์ */
       }
       .company-info {
-        font-size: 9pt; /* ปรับขนาดฟอนต์ข้อมูลบริษัทให้เหมาะสมกับการพิมพ์ */
-        line-height: 1.2; /* ระยะห่างระหว่างบรรทัดกระชับขึ้นสำหรับการพิมพ์ */
+        font-size: 8pt; /* ปรับขนาดฟอนต์ข้อมูลบริษัทให้เหมาะสมกับการพิมพ์ */
+        line-height: 1.1; /* ระยะห่างระหว่างบรรทัดกระชับขึ้นสำหรับการพิมพ์ */
+      }
+      .company-info p {
+        margin: 0; /* ลบ margin เริ่มต้นของ p เพื่อให้ชิดกันในการพิมพ์ */
+        white-space: nowrap; /* ป้องกันไม่ให้ข้อความขึ้นบรรทัดใหม่โดยไม่จำเป็นในการพิมพ์ */
       }
       h1 {
         font-size: 1.3em; /* ปรับขนาดหัวข้อหลักให้เหมาะสมกับการพิมพ์ */
