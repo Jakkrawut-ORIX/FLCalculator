@@ -20,31 +20,29 @@
     body {
       font-family: 'Kanit', sans-serif;
       margin: 0;
-      padding: 15px;
+      padding: 10px;
       background: var(--orix-light-grey);
       color: var(--orix-dark-grey);
-      font-size: 12pt;
+      font-size: 11pt; /* Base font size */
     }
     .quotation-container {
-      max-width: 100%;
-      margin: 0 auto;
+      max-width: 800px;
+      margin: auto;
       background: var(--orix-white);
       padding: 15px;
       border: 1px solid var(--orix-border-color);
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
       box-sizing: border-box;
-      margin-bottom: 10px;
     }
     .header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 15px;
+      flex-wrap: wrap;
       border-bottom: 2px solid var(--orix-logo-blue);
       padding-bottom: 10px;
-      flex-wrap: wrap;
+      margin-bottom: 15px;
     }
-    .header .logo img {
+    .logo img {
       max-width: 100px;
       height: auto;
     }
@@ -56,106 +54,171 @@
     h1 {
       text-align: center;
       color: var(--orix-logo-blue);
-      font-size: 1.6em;
-      margin-bottom: 15px;
-      border-bottom: 1px solid var(--orix-border-color);
-      padding-bottom: 8px;
-      font-weight: 600;
+      font-size: 1.4em;
+      margin-bottom: 10px;
     }
     .section-title {
-      font-size: 1em;
+      font-weight: 600;
+      margin: 15px 0 5px;
       color: var(--orix-logo-blue);
-      margin-top: 15px;
-      margin-bottom: 5px;
       border-bottom: 1px dashed var(--orix-border-color);
       padding-bottom: 3px;
-      font-weight: 600;
     }
     .data-table {
       width: 100%;
-      border-collapse: collapse;
       margin-bottom: 10px;
+      border-collapse: collapse;
     }
     .data-table td {
       padding: 4px 0;
-      vertical-align: top;
-      font-size: 0.9em;
+      font-size: 0.95em;
     }
-    .data-table .label {
-      width: 50%;
+    .label {
+      width: 60%;
       font-weight: 400;
-      color: var(--orix-dark-grey);
     }
-    .data-table .value {
-      width: 50%;
+    .value {
+      width: 40%;
       text-align: right;
       font-weight: 600;
     }
     .highlight-value {
+      color: var(--orix-logo-red);
       font-size: 1.05em;
-      color: var(--orix-logo-red);
-      font-weight: 600;
-    }
-    .summary-section .section-title {
-      font-size: 1.2em;
-    }
-    .summary-section .data-table .label {
-      font-weight: 600;
-    }
-    .summary-section .data-table .value.highlight-value {
-      font-size: 1.2em;
-      color: var(--orix-logo-red);
-      font-weight: 600;
     }
     .footer {
       text-align: center;
-      margin-top: 20px;
       font-size: 0.8em;
       color: var(--orix-mid-grey);
       border-top: 1px solid var(--orix-border-color);
+      margin-top: 20px;
       padding-top: 8px;
     }
     .export-button-container {
       text-align: center;
-      margin-top: 25px;
-      margin-bottom: 15px;
+      margin: 20px 0 10px;
     }
     .export-button {
-      padding: 12px 25px;
-      font-size: 1.1em;
+      padding: 10px 20px;
+      font-size: 1em;
       background-color: var(--orix-logo-blue);
-      color: var(--orix-white);
+      color: white;
       border: none;
-      border-radius: 7px;
+      border-radius: 5px;
       cursor: pointer;
-      font-weight: 600;
     }
 
-    @media (max-width: 600px) {
+    /* --- Mobile Specific Styles --- */
+    @media only screen and (max-width: 600px) {
+      body {
+        padding: 5px; /* Reduce overall padding */
+        font-size: 10pt; /* Smaller base font size for mobile */
+      }
+      .quotation-container {
+        padding: 10px; /* Reduce container padding */
+        border: none; /* Remove border on very small screens for cleaner look */
+      }
       .header {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
+        flex-direction: column; /* Stack header items vertically */
+        align-items: center; /* Center align items when stacked */
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+      }
+      .logo img {
+        max-width: 80px; /* Slightly smaller logo */
+        margin-bottom: 5px;
       }
       .company-info {
-        text-align: center;
-        font-size: 9pt;
-        margin-top: 10px;
+        text-align: center; /* Center company info */
+        font-size: 9pt; /* Smaller company info font */
       }
-      .header .logo img {
-        max-width: 90px;
+      h1 {
+        font-size: 1.2em; /* Smaller main title */
+        margin-bottom: 5px;
+      }
+      .section-title {
+        margin: 10px 0 3px; /* Reduced section title margin */
+        font-size: 0.95em;
+      }
+      .data-table td {
+        font-size: 0.9em; /* Smaller table cell font size */
+        padding: 3px 0;
+      }
+      .highlight-value {
+        font-size: 1em; /* Adjust highlight value font size */
+      }
+      .footer {
+        font-size: 0.7em; /* Smaller footer font */
+        margin-top: 15px;
+        padding-top: 5px;
+      }
+      .export-button {
+        padding: 8px 15px; /* Smaller button padding */
+        font-size: 0.9em; /* Smaller button font */
       }
     }
 
+    /* --- Print Specific Styles for A4 PDF --- */
     @media print {
-      .export-button-container { display: none; }
+      .export-button-container {
+        display: none; /* Hide button when printing */
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        background: none; /* No background in print */
+        font-size: 10pt; /* Optimized font size for print A4 */
+      }
+      .quotation-container {
+        width: 190mm; /* Slightly less than A4 width to allow margins */
+        margin: 10mm auto; /* Center on A4 with 10mm top/bottom margin */
+        padding: 15mm; /* Internal padding for content */
+        border: 1px solid var(--orix-border-color); /* Retain border for print */
+        box-shadow: none; /* No shadow in print */
+        box-sizing: border-box;
+      }
+      .header {
+        margin-bottom: 15mm; /* Increase header margin for print */
+        padding-bottom: 5mm;
+      }
+      .logo img {
+        max-width: 80px; /* Optimize logo size for print */
+      }
+      .company-info {
+        font-size: 9pt; /* Optimize company info font for print */
+      }
+      h1 {
+        font-size: 1.3em; /* Optimize main title for print */
+        margin-bottom: 10mm;
+      }
+      .section-title {
+        margin: 8mm 0 3mm; /* Optimize section title margins for print */
+        font-size: 1em;
+      }
+      .data-table {
+        margin-bottom: 5mm; /* Optimize table margin for print */
+      }
+      .data-table td {
+        padding: 3mm 0; /* Optimize cell padding for print */
+        font-size: 0.9em;
+      }
+      .highlight-value {
+        font-size: 1.0em;
+      }
+      .footer {
+        margin-top: 15mm; /* Optimize footer margin for print */
+        padding-top: 5mm;
+        font-size: 0.8em;
+      }
     }
   </style>
 </head>
 <body>
   <div class="quotation-container">
     <div class="header">
-      <div class="logo"><img src="orix_logo.png" alt="ORIX Lease Logo" /></div>
+      <div class="logo">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..." alt="ORIX Logo" />
+      </div>
       <div class="company-info">
         <p>บริษัท ไทยโอริกซ์ลีสซิ่ง จำกัด</p>
         <p>555 รสา วัน (อาคาร บี) ยูนิต 1801 ชั้น 18 และ ชั้น 19</p>
@@ -186,13 +249,11 @@
       <tr><td class="label">จำนวนงวด:</td><td class="value" id="q_termMonths"></td></tr>
     </table>
 
-    <div class="summary-section">
-      <div class="section-title">สรุปการชำระ</div>
-      <table class="data-table">
-        <tr><td class="label">เงินดาวน์:</td><td class="value highlight-value" id="q_downAmount_summary"></td></tr>
-        <tr><td class="label">ค่างวดต่อเดือน (รวม VAT):</td><td class="value highlight-value" id="q_leaseInVat"></td></tr>
-      </table>
-    </div>
+    <div class="section-title">สรุปการชำระ</div>
+    <table class="data-table">
+      <tr><td class="label">เงินดาวน์:</td><td class="value highlight-value" id="q_downAmount_summary"></td></tr>
+      <tr><td class="label">ค่างวดต่อเดือน (รวม VAT):</td><td class="value highlight-value" id="q_leaseInVat"></td></tr>
+    </table>
 
     <div class="footer">
       <p>ใบเสนอราคานี้เป็นข้อมูลเบื้องต้นและอาจมีการเปลี่ยนแปลงตามเงื่อนไขของบริษัท</p>
@@ -205,20 +266,18 @@
   </div>
 
   <script>
-    const fmt = n => isFinite(n) ? Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '0.00';
+    const fmt = n => isFinite(n) ? Number(n).toLocaleString('en-US', {minimumFractionDigits:2}) : '0.00';
     const fmtPct = n => isFinite(n) ? Number(n).toFixed(2) : '0.00';
     function loadPayload() {
       if (location.hash.startsWith('#data=')) {
-        try { return JSON.parse(atob(decodeURIComponent(location.hash.slice(6)))); } catch (e) {}
+        try { return JSON.parse(atob(decodeURIComponent(location.hash.slice(6)))); } catch {}
       }
-      try { return JSON.parse(localStorage.getItem('quotationData')); } catch (e) {}
+      try { return JSON.parse(localStorage.getItem('quotationData')); } catch {}
       return null;
     }
-
     document.addEventListener('DOMContentLoaded', () => {
       const d = loadPayload();
-      if (!d) return alert('ไม่พบข้อมูลใบเสนอราคา กรุณากลับไปหน้าหลัก');
-
+      if (!d) return alert('ไม่พบข้อมูลใบเสนอราคา');
       q_carInfo.textContent = d.carInfo || '-';
       q_carPrice.textContent = fmt(d.carPrice) + ' บาท';
       q_discount.textContent = fmt(d.discount) + ' บาท';
@@ -234,30 +293,50 @@
       q_leaseInVat.textContent = fmt(d.leaseInVat) + ' บาท';
       currentDate.textContent = new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
     });
-
     async function exportQuotationAsPdf() {
       const box = document.querySelector('.quotation-container');
       const btn = document.querySelector('.export-button-container');
-      btn.style.display = 'none';
+      btn.style.display = 'none'; // Hide the button before capturing
+      
       try {
-        const canvas = await html2canvas(box, { scale: 2, useCORS: true });
+        const canvas = await html2canvas(box, { 
+          scale: 2, // Increase scale for better quality PDF
+          useCORS: true,
+          windowWidth: document.querySelector('.quotation-container').scrollWidth, // Capture full width
+          windowHeight: document.querySelector('.quotation-container').scrollHeight // Capture full height
+        });
         const img = canvas.toDataURL('image/png');
-        const pdfW = 210, pdfH = 297;
-        const imgH = canvas.height * pdfW / canvas.width;
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p','mm','a4');
-        pdf.addImage(img, 'PNG', 0, 0, pdfW, imgH);
-        let pos = -pdfH;
-        while ((pos += pdfH) < imgH) {
-          pdf.addPage();
-          pdf.addImage(img, 'PNG', 0, pos * -1, pdfW, imgH);
+        
+        // A4 dimensions in mm (210mm x 297mm)
+        const pdfW = 210; 
+        const pdfH = 297; 
+
+        // Calculate image dimensions to fit within PDF, maintaining aspect ratio
+        const imgCanvasWidth = canvas.width;
+        const imgCanvasHeight = canvas.height;
+
+        let imgPdfWidth = pdfW - 20; // 10mm margin on each side
+        let imgPdfHeight = (imgCanvasHeight * imgPdfWidth) / imgCanvasWidth;
+
+        // If the image is too tall, scale it down to fit within PDF height with margins
+        if (imgPdfHeight > pdfH - 20) { // 10mm margin on top/bottom
+            imgPdfHeight = pdfH - 20;
+            imgPdfWidth = (imgCanvasWidth * imgPdfHeight) / imgCanvasHeight;
         }
-        const safeName = q_carInfo.textContent.replace(/[^\wก-๙]/g,'_').slice(0,40);
-        pdf.save(`Quotation_${safeName}_${new Date().toISOString().slice(0,10)}.pdf`);
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+
+        // Center the image on the page
+        const xPos = (pdfW - imgPdfWidth) / 2;
+        const yPos = (pdfH - imgPdfHeight) / 2;
+
+        pdf.addImage(img, 'PNG', xPos, yPos, imgPdfWidth, imgPdfHeight);
+        pdf.save("ใบเสนอราคา_ORIX.pdf"); // Give a meaningful filename
       } catch (err) {
-        alert('เกิดข้อผิดพลาด PDF: ' + err.message);
+        alert("PDF export failed: " + err.message);
       } finally {
-        btn.style.display = 'block';
+        btn.style.display = 'block'; // Show the button again
       }
     }
   </script>
