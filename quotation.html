@@ -304,53 +304,39 @@
 document.addEventListener('DOMContentLoaded', () => {
     const data = JSON.parse(localStorage.getItem('quotationData'));
 
-    // Helper function to format numbers
+    // Helper function to format numbers with 2 decimal places
     function format(n) {
       if (isNaN(n) || n === null) return "0.00";
       return parseFloat(n).toLocaleString('en-US', {
         minimumFractionDigits: 2, maximumFractionDigits: 2
       });
     }
-    // Helper function to uncomma numbers
-    function uncomma(s) {
-      const cleaned = String(s).replace(/,/g, '');
-      const num = parseFloat(cleaned);
-      return isNaN(num) ? 0 : num;
+
+    // Helper function to format percentages with 2 decimal places
+    function formatPercent(n) {
+      if (isNaN(n) || n === null) return "0.00";
+      return parseFloat(n).toFixed(2);
     }
 
     if (data) {
         document.getElementById('q_carInfo').innerText = data.carInfo || '-';
-        document.getElementById('q_carPrice').innerText = format(data.carPrice) + ' บาท' || '0.00 บาท';
-        document.getElementById('q_discount').innerText = format(data.discount) + ' บาท' || '0.00 บาท';
-        document.getElementById('q_option').innerText = format(data.option) + ' บาท' || '0.00 บาท';
-        document.getElementById('q_totalAmount').innerText = format(data.totalAmount) + ' บาท' || '0.00 บาท';
+        document.getElementById('q_carPrice').innerText = format(data.carPrice) + ' บาท';
+        document.getElementById('q_discount').innerText = format(data.discount) + ' บาท';
+        document.getElementById('q_option').innerText = format(data.option) + ' บาท';
+        document.getElementById('q_totalAmount').innerText = format(data.totalAmount) + ' บาท';
 
-        // Display downAmount in both sections
-        document.getElementById('q_downAmount_condition').innerText = format(data.downAmount) + ' บาท' || '0.00 บาท';
-        document.getElementById('q_downPercent').innerText = (uncomma(data.downPercent) || 0).toFixed(2) + '%';
-        document.getElementById('q_financeAmt').innerText = format(data.financeAmt) + ' บาท' || '0.00 บาท';
-        document.getElementById('q_interestRate').innerText = (uncomma(data.interestRate) || 0).toFixed(2) + '%';
-        document.getElementById('q_termYears').innerText = data.termYears + ' ปี' || '0 ปี';
+        document.getElementById('q_downAmount_condition').innerText = format(data.downAmount) + ' บาท';
+        // Ensure downPercent is formatted correctly. It's already a number from index.html.
+        document.getElementById('q_downPercent').innerText = formatPercent(data.downPercent) + '%';
+        document.getElementById('q_financeAmt').innerText = format(data.financeAmt) + ' บาท';
+        document.getElementById('q_interestRate').innerText = formatPercent(data.interestRate) + '%'; // Use formatPercent for interestRate
+        document.getElementById('q_termYears').innerText = data.termYears + ' ปี';
         document.getElementById('q_termMonths').innerText = (parseInt(data.termYears || 0) * 12) + ' งวด';
 
         // Summary section
-        document.getElementById('q_downAmount_summary').innerText = format(data.downAmount) + ' บาท' || '0.00 บาท';
-        document.getElementById('q_leaseInVat').innerText = format(data.leaseInVat) + ' บาท' || '0.00 บาท';
+        document.getElementById('q_downAmount_summary').innerText = format(data.downAmount) + ' บาท';
+        document.getElementById('q_leaseInVat').innerText = format(data.leaseInVat) + ' บาท';
         
-        // No longer displaying 'financeTotalWithInterest' in HTML summary,
-        // but keeping the calculation in JS for completeness if ever needed elsewhere.
-        const carPrice = uncomma(data.carPrice);
-        const discount = uncomma(data.discount);
-        const option = uncomma(data.option);
-        const downAmount = uncomma(data.downAmount);
-        const interestRate = uncomma(data.interestRate);
-        const termYears = parseInt(data.termYears || 0);
-
-        const total = carPrice - discount + option;
-        const finance = total - downAmount;
-        const intTotal = finance * (interestRate / 100) * termYears;
-        const financeTotalWithInterest = finance + intTotal;
-
         // Set current date
         const today = new Date();
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -358,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     } else {
         alert('ไม่พบข้อมูลใบเสนอราคา กรุณากลับไปหน้าคำนวณและสร้างใบเสนอราคาใหม่');
-        window.close(); // Close the tab if no data
+        // window.close(); // You might want to comment this out during development to see the alert.
     }
 });
 </script>
