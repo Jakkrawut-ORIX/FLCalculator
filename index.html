@@ -648,6 +648,25 @@ window.onload = () => {
   document.getElementById('comBase').addEventListener('change', calculate);
   calculate(); // Initial calculation on load
 };
+
+  <script>
+/* …โค้ดเดิมทั้งหมดอยู่ครบ… */
+
+/* ---------- แก้ไข generateQuotation() ---------- */
+function generateQuotation () {
+  calculate();                             // ให้ข้อมูลเป็นปัจจุบัน
+  const data = { /* …รวบรวมฟิลด์เหมือนเดิม… */ };
+
+  /* ✔ เก็บสำรองไว้ใน localStorage เช่นเดิม */
+  localStorage.setItem('quotationData', JSON.stringify(data));
+
+  /* ✔ ส่งผ่าน URL hash – ไม่กลัว cross-origin/file protocol */
+  const payload = encodeURIComponent(btoa(JSON.stringify(data)));
+  window.open(`quotation.html#data=${payload}`, '_blank');
+}
+
+/* …โค้ดเดิมทั้งหมดอยู่ครบ… */
+</script>
 </script>
 
 </body>
