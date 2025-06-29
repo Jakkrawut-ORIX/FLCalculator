@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>ใบเสนอราคา - ORIX Lease</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* ORIX Logo Colors for consistent theme variables */
+    :root {
+      --orix-logo-blue: #003366; /* Dark blue from logo */
+      --orix-logo-red: #E30613;  /* Red from logo */
+      --orix-white: #FFFFFF;
+      --orix-light-grey: #F8FBFD; /* Light background for the page */
+      --orix-dark-grey: #333333; /* Main body text color */
+      --orix-mid-grey: #555555;  /* For secondary text like company info */
+      --orix-border-color: #DDEBF5;
+    }
+
+    body {
+      font-family: 'Kanit', sans-serif;
+      margin: 0;
+      padding: 15px; /* Adjusted padding for mobile */
+      background: var(--orix-light-grey);
+      color: var(--orix-dark-grey);
+      line-height: 1.6;
+      font-size: 14pt; /* Increased base font size for better readability on screen */
+    }
+
+    .quotation-container {
+      max-width: 100%; /* Changed from fixed A4 width to 100% for responsiveness */
+      margin: 0 auto;
+      background: var(--orix-white);
+      padding: 20px; /* Adjusted padding for mobile */
+      border: 1px solid var(--orix-border-color);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+      min-height: auto; /* Removed fixed A4 height */
+      box-sizing: border-box;
+    }
+
+    .header {
+      display: flex;
+      flex-wrap: wrap; /* Added flex-wrap for responsiveness */
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 25px; /* Adjusted margin */
+      border-bottom: 2px solid var(--orix-logo-blue);
+      padding-bottom: 15px;
+    }
+
+    .header .logo img {
+      max-width: 120px; /* Adjusted logo size for mobile */
+      height: auto;
+    }
+
+    .company-info {
+      text-align: right;
+      font-size: 10pt; /* Slightly smaller than body for company details, but readable */
+      color: var(--orix-mid-grey);
+      flex-basis: auto; /* Allow content to dictate width */
+    }
+
+    .company-info p {
+      margin: 2px 0;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--orix-logo-blue);
+      font-size: 1.8em; /* Adjusted for mobile */
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--orix-border-color);
+      padding-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .section-title {
+      font-size: 1.1em; /* Adjusted for mobile */
+      color: var(--orix-logo-blue);
+      margin-top: 20px;
+      margin-bottom: 8px;
+      border-bottom: 1px dashed var(--orix-border-color);
+      padding-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px; /* Adjusted margin */
+    }
+
+    .data-table td {
+      padding: 6px 0; /* Adjusted padding */
+      vertical-align: top;
+      font-size: 1em;
+    }
+
+    .data-table .label {
+      width: 50%; /* Adjusted width for mobile */
+      font-weight: 400;
+      color: var(--orix-dark-grey);
+    }
+
+    .data-table .value {
+      width: 50%; /* Adjusted width for mobile */
+      text-align: right;
+      font-weight: 600;
+      color: var(--orix-dark-grey);
+    }
+
+    .highlight-value {
+      font-size: 1.05em; /* Slightly larger for highlighted values */
+      color: var(--orix-logo-red);
+      font-weight: 600;
+    }
+
+    /* Styles for the "สรุปการชำระ" section - significantly emphasized */
+    .summary-section .section-title {
+      font-size: 1.3em; /* Adjusted for mobile */
+      color: var(--orix-logo-blue);
+    }
+
+    .summary-section .data-table .label {
+        font-size: 1.1em; /* Adjusted for mobile */
+        font-weight: 600;
+    }
+    .summary-section .data-table .value.highlight-value {
+        font-size: 1.3em; /* Adjusted for mobile */
+        color: var(--orix-logo-red);
+        font-weight: 600;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 30px; /* Adjusted margin */
+      font-size: 0.8em; /* Adjusted for mobile */
+      color: var(--orix-mid-grey);
+      border-top: 1px solid var(--orix-border-color);
+      padding-top: 10px; /* Adjusted padding */
+    }
+
+    /* --- Media Queries for Mobile Responsiveness --- */
+    @media (max-width: 600px) {
+      body {
+        font-size: 12pt; /* Base font size for smaller screens */
+        padding: 10px;
+      }
+
+      .quotation-container {
+        padding: 15px;
+        box-shadow: none; /* Remove box shadow on very small screens for cleaner look */
+      }
+
+      .header {
+        flex-direction: column; /* Stack logo and company info vertically */
+        align-items: center; /* Center align items when stacked */
+        text-align: center;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+      }
+
+      .header .logo {
+        margin-bottom: 15px; /* Space between logo and company info */
+      }
+
+      .header .logo img {
+        max-width: 100px; /* Further reduce logo size on very small screens */
+      }
+
+      .company-info {
+        text-align: center; /* Center company info when stacked */
+        font-size: 9pt;
+      }
+
+      h1 {
+        font-size: 1.6em; /* Adjust main title size */
+        margin-bottom: 15px;
+      }
+
+      .section-title {
+        font-size: 1em; /* Adjust section title size */
+        margin-top: 15px;
+        margin-bottom: 5px;
+      }
+
+      .data-table td {
+        padding: 5px 0; /* Adjust table cell padding */
+        display: block; /* Make table cells stack for better readability */
+        width: 100% !important; /* Override explicit width */
+        text-align: left !important; /* Align text left when stacked */
+      }
+
+      .data-table .label {
+        font-weight: 600; /* Bold labels when stacked */
+        margin-bottom: 2px;
+      }
+
+      .data-table .value {
+        margin-bottom: 10px; /* Space after each value when stacked */
+      }
+
+      .summary-section .data-table .label {
+        font-size: 1em; /* Adjust summary label size */
+      }
+      .summary-section .data-table .value.highlight-value {
+        font-size: 1.2em; /* Adjust summary value size */
+      }
+
+      .footer {
+        margin-top: 20px;
+        font-size: 0.75em;
+      }
+    }
+
+    /* Print specific styles (kept for printing functionality) */
+    @media print {
+      body {
+        margin: 0;
+        padding: 0;
+        font-size: 11pt; /* Base font size for print - slightly larger than prev */
+        -webkit-print-color-adjust: exact; /* Ensure colors are printed */
+      }
+      .quotation-container {
+        box-shadow: none;
+        border: none;
+        margin: 0;
+        padding: 15mm; /* A4 margins for printing */
+        width: 210mm;
+        min-height: 297mm;
+      }
+      /* Adjust font sizes and colors for print clarity */
+      .company-info { font-size: 10pt; }
+      h1 { font-size: 1.7em; }
+      .section-title { font-size: 1.1em; }
+      .data-table td, .data-table .label, .data-table .value { font-size: 11pt; }
+      .highlight-value { font-size: 1.05em; } /* Smaller emphasis on print */
+
+      .summary-section .section-title { font-size: 1.4em; }
+      .summary-section .data-table .label { font-size: 1.1em; }
+      .summary-section .data-table .value.highlight-value { font-size: 1.3em; }
+
+      .footer { font-size: 9pt; }
+
+      /* Force print colors to be legible, e.g., black or dark blue */
+      h1, .section-title { color: #000000; } /* Often printers convert dark blue to black */
+      .highlight-value { color: #CC0000; } /* Darker red for print */
+      .company-info, .footer { color: #444444; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="quotation-container">
+  <div class="header">
+    <div class="logo">
+      <img src="orix_logo.png" alt="ORIX Lease Logo">
+    </div>
+    <div class="company-info">
+      <p>บริษัท ไทยโอริกซ์ลีสซิ่ง จำกัด</p>
+      <p>555 รสา วัน (อาคาร บี) ยูนิต 1801 ชั้น 18 และ ชั้น 19</p>
+      <p>ถนนพหลโยธิน แขวงจตุจักร เขตจตุจักร</p>
+      <p>กรุงเทพฯ 10900</p>
+      <p>โทรศัพท์: 66(0) 2792-4500</p>
+    </div>
+  </div>
+
+  <h1>ใบเสนอราคาเช่าซื้อรถยนต์</h1>
+
+  <div class="section-title">ข้อมูลรถยนต์</div>
+  <table class="data-table">
+    <tr><td class="label">ข้อมูลรถ:</td><td class="value" id="q_carInfo"></td></tr>
+    <tr><td class="label">ราคารถ:</td><td class="value" id="q_carPrice"></td></tr>
+    <tr><td class="label">ส่วนลด:</td><td class="value" id="q_discount"></td></tr>
+    <tr><td class="label">Option:</td><td class="value" id="q_option"></td></tr>
+    <tr><td class="label">ราคาสุทธิ:</td><td class="value highlight-value" id="q_totalAmount"></td></tr>
+  </table>
+
+  <div class="section-title">เงื่อนไขการเช่าซื้อ</div>
+  <table class="data-table">
+    <tr><td class="label">เงินดาวน์:</td><td class="value highlight-value" id="q_downAmount_condition"></td></tr>
+    <tr><td class="label">เงินดาวน์คิดเป็น:</td><td class="value" id="q_downPercent"></td></tr>
+    <tr><td class="label">ยอดจัด:</td><td class="value highlight-value" id="q_financeAmt"></td></tr>
+    <tr><td class="label">อัตราดอกเบี้ย:</td><td class="value" id="q_interestRate"></td></tr>
+    <tr><td class="label">จำนวนปี:</td><td class="value" id="q_termYears"></td></tr>
+    <tr><td class="label">จำนวนงวด:</td><td class="value" id="q_termMonths"></td></tr>
+  </table>
+
+  <div class="summary-section">
+    <div class="section-title">สรุปการชำระ</div>
+    <table class="data-table">
+      <tr><td class="label">เงินดาวน์:</td><td class="value highlight-value" id="q_downAmount_summary"></td></tr>
+      <tr><td class="label">ค่างวดต่อเดือน (รวม VAT):</td><td class="value highlight-value" id="q_leaseInVat"></td></tr>
+    </table>
+  </div>
+
+  <div class="footer">
+    <p>ใบเสนอราคานี้เป็นข้อมูลเบื้องต้นและอาจมีการเปลี่ยนแปลงตามเงื่อนไขของบริษัท</p>
+    <p>วันที่ออกใบเสนอราคา: <span id="currentDate"></span></p>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const data = JSON.parse(localStorage.getItem('quotationData'));
+
+    // Helper function to format numbers
+    function format(n) {
+      if (isNaN(n) || n === null) return "0.00";
+      return parseFloat(n).toLocaleString('en-US', {
+        minimumFractionDigits: 2, maximumFractionDigits: 2
+      });
+    }
+    // Helper function to uncomma numbers
+    function uncomma(s) {
+      const cleaned = String(s).replace(/,/g, '');
+      const num = parseFloat(cleaned);
+      return isNaN(num) ? 0 : num;
+    }
+
+    if (data) {
+        document.getElementById('q_carInfo').innerText = data.carInfo || '-';
+        document.getElementById('q_carPrice').innerText = format(data.carPrice) + ' บาท' || '0.00 บาท';
+        document.getElementById('q_discount').innerText = format(data.discount) + ' บาท' || '0.00 บาท';
+        document.getElementById('q_option').innerText = format(data.option) + ' บาท' || '0.00 บาท';
+        document.getElementById('q_totalAmount').innerText = format(data.totalAmount) + ' บาท' || '0.00 บาท';
+
+        // Display downAmount in both sections
+        document.getElementById('q_downAmount_condition').innerText = format(data.downAmount) + ' บาท' || '0.00 บาท';
+        document.getElementById('q_downPercent').innerText = (uncomma(data.downPercent) || 0).toFixed(2) + '%';
+        document.getElementById('q_financeAmt').innerText = format(data.financeAmt) + ' บาท' || '0.00 บาท';
+        document.getElementById('q_interestRate').innerText = (uncomma(data.interestRate) || 0).toFixed(2) + '%';
+        document.getElementById('q_termYears').innerText = data.termYears + ' ปี' || '0 ปี';
+        document.getElementById('q_termMonths').innerText = (parseInt(data.termYears || 0) * 12) + ' งวด';
+
+        // Summary section
+        document.getElementById('q_downAmount_summary').innerText = format(data.downAmount) + ' บาท' || '0.00 บาท';
+        document.getElementById('q_leaseInVat').innerText = format(data.leaseInVat) + ' บาท' || '0.00 บาท';
+        
+        // No longer displaying 'financeTotalWithInterest' in HTML summary,
+        // but keeping the calculation in JS for completeness if ever needed elsewhere.
+        const carPrice = uncomma(data.carPrice);
+        const discount = uncomma(data.discount);
+        const option = uncomma(data.option);
+        const downAmount = uncomma(data.downAmount);
+        const interestRate = uncomma(data.interestRate);
+        const termYears = parseInt(data.termYears || 0);
+
+        const total = carPrice - discount + option;
+        const finance = total - downAmount;
+        const intTotal = finance * (interestRate / 100) * termYears;
+        const financeTotalWithInterest = finance + intTotal;
+
+        // Set current date
+        const today = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDate').innerText = today.toLocaleDateString('th-TH', options);
+
+    } else {
+        alert('ไม่พบข้อมูลใบเสนอราคา กรุณากลับไปหน้าคำนวณและสร้างใบเสนอราคาใหม่');
+        window.close(); // Close the tab if no data
+    }
+});
+</script>
+
+</body>
+</html>
