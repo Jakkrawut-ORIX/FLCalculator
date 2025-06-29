@@ -25,41 +25,44 @@
       padding: 15px; /* Adjusted padding for mobile */
       background: var(--orix-light-grey);
       color: var(--orix-dark-grey);
-      line-height: 1.6;
-      font-size: 14pt; /* Increased base font size for better readability on screen */
+      line-height: 1.4; /* ลด line-height เล็กน้อยเพื่อประหยัดพื้นที่ */
+      font-size: 12pt; /* ลดขนาด font เริ่มต้นเพื่อพยายามให้เนื้อหาอยู่ในหน้าจอเดียว */
     }
 
     .quotation-container {
       max-width: 100%; /* Changed from fixed A4 width to 100% for responsiveness */
       margin: 0 auto;
       background: var(--orix-white);
-      padding: 20px; /* Adjusted padding for mobile */
+      padding: 15px; /* ลด padding เพื่อประหยัดพื้นที่ */
       border: 1px solid var(--orix-border-color);
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
       min-height: auto; /* Removed fixed A4 height */
       box-sizing: border-box;
+      margin-bottom: 10px; /* ลด margin ด้านล่าง */
     }
 
     .header {
       display: flex;
-      flex-wrap: wrap; /* Added flex-wrap for responsiveness */
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 25px; /* Adjusted margin */
+      justify-content: space-between; /* จัดให้ logo และ company-info อยู่คนละฝั่ง */
+      align-items: flex-start; /* จัดแนวรายการด้านบน */
+      margin-bottom: 15px; /* ลด margin ด้านล่าง */
       border-bottom: 2px solid var(--orix-logo-blue);
-      padding-bottom: 15px;
+      padding-bottom: 10px; /* ลด padding ด้านล่าง */
+    }
+
+    .header .logo {
+      /* ไม่ต้องกำหนด text-align: right แล้ว */
     }
 
     .header .logo img {
-      max-width: 120px; /* Adjusted logo size for mobile */
+      max-width: 100px; /* ลดขนาด logo */
       height: auto;
     }
 
     .company-info {
-      text-align: right;
+      text-align: right; /* จัดข้อความใน company-info ชิดขวา */
       font-size: 10pt; /* Slightly smaller than body for company details, but readable */
       color: var(--orix-mid-grey);
-      flex-basis: auto; /* Allow content to dictate width */
     }
 
     .company-info p {
@@ -69,33 +72,33 @@
     h1 {
       text-align: center;
       color: var(--orix-logo-blue);
-      font-size: 1.8em; /* Adjusted for mobile */
-      margin-bottom: 20px;
+      font-size: 1.6em; /* ลดขนาด font หัวข้อหลัก */
+      margin-bottom: 15px;
       border-bottom: 1px solid var(--orix-border-color);
-      padding-bottom: 10px;
+      padding-bottom: 8px; /* ลด padding ด้านล่าง */
       font-weight: 600;
     }
 
     .section-title {
-      font-size: 1.1em; /* Adjusted for mobile */
+      font-size: 1em; /* ลดขนาด font หัวข้อ */
       color: var(--orix-logo-blue);
-      margin-top: 20px;
-      margin-bottom: 8px;
+      margin-top: 15px; /* ลด margin ด้านบน */
+      margin-bottom: 5px; /* ลด margin ด้านล่าง */
       border-bottom: 1px dashed var(--orix-border-color);
-      padding-bottom: 5px;
+      padding-bottom: 3px; /* ลด padding ด้านล่าง */
       font-weight: 600;
     }
 
     .data-table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 15px; /* Adjusted margin */
+      margin-bottom: 10px; /* ลด margin ด้านล่าง */
     }
 
     .data-table td {
-      padding: 6px 0; /* Adjusted padding */
+      padding: 4px 0; /* ลด padding ในตาราง */
       vertical-align: top;
-      font-size: 1em;
+      font-size: 0.9em; /* ลดขนาด font ในตาราง */
     }
 
     .data-table .label {
@@ -119,27 +122,27 @@
 
     /* Styles for the "สรุปการชำระ" section - significantly emphasized */
     .summary-section .section-title {
-      font-size: 1.3em; /* Adjusted for mobile */
+      font-size: 1.2em; /* Adjusted for mobile */
       color: var(--orix-logo-blue);
     }
 
     .summary-section .data-table .label {
-        font-size: 1.1em; /* Adjusted for mobile */
+        font-size: 1em; /* Adjusted for mobile */
         font-weight: 600;
     }
     .summary-section .data-table .value.highlight-value {
-        font-size: 1.3em; /* Adjusted for mobile */
+        font-size: 1.2em; /* Adjusted for mobile */
         color: var(--orix-logo-red);
         font-weight: 600;
     }
 
     .footer {
       text-align: center;
-      margin-top: 30px; /* Adjusted margin */
+      margin-top: 20px; /* ลด margin ด้านบน */
       font-size: 0.8em; /* Adjusted for mobile */
       color: var(--orix-mid-grey);
       border-top: 1px solid var(--orix-border-color);
-      padding-top: 10px; /* Adjusted padding */
+      padding-top: 8px; /* ลด padding ด้านบน */
     }
 
     /* New style for the export button */
@@ -212,7 +215,6 @@
         margin-bottom: 5px;
       }
 
-      /* *** ปรับปรุง CSS สำหรับ Mobile (ข้อความและตัวเลขในแถวเดียวกัน) *** */
       .data-table tr {
         display: flex; /* ใช้ Flexbox เพื่อจัดเรียง td ในแนวนอน */
         justify-content: space-between; /* กระจายช่องไฟระหว่าง label และ value */
@@ -232,15 +234,11 @@
 
       .data-table .label {
         font-weight: 600; /* Bold labels */
-        /* ไม่ต้องมี margin-bottom แล้ว เพราะอยู่แถวเดียวกัน */
       }
 
       .data-table .value {
         text-align: right; /* จัดชิดขวาสำหรับตัวเลข */
-        /* ไม่ต้องมี margin-bottom แล้ว */
       }
-      /* *** สิ้นสุดการปรับปรุง CSS สำหรับ Mobile *** */
-
 
       .summary-section .data-table .label {
         font-size: 1em; /* Adjust summary label size */
@@ -280,7 +278,7 @@
       h1 { font-size: 1.7em; }
       .section-title { font-size: 1.1em; }
       .data-table td, .data-table .label, .data-table .value { font-size: 11pt; }
-      .highlight-value { font-size: 1.05em; } /* Smaller emphasis on print */
+      .highlight-value { color: #CC0000; font-size: 1.05em; } /* Darker red for print */
 
       .summary-section .section-title { font-size: 1.4em; }
       .summary-section .data-table .label { font-size: 1.1em; }
@@ -290,12 +288,25 @@
 
       /* Force print colors to be legible, e.g., black or dark blue */
       h1, .section-title { color: #000000; } /* Often printers convert dark blue to black */
-      .highlight-value { color: #CC0000; } /* Darker red for print */
       .company-info, .footer { color: #444444; }
 
       /* Hide export button when printing */
       .export-button-container {
           display: none;
+      }
+    }
+
+    /* Desktop specific styles for header alignment */
+    @media (min-width: 601px) {
+      .header {
+        flex-wrap: nowrap; /* ป้องกันไม่ให้ logo และ company-info ขึ้นบรรทัดใหม่ */
+      }
+      .header .logo {
+        flex-grow: 1; /* ให้ logo ผลัก company-info ไปทางขวา */
+      }
+      .company-info {
+        flex-grow: 0; /* ไม่ให้ company-info ขยาย */
+        text-align: right; /* ย้ำอีกครั้งเพื่อความแน่ใจ */
       }
     }
   </style>
@@ -361,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper function to format numbers with 2 decimal places
     function format(n) {
-      if (isNaN(n) || n === null) return "0.00";
+      if (isNaN(n) || n === null || n === undefined) return "0.00";
       return parseFloat(n).toLocaleString('en-US', {
         minimumFractionDigits: 2, maximumFractionDigits: 2
       });
@@ -369,27 +380,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper function to format percentages with 2 decimal places
     function formatPercent(n) {
-      if (isNaN(n) || n === null) return "0.00";
+      if (isNaN(n) || n === null || n === undefined) return "0.00";
       return parseFloat(n).toFixed(2);
     }
 
     if (data) {
         document.getElementById('q_carInfo').innerText = data.carInfo || '-';
-        document.getElementById('q_carPrice').innerText = format(data.carPrice) + ' บาท';
-        document.getElementById('q_discount').innerText = format(data.discount) + ' บาท';
-        document.getElementById('q_option').innerText = format(data.option) + ' บาท';
-        document.getElementById('q_totalAmount').innerText = format(data.totalAmount) + ' บาท';
+        document.getElementById('q_carPrice').innerText = format(data.carPrice || 0) + ' บาท';
+        document.getElementById('q_discount').innerText = format(data.discount || 0) + ' บาท';
+        document.getElementById('q_option').innerText = format(data.option || 0) + ' บาท';
+        document.getElementById('q_totalAmount').innerText = format(data.totalAmount || 0) + ' บาท';
 
-        document.getElementById('q_downAmount_condition').innerText = format(data.downAmount) + ' บาท';
-        document.getElementById('q_downPercent').innerText = formatPercent(data.downPercent) + '%';
-        document.getElementById('q_financeAmt').innerText = format(data.financeAmt) + ' บาท';
-        document.getElementById('q_interestRate').innerText = formatPercent(data.interestRate) + '%';
-        document.getElementById('q_termYears').innerText = data.termYears + ' ปี';
-        document.getElementById('q_termMonths').innerText = (parseInt(data.termYears || 0) * 12) + ' งวด';
+        document.getElementById('q_downAmount_condition').innerText = format(data.downAmount || 0) + ' บาท';
+        document.getElementById('q_downPercent').innerText = formatPercent(data.downPercent || 0) + '%';
+        document.getElementById('q_financeAmt').innerText = format(data.financeAmt || 0) + ' บาท';
+        document.getElementById('q_interestRate').innerText = formatPercent(data.interestRate || 0) + '%';
+        document.getElementById('q_termYears').innerText = (data.termYears || 0) + ' ปี';
+        document.getElementById('q_termMonths').innerText = ((parseInt(data.termYears || 0) || 0) * 12) + ' งวด';
 
         // Summary section
-        document.getElementById('q_downAmount_summary').innerText = format(data.downAmount) + ' บาท';
-        document.getElementById('q_leaseInVat').innerText = format(data.leaseInVat) + ' บาท';
+        document.getElementById('q_downAmount_summary').innerText = format(data.downAmount || 0) + ' บาท';
+        document.getElementById('q_leaseInVat').innerText = format(data.leaseInVat || 0) + ' บาท';
         
         // Set current date
         const today = new Date();
@@ -398,7 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     } else {
         alert('ไม่พบข้อมูลใบเสนอราคา กรุณากลับไปหน้าคำนวณและสร้างใบเสนอราคาใหม่');
-        // window.close(); // You might want to comment this out during development to see the alert.
+        // window.close();
     }
 });
 
