@@ -23,7 +23,7 @@
       padding: 10px;
       background: var(--orix-light-grey);
       color: var(--orix-dark-grey);
-      font-size: 11pt; /* Base font size */
+      font-size: 11pt; /* ขนาดฟอนต์พื้นฐาน */
     }
     .quotation-container {
       max-width: 800px;
@@ -36,20 +36,21 @@
     .header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: flex-end; /* จัดเรียงส่วนประกอบให้อยู่ด้านล่างสุดของ header เพื่อให้เหมือนหัวจดหมาย */
       flex-wrap: wrap;
       border-bottom: 2px solid var(--orix-logo-blue);
       padding-bottom: 10px;
       margin-bottom: 15px;
     }
     .logo img {
-      max-width: 100px;
+      max-width: 120px; /* ขยายโลโก้ให้ใหญ่ขึ้นเล็กน้อยสำหรับหัวจดหมาย */
       height: auto;
     }
     .company-info {
       text-align: right;
       font-size: 10pt;
       color: var(--orix-mid-grey);
+      line-height: 1.3; /* ทำให้ระยะห่างระหว่างบรรทัดของที่อยู่กระชับขึ้น */
     }
     h1 {
       text-align: center;
@@ -108,105 +109,108 @@
       cursor: pointer;
     }
 
-    /* --- Mobile Specific Styles --- */
+    /* --- รูปแบบเฉพาะสำหรับมือถือ --- */
     @media only screen and (max-width: 600px) {
       body {
-        padding: 5px; /* Reduce overall padding */
-        font-size: 10pt; /* Smaller base font size for mobile */
+        padding: 5px; /* ลดระยะขอบโดยรวม */
+        font-size: 10pt; /* ลดขนาดฟอนต์พื้นฐานสำหรับมือถือ */
       }
       .quotation-container {
-        padding: 10px; /* Reduce container padding */
-        border: none; /* Remove border on very small screens for cleaner look */
+        padding: 10px; /* ลดระยะขอบในคอนเทนเนอร์ */
+        border: none; /* ลบเส้นขอบบนหน้าจอขนาดเล็กมากเพื่อให้ดูสะอาดขึ้น */
       }
       .header {
-        flex-direction: column; /* Stack header items vertically */
-        align-items: center; /* Center align items when stacked */
+        flex-direction: column; /* จัดเรียงส่วนประกอบใน header ในแนวตั้ง */
+        align-items: center; /* จัดกึ่งกลางเมื่อจัดเรียงแบบแนวตั้ง */
         padding-bottom: 5px;
         margin-bottom: 10px;
       }
       .logo img {
-        max-width: 80px; /* Slightly smaller logo */
+        max-width: 80px; /* โลโก้เล็กลงเล็กน้อย */
         margin-bottom: 5px;
       }
       .company-info {
-        text-align: center; /* Center company info */
-        font-size: 9pt; /* Smaller company info font */
+        text-align: center; /* จัดกึ่งกลางข้อมูลบริษัท */
+        font-size: 9pt; /* ขนาดฟอนต์ข้อมูลบริษัทเล็กลง */
+        line-height: 1.4; /* ระยะห่างระหว่างบรรทัดกว้างขึ้นเล็กน้อยเพื่อให้อ่านง่ายบนมือถือ */
       }
       h1 {
-        font-size: 1.2em; /* Smaller main title */
+        font-size: 1.2em; /* หัวข้อหลักเล็กลง */
         margin-bottom: 5px;
       }
       .section-title {
-        margin: 10px 0 3px; /* Reduced section title margin */
+        margin: 10px 0 3px; /* ลดระยะขอบหัวข้อส่วน */
         font-size: 0.95em;
       }
       .data-table td {
-        font-size: 0.9em; /* Smaller table cell font size */
+        font-size: 0.9em; /* ลดขนาดฟอนต์ในเซลล์ตาราง */
         padding: 3px 0;
       }
       .highlight-value {
-        font-size: 1em; /* Adjust highlight value font size */
+        font-size: 1em; /* ปรับขนาดฟอนต์ของค่าที่เน้น */
       }
       .footer {
-        font-size: 0.7em; /* Smaller footer font */
+        font-size: 0.7em; /* ลดขนาดฟอนต์ท้ายกระดาษ */
         margin-top: 15px;
         padding-top: 5px;
       }
       .export-button {
-        padding: 8px 15px; /* Smaller button padding */
-        font-size: 0.9em; /* Smaller button font */
+        padding: 8px 15px; /* ลดขนาดปุ่ม */
+        font-size: 0.9em; /* ลดขนาดฟอนต์ปุ่ม */
       }
     }
 
-    /* --- Print Specific Styles for A4 PDF --- */
+    /* --- รูปแบบเฉพาะสำหรับการพิมพ์ (A4 PDF) --- */
     @media print {
       .export-button-container {
-        display: none; /* Hide button when printing */
+        display: none; /* ซ่อนปุ่มเมื่อพิมพ์ */
       }
       body {
         margin: 0;
         padding: 0;
-        background: none; /* No background in print */
-        font-size: 10pt; /* Optimized font size for print A4 */
+        background: none; /* ไม่มีพื้นหลังเมื่อพิมพ์ */
+        font-size: 10pt; /* ขนาดฟอนต์ที่เหมาะสมสำหรับ A4 */
       }
       .quotation-container {
-        width: 190mm; /* Slightly less than A4 width to allow margins */
-        margin: 10mm auto; /* Center on A4 with 10mm top/bottom margin */
-        padding: 15mm; /* Internal padding for content */
-        border: 1px solid var(--orix-border-color); /* Retain border for print */
-        box-shadow: none; /* No shadow in print */
+        width: 190mm; /* ความกว้างน้อยกว่า A4 เล็กน้อยสำหรับระยะขอบ */
+        margin: 10mm auto; /* จัดกึ่งกลางบน A4 โดยมีระยะขอบ 10 มม. ด้านบน/ล่าง */
+        padding: 15mm; /* ระยะขอบภายในสำหรับเนื้อหา */
+        border: 1px solid var(--orix-border-color); /* คงเส้นขอบสำหรับการพิมพ์ */
+        box-shadow: none; /* ไม่มีเงาเมื่อพิมพ์ */
         box-sizing: border-box;
       }
       .header {
-        margin-bottom: 15mm; /* Increase header margin for print */
+        margin-bottom: 15mm; /* เพิ่มระยะขอบ header สำหรับการพิมพ์ */
         padding-bottom: 5mm;
+        align-items: flex-end; /* ให้รูปแบบหัวจดหมายยังคงอยู่ในการพิมพ์ */
       }
       .logo img {
-        max-width: 80px; /* Optimize logo size for print */
+        max-width: 100px; /* ปรับขนาดโลโก้ให้เหมาะสมกับการพิมพ์ */
       }
       .company-info {
-        font-size: 9pt; /* Optimize company info font for print */
+        font-size: 9pt; /* ปรับขนาดฟอนต์ข้อมูลบริษัทให้เหมาะสมกับการพิมพ์ */
+        line-height: 1.2; /* ระยะห่างระหว่างบรรทัดกระชับขึ้นสำหรับการพิมพ์ */
       }
       h1 {
-        font-size: 1.3em; /* Optimize main title for print */
+        font-size: 1.3em; /* ปรับขนาดหัวข้อหลักให้เหมาะสมกับการพิมพ์ */
         margin-bottom: 10mm;
       }
       .section-title {
-        margin: 8mm 0 3mm; /* Optimize section title margins for print */
+        margin: 8mm 0 3mm; /* ปรับระยะขอบหัวข้อส่วนให้เหมาะสมกับการพิมพ์ */
         font-size: 1em;
       }
       .data-table {
-        margin-bottom: 5mm; /* Optimize table margin for print */
+        margin-bottom: 5mm; /* ปรับระยะขอบตารางให้เหมาะสมกับการพิมพ์ */
       }
       .data-table td {
-        padding: 3mm 0; /* Optimize cell padding for print */
+        padding: 3mm 0; /* ปรับระยะขอบเซลล์ให้เหมาะสมกับการพิมพ์ */
         font-size: 0.9em;
       }
       .highlight-value {
         font-size: 1.0em;
       }
       .footer {
-        margin-top: 15mm; /* Optimize footer margin for print */
+        margin-top: 15mm; /* ปรับระยะขอบท้ายกระดาษให้เหมาะสมกับการพิมพ์ */
         padding-top: 5mm;
         font-size: 0.8em;
       }
@@ -266,60 +270,76 @@
   </div>
 
   <script>
+    // ฟังก์ชันช่วยจัดรูปแบบตัวเลขให้มีทศนิยม 2 ตำแหน่ง
     const fmt = n => isFinite(n) ? Number(n).toLocaleString('en-US', {minimumFractionDigits:2}) : '0.00';
+    // ฟังก์ชันช่วยจัดรูปแบบเปอร์เซ็นต์ให้มีทศนิยม 2 ตำแหน่ง
     const fmtPct = n => isFinite(n) ? Number(n).toFixed(2) : '0.00';
+
+    // ฟังก์ชันโหลดข้อมูลใบเสนอราคาจาก URL hash หรือ localStorage
     function loadPayload() {
       if (location.hash.startsWith('#data=')) {
-        try { return JSON.parse(atob(decodeURIComponent(location.hash.slice(6)))); } catch {}
+        try { return JSON.parse(atob(decodeURIComponent(location.hash.slice(6)))); } catch (e) {console.error("Error decoding URL hash:", e);}
       }
-      try { return JSON.parse(localStorage.getItem('quotationData')); } catch {}
+      try { return JSON.parse(localStorage.getItem('quotationData')); } catch (e) {console.error("Error parsing localStorage data:", e);}
       return null;
     }
+
+    // เมื่อโหลดเอกสารเสร็จสิ้น ให้เติมข้อมูลลงในใบเสนอราคา
     document.addEventListener('DOMContentLoaded', () => {
       const d = loadPayload();
       if (!d) return alert('ไม่พบข้อมูลใบเสนอราคา');
-      q_carInfo.textContent = d.carInfo || '-';
-      q_carPrice.textContent = fmt(d.carPrice) + ' บาท';
-      q_discount.textContent = fmt(d.discount) + ' บาท';
-      q_option.textContent = fmt(d.option) + ' บาท';
-      q_totalAmount.textContent = fmt(d.totalAmount) + ' บาท';
-      q_downAmount_condition.textContent = fmt(d.downAmount) + ' บาท';
-      q_downPercent.textContent = fmtPct(d.downPercent) + '%';
-      q_financeAmt.textContent = fmt(d.financeAmt) + ' บาท';
-      q_interestRate.textContent = fmtPct(d.interestRate) + '%';
-      q_termYears.textContent = (d.termYears || 0) + ' ปี';
-      q_termMonths.textContent = ((d.termYears || 0) * 12) + ' งวด';
-      q_downAmount_summary.textContent = fmt(d.downAmount) + ' บาท';
-      q_leaseInVat.textContent = fmt(d.leaseInVat) + ' บาท';
-      currentDate.textContent = new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      // กำหนดค่าข้อมูลรถยนต์
+      document.getElementById('q_carInfo').textContent = d.carInfo || '-';
+      document.getElementById('q_carPrice').textContent = fmt(d.carPrice) + ' บาท';
+      document.getElementById('q_discount').textContent = fmt(d.discount) + ' บาท';
+      document.getElementById('q_option').textContent = fmt(d.option) + ' บาท';
+      document.getElementById('q_totalAmount').textContent = fmt(d.totalAmount) + ' บาท';
+
+      // กำหนดค่าเงื่อนไขการเช่าซื้อ
+      document.getElementById('q_downAmount_condition').textContent = fmt(d.downAmount) + ' บาท';
+      document.getElementById('q_downPercent').textContent = fmtPct(d.downPercent) + '%';
+      document.getElementById('q_financeAmt').textContent = fmt(d.financeAmt) + ' บาท';
+      document.getElementById('q_interestRate').textContent = fmtPct(d.interestRate) + '%';
+      document.getElementById('q_termYears').textContent = (d.termYears || 0) + ' ปี';
+      document.getElementById('q_termMonths').textContent = ((d.termYears || 0) * 12) + ' งวด';
+
+      // กำหนดค่าสรุปการชำระ
+      document.getElementById('q_downAmount_summary').textContent = fmt(d.downAmount) + ' บาท';
+      document.getElementById('q_leaseInVat').textContent = fmt(d.leaseInVat) + ' บาท';
+      
+      // กำหนดวันที่ออกใบเสนอราคาปัจจุบัน
+      document.getElementById('currentDate').textContent = new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
     });
+
+    // ฟังก์ชันสำหรับ Export ใบเสนอราคาเป็น PDF
     async function exportQuotationAsPdf() {
       const box = document.querySelector('.quotation-container');
       const btn = document.querySelector('.export-button-container');
-      btn.style.display = 'none'; // Hide the button before capturing
-      
+      btn.style.display = 'none'; // ซ่อนปุ่มก่อนจับภาพ
+
       try {
         const canvas = await html2canvas(box, { 
-          scale: 2, // Increase scale for better quality PDF
+          scale: 2, // เพิ่มสเกลเพื่อคุณภาพ PDF ที่ดีขึ้น
           useCORS: true,
-          windowWidth: document.querySelector('.quotation-container').scrollWidth, // Capture full width
-          windowHeight: document.querySelector('.quotation-container').scrollHeight // Capture full height
+          windowWidth: document.querySelector('.quotation-container').scrollWidth, // จับภาพความกว้างทั้งหมด
+          windowHeight: document.querySelector('.quotation-container').scrollHeight // จับภาพความสูงทั้งหมด
         });
         const img = canvas.toDataURL('image/png');
         
-        // A4 dimensions in mm (210mm x 297mm)
+        // ขนาด A4 ในหน่วยมิลลิเมตร (210 มม. x 297 มม.)
         const pdfW = 210; 
         const pdfH = 297; 
 
-        // Calculate image dimensions to fit within PDF, maintaining aspect ratio
+        // คำนวณขนาดรูปภาพให้พอดีกับ PDF โดยรักษาสัดส่วน
         const imgCanvasWidth = canvas.width;
         const imgCanvasHeight = canvas.height;
 
-        let imgPdfWidth = pdfW - 20; // 10mm margin on each side
+        let imgPdfWidth = pdfW - 20; // 10 มม. ระยะขอบแต่ละด้าน
         let imgPdfHeight = (imgCanvasHeight * imgPdfWidth) / imgCanvasWidth;
 
-        // If the image is too tall, scale it down to fit within PDF height with margins
-        if (imgPdfHeight > pdfH - 20) { // 10mm margin on top/bottom
+        // หากรูปภาพสูงเกินไป ให้ย่อขนาดลงเพื่อให้พอดีกับความสูงของ PDF พร้อมระยะขอบ
+        if (imgPdfHeight > pdfH - 20) { // 10 มม. ระยะขอบด้านบน/ล่าง
             imgPdfHeight = pdfH - 20;
             imgPdfWidth = (imgCanvasWidth * imgPdfHeight) / imgCanvasHeight;
         }
@@ -327,16 +347,16 @@
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
 
-        // Center the image on the page
+        // จัดกึ่งกลางรูปภาพบนหน้ากระดาษ
         const xPos = (pdfW - imgPdfWidth) / 2;
         const yPos = (pdfH - imgPdfHeight) / 2;
 
         pdf.addImage(img, 'PNG', xPos, yPos, imgPdfWidth, imgPdfHeight);
-        pdf.save("ใบเสนอราคา_ORIX.pdf"); // Give a meaningful filename
+        pdf.save("ใบเสนอราคา_ORIX.pdf"); // ตั้งชื่อไฟล์ที่สื่อความหมาย
       } catch (err) {
-        alert("PDF export failed: " + err.message);
+        alert("การ Export PDF ล้มเหลว: " + err.message);
       } finally {
-        btn.style.display = 'block'; // Show the button again
+        btn.style.display = 'block'; // แสดงปุ่มอีกครั้ง
       }
     }
   </script>
