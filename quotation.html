@@ -36,7 +36,7 @@
     .header {
       display: flex;
       justify-content: space-between;
-      align-items: center; /* จัดกึ่งกลางโลโก้และข้อมูลบริษัทในแนวตั้ง */
+      align-items: flex-start; /* เปลี่ยนเป็นจัดชิดด้านบน */
       flex-wrap: wrap;
       border-bottom: 2px solid var(--orix-logo-blue);
       padding-bottom: 10px;
@@ -189,7 +189,7 @@
       .header {
         margin-bottom: 15mm; /* เพิ่มระยะขอบ header สำหรับการพิมพ์ */
         padding-bottom: 5mm;
-        align-items: center; /* ให้รูปแบบจัดกึ่งกลางในแนวตั้งสำหรับการพิมพ์ */
+        align-items: flex-start; /* ให้รูปแบบจัดชิดด้านบนในการพิมพ์ */
       }
       .logo img {
         max-width: 120px; /* ปรับขนาดโลโก้ให้เหมาะสมกับการพิมพ์ */
