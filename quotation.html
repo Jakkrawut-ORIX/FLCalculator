@@ -1,470 +1,265 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>ใบเสนอราคา - ORIX Lease</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    /* ORIX Logo Colors for consistent theme variables */
     :root {
-      --orix-logo-blue: #003366; /* Dark blue from logo */
-      --orix-logo-red: #E30613;  /* Red from logo */
+      --orix-logo-blue: #003366;
+      --orix-logo-red: #E30613;
       --orix-white: #FFFFFF;
-      --orix-light-grey: #F8FBFD; /* Light background for the page */
-      --orix-dark-grey: #333333; /* Main body text color */
-      --orix-mid-grey: #555555;  /* For secondary text like company info */
+      --orix-light-grey: #F8FBFD;
+      --orix-dark-grey: #333333;
+      --orix-mid-grey: #555555;
       --orix-border-color: #DDEBF5;
     }
-
     body {
       font-family: 'Kanit', sans-serif;
       margin: 0;
-      padding: 15px; /* Adjusted padding for mobile */
+      padding: 15px;
       background: var(--orix-light-grey);
       color: var(--orix-dark-grey);
-      line-height: 1.4; /* ลด line-height เล็กน้อยเพื่อประหยัดพื้นที่ */
-      font-size: 12pt; /* ลดขนาด font เริ่มต้นเพื่อพยายามให้เนื้อหาอยู่ในหน้าจอเดียว */
+      font-size: 12pt;
     }
-
     .quotation-container {
-      max-width: 100%; /* Changed from fixed A4 width to 100% for responsiveness */
+      max-width: 100%;
       margin: 0 auto;
       background: var(--orix-white);
-      padding: 15px; /* ลด padding เพื่อประหยัดพื้นที่ */
+      padding: 15px;
       border: 1px solid var(--orix-border-color);
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-      min-height: auto; /* Removed fixed A4 height */
       box-sizing: border-box;
-      margin-bottom: 10px; /* ลด margin ด้านล่าง */
+      margin-bottom: 10px;
     }
-
     .header {
       display: flex;
-      justify-content: space-between; /* จัดให้ logo และ company-info อยู่คนละฝั่ง */
-      align-items: flex-start; /* จัดแนวรายการด้านบน */
-      margin-bottom: 15px; /* ลด margin ด้านล่าง */
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
       border-bottom: 2px solid var(--orix-logo-blue);
-      padding-bottom: 10px; /* ลด padding ด้านล่าง */
+      padding-bottom: 10px;
+      flex-wrap: wrap;
     }
-
-    .header .logo {
-      /* ไม่ต้องกำหนด text-align: right แล้ว */
-    }
-
     .header .logo img {
-      max-width: 100px; /* ลดขนาด logo */
+      max-width: 100px;
       height: auto;
     }
-
     .company-info {
-      text-align: right; /* จัดข้อความใน company-info ชิดขวา */
-      font-size: 10pt; /* Slightly smaller than body for company details, but readable */
+      text-align: right;
+      font-size: 10pt;
       color: var(--orix-mid-grey);
     }
-
-    .company-info p {
-      margin: 2px 0;
-    }
-
     h1 {
       text-align: center;
       color: var(--orix-logo-blue);
-      font-size: 1.6em; /* ลดขนาด font หัวข้อหลัก */
+      font-size: 1.6em;
       margin-bottom: 15px;
       border-bottom: 1px solid var(--orix-border-color);
-      padding-bottom: 8px; /* ลด padding ด้านล่าง */
+      padding-bottom: 8px;
       font-weight: 600;
     }
-
     .section-title {
-      font-size: 1em; /* ลดขนาด font หัวข้อ */
+      font-size: 1em;
       color: var(--orix-logo-blue);
-      margin-top: 15px; /* ลด margin ด้านบน */
-      margin-bottom: 5px; /* ลด margin ด้านล่าง */
+      margin-top: 15px;
+      margin-bottom: 5px;
       border-bottom: 1px dashed var(--orix-border-color);
-      padding-bottom: 3px; /* ลด padding ด้านล่าง */
+      padding-bottom: 3px;
       font-weight: 600;
     }
-
     .data-table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 10px; /* ลด margin ด้านล่าง */
+      margin-bottom: 10px;
     }
-
     .data-table td {
-      padding: 4px 0; /* ลด padding ในตาราง */
+      padding: 4px 0;
       vertical-align: top;
-      font-size: 0.9em; /* ลดขนาด font ในตาราง */
+      font-size: 0.9em;
     }
-
     .data-table .label {
-      width: 50%; /* Adjusted width for mobile */
+      width: 50%;
       font-weight: 400;
       color: var(--orix-dark-grey);
     }
-
     .data-table .value {
-      width: 50%; /* Adjusted width for mobile */
+      width: 50%;
       text-align: right;
       font-weight: 600;
-      color: var(--orix-dark-grey);
     }
-
     .highlight-value {
-      font-size: 1.05em; /* Slightly larger for highlighted values */
+      font-size: 1.05em;
       color: var(--orix-logo-red);
       font-weight: 600;
     }
-
-    /* Styles for the "สรุปการชำระ" section - significantly emphasized */
     .summary-section .section-title {
-      font-size: 1.2em; /* Adjusted for mobile */
-      color: var(--orix-logo-blue);
+      font-size: 1.2em;
     }
-
     .summary-section .data-table .label {
-        font-size: 1em; /* Adjusted for mobile */
-        font-weight: 600;
+      font-weight: 600;
     }
     .summary-section .data-table .value.highlight-value {
-        font-size: 1.2em; /* Adjusted for mobile */
-        color: var(--orix-logo-red);
-        font-weight: 600;
+      font-size: 1.2em;
+      color: var(--orix-logo-red);
+      font-weight: 600;
     }
-
     .footer {
       text-align: center;
-      margin-top: 20px; /* ลด margin ด้านบน */
-      font-size: 0.8em; /* Adjusted for mobile */
+      margin-top: 20px;
+      font-size: 0.8em;
       color: var(--orix-mid-grey);
       border-top: 1px solid var(--orix-border-color);
-      padding-top: 8px; /* ลด padding ด้านบน */
+      padding-top: 8px;
     }
-
-    /* New style for the export button */
     .export-button-container {
-        text-align: center;
-        margin-top: 25px;
-        margin-bottom: 15px;
+      text-align: center;
+      margin-top: 25px;
+      margin-bottom: 15px;
     }
     .export-button {
-        padding: 12px 25px;
-        font-size: 1.1em;
-        background-color: var(--orix-logo-blue);
-        color: var(--orix-white);
-        border: none;
-        border-radius: 7px;
-        cursor: pointer;
-        transition: background-color 0.3s ease, transform 0.2s ease;
-        font-weight: 600;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    .export-button:hover {
-        background-color: #002244;
-        transform: translateY(-1px);
-    }
-    .export-button:active {
-        transform: translateY(0);
+      padding: 12px 25px;
+      font-size: 1.1em;
+      background-color: var(--orix-logo-blue);
+      color: var(--orix-white);
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: 600;
     }
 
-    /* --- Media Queries for Mobile Responsiveness --- */
     @media (max-width: 600px) {
-      body {
-        font-size: 12pt; /* Base font size for smaller screens */
-        padding: 10px;
-      }
-
-      .quotation-container {
-        padding: 15px;
-        box-shadow: none; /* Remove box shadow on very small screens for cleaner look */
-      }
-
       .header {
-        flex-direction: column; /* Stack logo and company info vertically */
-        align-items: center; /* Center align items when stacked */
+        flex-direction: column;
+        align-items: center;
         text-align: center;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
       }
-
-      .header .logo {
-        margin-bottom: 15px; /* Space between logo and company info */
-      }
-
-      .header .logo img {
-        max-width: 100px; /* Further reduce logo size on very small screens */
-      }
-
       .company-info {
-        text-align: center; /* Center company info when stacked */
+        text-align: center;
         font-size: 9pt;
+        margin-top: 10px;
       }
-
-      h1 {
-        font-size: 1.6em; /* Adjust main title size */
-        margin-bottom: 15px;
-      }
-
-      .section-title {
-        font-size: 1em; /* Adjust section title size */
-        margin-top: 15px;
-        margin-bottom: 5px;
-      }
-
-      .data-table tr {
-        display: flex; /* ใช้ Flexbox เพื่อจัดเรียง td ในแนวนอน */
-        justify-content: space-between; /* กระจายช่องไฟระหว่าง label และ value */
-        align-items: baseline; /* จัดแนวบนของข้อความ */
-        margin-bottom: 8px; /* เพิ่มระยะห่างระหว่างแถว */
-        border-bottom: 1px solid var(--orix-border-color); /* เพิ่มเส้นแบ่งแถว */
-        padding-bottom: 4px;
-      }
-
-      .data-table td {
-        display: block; /* ยังคงเป็น block แต่ถูกควบคุมด้วย flex ใน tr */
-        padding: 2px 0; /* ลด padding แนวตั้ง */
-        width: auto !important; /* ยกเลิก width เดิม */
-        flex-grow: 1; /* ให้ td ขยายเพื่อแบ่งพื้นที่ */
-        text-align: left; /* จัดชิดซ้ายโดย default */
-      }
-
-      .data-table .label {
-        font-weight: 600; /* Bold labels */
-      }
-
-      .data-table .value {
-        text-align: right; /* จัดชิดขวาสำหรับตัวเลข */
-      }
-
-      .summary-section .data-table .label {
-        font-size: 1em; /* Adjust summary label size */
-      }
-      .summary-section .data-table .value.highlight-value {
-        font-size: 1.2em; /* Adjust summary value size */
-      }
-
-      .footer {
-        margin-top: 20px;
-        font-size: 0.75em;
-      }
-      .export-button {
-          padding: 10px 20px;
-          font-size: 1em;
+      .header .logo img {
+        max-width: 90px;
       }
     }
 
-    /* Print specific styles (kept for printing functionality) */
     @media print {
-      body {
-        margin: 0;
-        padding: 0;
-        font-size: 11pt; /* Base font size for print - slightly larger than prev */
-        -webkit-print-color-adjust: exact; /* Ensure colors are printed */
-      }
-      .quotation-container {
-        box-shadow: none;
-        border: none;
-        margin: 0;
-        padding: 15mm; /* A4 margins for printing */
-        width: 210mm;
-        min-height: 297mm;
-      }
-      /* Adjust font sizes and colors for print clarity */
-      .company-info { font-size: 10pt; }
-      h1 { font-size: 1.7em; }
-      .section-title { font-size: 1.1em; }
-      .data-table td, .data-table .label, .data-table .value { font-size: 11pt; }
-      .highlight-value { color: #CC0000; font-size: 1.05em; } /* Darker red for print */
-
-      .summary-section .section-title { font-size: 1.4em; }
-      .summary-section .data-table .label { font-size: 1.1em; }
-      .summary-section .data-table .value.highlight-value { font-size: 1.3em; }
-
-      .footer { font-size: 9pt; }
-
-      /* Force print colors to be legible, e.g., black or dark blue */
-      h1, .section-title { color: #000000; } /* Often printers convert dark blue to black */
-      .company-info, .footer { color: #444444; }
-
-      /* Hide export button when printing */
-      .export-button-container {
-          display: none;
-      }
-    }
-
-    /* Desktop specific styles for header alignment */
-    @media (min-width: 601px) {
-      .header {
-        flex-wrap: nowrap; /* ป้องกันไม่ให้ logo และ company-info ขึ้นบรรทัดใหม่ */
-      }
-      .header .logo {
-        flex-grow: 1; /* ให้ logo ผลัก company-info ไปทางขวา */
-      }
-      .company-info {
-        flex-grow: 0; /* ไม่ให้ company-info ขยาย */
-        text-align: right; /* ย้ำอีกครั้งเพื่อความแน่ใจ */
-      }
+      .export-button-container { display: none; }
     }
   </style>
 </head>
 <body>
-
-<div class="quotation-container">
-  <div class="header">
-    <div class="logo">
-      <img src="orix_logo.png" alt="ORIX Lease Logo">
+  <div class="quotation-container">
+    <div class="header">
+      <div class="logo"><img src="orix_logo.png" alt="ORIX Lease Logo" /></div>
+      <div class="company-info">
+        <p>บริษัท ไทยโอริกซ์ลีสซิ่ง จำกัด</p>
+        <p>555 รสา วัน (อาคาร บี) ยูนิต 1801 ชั้น 18 และ ชั้น 19</p>
+        <p>ถนนพหลโยธิน แขวงจตุจักร เขตจตุจักร</p>
+        <p>กรุงเทพฯ 10900</p>
+        <p>โทรศัพท์: 66(0) 2792-4500</p>
+      </div>
     </div>
-    <div class="company-info">
-      <p>บริษัท ไทยโอริกซ์ลีสซิ่ง จำกัด</p>
-      <p>555 รสา วัน (อาคาร บี) ยูนิต 1801 ชั้น 18 และ ชั้น 19</p>
-      <p>ถนนพหลโยธิน แขวงจตุจักร เขตจตุจักร</p>
-      <p>กรุงเทพฯ 10900</p>
-      <p>โทรศัพท์: 66(0) 2792-4500</p>
-    </div>
-  </div>
 
-  <h1>ใบเสนอราคาเช่าซื้อรถยนต์</h1>
+    <h1>ใบเสนอราคาเช่าซื้อรถยนต์</h1>
 
-  <div class="section-title">ข้อมูลรถยนต์</div>
-  <table class="data-table">
-    <tr><td class="label">ข้อมูลรถ:</td><td class="value" id="q_carInfo"></td></tr>
-    <tr><td class="label">ราคารถ:</td><td class="value" id="q_carPrice"></td></tr>
-    <tr><td class="label">ส่วนลด:</td><td class="value" id="q_discount"></td></tr>
-    <tr><td class="label">Option:</td><td class="value" id="q_option"></td></tr>
-    <tr><td class="label">ราคาสุทธิ:</td><td class="value highlight-value" id="q_totalAmount"></td></tr>
-  </table>
-
-  <div class="section-title">เงื่อนไขการเช่าซื้อ</div>
-  <table class="data-table">
-    <tr><td class="label">เงินดาวน์:</td><td class="value highlight-value" id="q_downAmount_condition"></td></tr>
-    <tr><td class="label">เงินดาวน์คิดเป็น:</td><td class="value" id="q_downPercent"></td></tr>
-    <tr><td class="label">ยอดจัด:</td><td class="value highlight-value" id="q_financeAmt"></td></tr>
-    <tr><td class="label">อัตราดอกเบี้ย:</td><td class="value" id="q_interestRate"></td></tr>
-    <tr><td class="label">จำนวนปี:</td><td class="value" id="q_termYears"></td></tr>
-    <tr><td class="label">จำนวนงวด:</td><td class="value" id="q_termMonths"></td></tr>
-  </table>
-
-  <div class="summary-section">
-    <div class="section-title">สรุปการชำระ</div>
+    <div class="section-title">ข้อมูลรถยนต์</div>
     <table class="data-table">
-      <tr><td class="label">เงินดาวน์:</td><td class="value highlight-value" id="q_downAmount_summary"></td></tr>
-      <tr><td class="label">ค่างวดต่อเดือน (รวม VAT):</td><td class="value highlight-value" id="q_leaseInVat"></td></tr>
+      <tr><td class="label">ข้อมูลรถ:</td><td class="value" id="q_carInfo"></td></tr>
+      <tr><td class="label">ราคารถ:</td><td class="value" id="q_carPrice"></td></tr>
+      <tr><td class="label">ส่วนลด:</td><td class="value" id="q_discount"></td></tr>
+      <tr><td class="label">Option:</td><td class="value" id="q_option"></td></tr>
+      <tr><td class="label">ราคาสุทธิ:</td><td class="value highlight-value" id="q_totalAmount"></td></tr>
     </table>
-  </div>
 
-  <div class="footer">
-    <p>ใบเสนอราคานี้เป็นข้อมูลเบื้องต้นและอาจมีการเปลี่ยนแปลงตามเงื่อนไขของบริษัท</p>
-    <p>วันที่ออกใบเสนอราคา: <span id="currentDate"></span></p>
-  </div>
+    <div class="section-title">เงื่อนไขการเช่าซื้อ</div>
+    <table class="data-table">
+      <tr><td class="label">เงินดาวน์:</td><td class="value highlight-value" id="q_downAmount_condition"></td></tr>
+      <tr><td class="label">เงินดาวน์คิดเป็น:</td><td class="value" id="q_downPercent"></td></tr>
+      <tr><td class="label">ยอดจัด:</td><td class="value highlight-value" id="q_financeAmt"></td></tr>
+      <tr><td class="label">อัตราดอกเบี้ย:</td><td class="value" id="q_interestRate"></td></tr>
+      <tr><td class="label">จำนวนปี:</td><td class="value" id="q_termYears"></td></tr>
+      <tr><td class="label">จำนวนงวด:</td><td class="value" id="q_termMonths"></td></tr>
+    </table>
 
-  <div class="export-button-container">
+    <div class="summary-section">
+      <div class="section-title">สรุปการชำระ</div>
+      <table class="data-table">
+        <tr><td class="label">เงินดาวน์:</td><td class="value highlight-value" id="q_downAmount_summary"></td></tr>
+        <tr><td class="label">ค่างวดต่อเดือน (รวม VAT):</td><td class="value highlight-value" id="q_leaseInVat"></td></tr>
+      </table>
+    </div>
+
+    <div class="footer">
+      <p>ใบเสนอราคานี้เป็นข้อมูลเบื้องต้นและอาจมีการเปลี่ยนแปลงตามเงื่อนไขของบริษัท</p>
+      <p>วันที่ออกใบเสนอราคา: <span id="currentDate"></span></p>
+    </div>
+
+    <div class="export-button-container">
       <button class="export-button" onclick="exportQuotationAsPdf()">Export PDF</button>
+    </div>
   </div>
-</div>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const data = JSON.parse(localStorage.getItem('quotationData'));
-
-    // Helper function to format numbers with 2 decimal places
-    function format(n) {
-      if (isNaN(n) || n === null || n === undefined) return "0.00";
-      return parseFloat(n).toLocaleString('en-US', {
-        minimumFractionDigits: 2, maximumFractionDigits: 2
-      });
+  <script>
+    const fmt = n => isFinite(n) ? Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '0.00';
+    const fmtPct = n => isFinite(n) ? Number(n).toFixed(2) : '0.00';
+    function loadPayload() {
+      if (location.hash.startsWith('#data=')) {
+        try { return JSON.parse(atob(decodeURIComponent(location.hash.slice(6)))); } catch (e) {}
+      }
+      try { return JSON.parse(localStorage.getItem('quotationData')); } catch (e) {}
+      return null;
     }
 
-    // Helper function to format percentages with 2 decimal places
-    function formatPercent(n) {
-      if (isNaN(n) || n === null || n === undefined) return "0.00";
-      return parseFloat(n).toFixed(2);
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+      const d = loadPayload();
+      if (!d) return alert('ไม่พบข้อมูลใบเสนอราคา กรุณากลับไปหน้าหลัก');
 
-    if (data) {
-        document.getElementById('q_carInfo').innerText = data.carInfo || '-';
-        document.getElementById('q_carPrice').innerText = format(data.carPrice || 0) + ' บาท';
-        document.getElementById('q_discount').innerText = format(data.discount || 0) + ' บาท';
-        document.getElementById('q_option').innerText = format(data.option || 0) + ' บาท';
-        document.getElementById('q_totalAmount').innerText = format(data.totalAmount || 0) + ' บาท';
-
-        document.getElementById('q_downAmount_condition').innerText = format(data.downAmount || 0) + ' บาท';
-        document.getElementById('q_downPercent').innerText = formatPercent(data.downPercent || 0) + '%';
-        document.getElementById('q_financeAmt').innerText = format(data.financeAmt || 0) + ' บาท';
-        document.getElementById('q_interestRate').innerText = formatPercent(data.interestRate || 0) + '%';
-        document.getElementById('q_termYears').innerText = (data.termYears || 0) + ' ปี';
-        document.getElementById('q_termMonths').innerText = ((parseInt(data.termYears || 0) || 0) * 12) + ' งวด';
-
-        // Summary section
-        document.getElementById('q_downAmount_summary').innerText = format(data.downAmount || 0) + ' บาท';
-        document.getElementById('q_leaseInVat').innerText = format(data.leaseInVat || 0) + ' บาท';
-        
-        // Set current date
-        const today = new Date();
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('currentDate').innerText = today.toLocaleDateString('th-TH', options);
-
-    } else {
-        alert('ไม่พบข้อมูลใบเสนอราคา กรุณากลับไปหน้าคำนวณและสร้างใบเสนอราคาใหม่');
-        // window.close();
-    }
-});
-
-// ฟังก์ชันสำหรับ Export PDF
-async function exportQuotationAsPdf() {
-    const quotationContainer = document.querySelector('.quotation-container');
-
-    // ซ่อนปุ่ม Export PDF ชั่วคราวไม่ให้แสดงใน PDF
-    const exportButtonContainer = document.querySelector('.export-button-container');
-    exportButtonContainer.style.display = 'none';
-
-    // กำหนดขนาด A4 ในหน่วย mm (A4: 210mm x 297mm)
-    const pdfWidth = 210; // mm
-    const pdfHeight = 297; // mm
-
-    // สร้าง Canvas จาก HTML content
-    const canvas = await html2canvas(quotationContainer, {
-        scale: 2, // เพิ่ม scale เพื่อคุณภาพที่ดีขึ้น
-        useCORS: true, // สำคัญหากมีรูปภาพจากภายนอก (เช่น logo.png)
-        logging: true // เปิด logging สำหรับ debugging
+      q_carInfo.textContent = d.carInfo || '-';
+      q_carPrice.textContent = fmt(d.carPrice) + ' บาท';
+      q_discount.textContent = fmt(d.discount) + ' บาท';
+      q_option.textContent = fmt(d.option) + ' บาท';
+      q_totalAmount.textContent = fmt(d.totalAmount) + ' บาท';
+      q_downAmount_condition.textContent = fmt(d.downAmount) + ' บาท';
+      q_downPercent.textContent = fmtPct(d.downPercent) + '%';
+      q_financeAmt.textContent = fmt(d.financeAmt) + ' บาท';
+      q_interestRate.textContent = fmtPct(d.interestRate) + '%';
+      q_termYears.textContent = (d.termYears || 0) + ' ปี';
+      q_termMonths.textContent = ((d.termYears || 0) * 12) + ' งวด';
+      q_downAmount_summary.textContent = fmt(d.downAmount) + ' บาท';
+      q_leaseInVat.textContent = fmt(d.leaseInVat) + ' บาท';
+      currentDate.textContent = new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
     });
 
-    // กำหนดอัตราส่วนความกว้างต่อความสูงของเนื้อหา
-    const imgData = canvas.toDataURL('image/png');
-    const imgWidth = pdfWidth;
-    const pageHeight = pdfHeight;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    let heightLeft = imgHeight;
-
-    // สร้าง PDF object
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'mm', 'a4'); // 'p' for portrait, 'mm' for millimeters, 'a4' for A4 size
-
-    let position = 0;
-
-    // เพิ่มรูปภาพลงใน PDF
-    doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-
-    // หากเนื้อหามีหลายหน้า ให้เพิ่มหน้าใหม่
-    while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        doc.addPage();
-        doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+    async function exportQuotationAsPdf() {
+      const box = document.querySelector('.quotation-container');
+      const btn = document.querySelector('.export-button-container');
+      btn.style.display = 'none';
+      try {
+        const canvas = await html2canvas(box, { scale: 2, useCORS: true });
+        const img = canvas.toDataURL('image/png');
+        const pdfW = 210, pdfH = 297;
+        const imgH = canvas.height * pdfW / canvas.width;
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p','mm','a4');
+        pdf.addImage(img, 'PNG', 0, 0, pdfW, imgH);
+        let pos = -pdfH;
+        while ((pos += pdfH) < imgH) {
+          pdf.addPage();
+          pdf.addImage(img, 'PNG', 0, pos * -1, pdfW, imgH);
+        }
+        const safeName = q_carInfo.textContent.replace(/[^\wก-๙]/g,'_').slice(0,40);
+        pdf.save(`Quotation_${safeName}_${new Date().toISOString().slice(0,10)}.pdf`);
+      } catch (err) {
+        alert('เกิดข้อผิดพลาด PDF: ' + err.message);
+      } finally {
+        btn.style.display = 'block';
+      }
     }
-
-    // กำหนดชื่อไฟล์ PDF
-    const fileName = `Quotation_${document.getElementById('q_carInfo').innerText.replace(/[^a-zA-Z0-9ก-ฮเ-ะแ-็โ-๋]/g, '_')}_${new Date().toLocaleDateString('en-CA').replace(/-/g, '')}.pdf`;
-    doc.save(fileName);
-
-    // แสดงปุ่ม Export PDF กลับมา
-    exportButtonContainer.style.display = 'block';
-}
-</script>
-
+  </script>
 </body>
 </html>
