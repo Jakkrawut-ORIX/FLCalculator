@@ -340,12 +340,12 @@
 
       try {
         const canvas = await html2canvas(box, { 
-          scale: 1.5, // ลดสเกลลงเพื่อลดขนาดไฟล์
+          scale: 1.8, // เพิ่มสเกลเพื่อความคมชัด
           useCORS: true,
           windowWidth: document.querySelector('.quotation-container').scrollWidth, // จับภาพความกว้างทั้งหมด
           windowHeight: document.querySelector('.quotation-container').scrollHeight // จับภาพความสูงทั้งหมด
         });
-        const img = canvas.toDataURL('image/jpeg', 0.8); // เปลี่ยนเป็น JPEG และกำหนดคุณภาพ 0.8
+        const img = canvas.toDataURL('image/png'); // กลับไปใช้ PNG เพื่อความคมชัด
         
         // ขนาด A4 ในหน่วยมิลลิเมตร (210 มม. x 297 มม.)
         const pdfW = 210; 
@@ -371,7 +371,7 @@
         const xPos = (pdfW - imgPdfWidth) / 2;
         const yPos = (pdfH - imgPdfHeight) / 2;
 
-        pdf.addImage(img, 'JPEG', xPos, yPos, imgPdfWidth, imgPdfHeight); // ใช้ 'JPEG' แทน 'PNG'
+        pdf.addImage(img, 'PNG', xPos, yPos, imgPdfWidth, imgPdfHeight);
         pdf.save("ใบเสนอราคา_ORIX.pdf"); // ตั้งชื่อไฟล์ที่สื่อความหมาย
       } catch (err) {
         alert("การ Export PDF ล้มเหลว: " + err.message);
