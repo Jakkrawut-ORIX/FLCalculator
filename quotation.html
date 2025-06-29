@@ -36,7 +36,7 @@
     .header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start; /* เปลี่ยนเป็นจัดชิดด้านบน */
+      align-items: flex-start; /* จัดชิดด้านบน */
       flex-wrap: wrap;
       border-bottom: 2px solid var(--orix-logo-blue);
       padding-bottom: 10px;
@@ -51,6 +51,7 @@
       font-size: 9pt; /* ลดขนาดฟอนต์ของข้อมูลบริษัท */
       color: var(--orix-mid-grey);
       line-height: 1.1; /* ทำให้ระยะห่างระหว่างบรรทัดของที่อยู่กระชับขึ้น */
+      margin-top: -15px; /* ปรับดึงข้อความขึ้นไปด้านบน เพื่อจัดตำแหน่งกับโลโก้ให้เหมาะสมยิ่งขึ้น */
     }
     .company-info p {
         margin: 0; /* ลบ margin เริ่มต้นของ p เพื่อให้ชิดกัน */
@@ -137,6 +138,7 @@
         text-align: center; /* จัดกึ่งกลางข้อมูลบริษัท */
         font-size: 9pt; /* ขนาดฟอนต์ข้อมูลบริษัทเล็กลง */
         line-height: 1.3; /* ระยะห่างระหว่างบรรทัดกว้างขึ้นเล็กน้อยเพื่อให้อ่านง่ายบนมือถือ */
+        margin-top: 0; /* ลบการปรับ margin-top เมื่ออยู่บนมือถือ */
       }
       .company-info p {
         white-space: normal; /* อนุญาตให้ข้อความที่อยู่ขึ้นบรรทัดใหม่บนมือถือ */
@@ -197,6 +199,7 @@
       .company-info {
         font-size: 8pt; /* ปรับขนาดฟอนต์ข้อมูลบริษัทให้เหมาะสมกับการพิมพ์ */
         line-height: 1.1; /* ระยะห่างระหว่างบรรทัดกระชับขึ้นสำหรับการพิมพ์ */
+        margin-top: -15px; /* ปรับดึงข้อความขึ้นไปด้านบนในโหมดพิมพ์ */
       }
       .company-info p {
         margin: 0; /* ลบ margin เริ่มต้นของ p เพื่อให้ชิดกันในการพิมพ์ */
