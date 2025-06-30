@@ -430,6 +430,7 @@ function calculate() {
       document.getElementById('leaseExVat').value = format(0);
       document.getElementById('trRate').value = 'ไม่สามารถคำนวณ';
       document.getElementById('qsTrDep').value = 'ไม่สามารถคำนวณ';
+      // *** เปลี่ยนลำดับ: เรียก showDownPercent ก่อน updateQsInfo ***
       showDownPercent();
       updateQsInfo(carInfo, car, discount, option, down, years, 0, 0);
       return;
@@ -471,9 +472,9 @@ function calculate() {
   document.getElementById('trRate').value = isNaN(tr) ? 'ไม่สามารถคำนวณ' : format4(tr);
   document.getElementById('qsTrDep').value = isNaN(trDep) ? 'ไม่สามารถคำนวณ' : format4(trDep);
 
-  updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep);
-
-  showDownPercent();
+  // *** เปลี่ยนลำดับ: เรียก showDownPercent ก่อน updateQsInfo ***
+  showDownPercent(); // อัปเดต qsDownPercent ก่อน
+  updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep); // แล้วค่อยให้ updateQsInfo ดึงค่าไปใช้
 }
 
 function updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep) {
@@ -615,8 +616,8 @@ function addInputListeners(id) {
   } else { // All other number/percent inputs
       el.addEventListener('focus', () => {
           let currentVal = uncomma(el.value);
-          // *** แก้ไขตรงนี้ ***: เคลียร์ช่องถ้าค่าเป็น 0 หรือใกล้ 0 มากๆ
-          if (Math.abs(currentVal) < 0.001) { // Changed condition from `currentVal !== 0`
+          // เคลียร์ช่องถ้าค่าเป็น 0 หรือใกล้ 0 มากๆ
+          if (Math.abs(currentVal) < 0.001) {
               el.value = ''; // Clear if value is effectively zero
           } else {
               el.value = String(currentVal); // Remove commas for editing
@@ -656,4 +657,3 @@ window.onload = () => {
 
 </body>
 </html>
-
