@@ -485,7 +485,11 @@ function updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep) {
     document.getElementById('qsTrRate').value = isNaN(tr) ? 'ไม่สามารถคำนวณ' : format4(tr);
     document.getElementById('qsTermYears').value = years;
     document.getElementById('qsDeposit').value = format(down / 1.07);
-    document.getElementById('qsRV').value = format4(car > 0 ? (down / car * 100) : 0) + '%';
+
+    // ดึงค่าเปอร์เซ็นต์เงินดาวน์ที่คำนวณไว้แล้วจาก input 'qsDownPercent'
+    const downPercentValue = document.getElementById('qsDownPercent').value;
+    document.getElementById('qsRV').value = downPercentValue; // กำหนดค่านี้ให้กับ 'qsRV'
+
     document.getElementById('qsTrDep').value = isNaN(trDep) ? 'ไม่สามารถคำนวณ' : format4(trDep);
 }
 
@@ -652,3 +656,4 @@ window.onload = () => {
 
 </body>
 </html>
+
