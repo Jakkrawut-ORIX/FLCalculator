@@ -484,7 +484,7 @@ function updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep) {
     document.getElementById('qsDownAmount').value = format(down);
     document.getElementById('qsTrRate').value = isNaN(tr) ? 'ไม่สามารถคำนวณ' : format4(tr);
     document.getElementById('qsTermYears').value = years;
-    document.getElementById('qsDeposit').value = format(down / 1.07);
+    document.getElementById('qsDeposit').value = format(down / 1.07, 4); // Display Deposit with 4 decimal places
     // ปรับการคำนวณ qsRV เป็น: เงินดาวน์ / ราคารวมทั้งหมด
     const totalAmount = uncomma(document.getElementById('totalAmount').value); // ดึงค่าราคารวมทั้งหมดปัจจุบัน
     document.getElementById('qsRV').value = format4(totalAmount > 0 ? (down / totalAmount * 100) : 0) + '%';
