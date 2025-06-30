@@ -485,18 +485,7 @@ function updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep) {
     document.getElementById('qsTrRate').value = isNaN(tr) ? 'ไม่สามารถคำนวณ' : format4(tr);
     document.getElementById('qsTermYears').value = years;
     document.getElementById('qsDeposit').value = format(down / 1.07);
-
-    // --- ส่วนที่แก้ไข: การคำนวณ RV (ราคาสุทธิ / เงินดาวน์) ---
-    const totalAmount = uncomma(document.getElementById('totalAmount').value); // ดึงค่าราคาสุทธิ
-    let rvCalculation = 0;
-    if (down > 0) { // ป้องกันการหารด้วยศูนย์
-        rvCalculation = (totalAmount / down) * 100; // ราคาสุทธิ / เงินดาวน์ * 100 เพื่อแสดงเป็น %
-    } else if (totalAmount > 0) { // ถ้าราคาสุทธิมี แต่เงินดาวน์เป็น 0 แสดงว่า RV เป็นอนันต์
-        rvCalculation = Infinity; // หรือจะให้แสดงข้อความ 'N/A' ก็ได้
-    }
-    document.getElementById('qsRV').value = isFinite(rvCalculation) ? (format4(rvCalculation) + '%') : 'N/A';
-    // --- สิ้นสุดส่วนที่แก้ไข ---
-
+    document.getElementById('qsRV').value = format4(car > 0 ? (down / car * 100) : 0) + '%';
     document.getElementById('qsTrDep').value = isNaN(trDep) ? 'ไม่สามารถคำนวณ' : format4(trDep);
 }
 
@@ -530,7 +519,7 @@ function calculateDownForTargetLease(targetLease) {
   const maxIter = 500; // Increased iterations for binary search precision
 
   for (let i = 0; i < maxIter; i++) {
-    let currentDown = (low + high) / 2;
+    const currentDown = (low + high) / 2;
     if (currentDown < 0) currentDown = 0; // Ensure down payment is not negative
     if (currentDown > total) currentDown = total; // Ensure down payment does not exceed total price
 
@@ -605,16 +594,12 @@ function generateQuotation() {
         qsTrRate: parseFloat(document.getElementById('qsTrRate').value.replace('ไม่สามารถคำนวณ', 'NaN')),
         qsTermYears: parseInt(document.getElementById('qsTermYears').value) || 0,
         qsDeposit: uncomma(document.getElementById('qsDeposit').value),
-        qsRV: parseFloat(document.getElementById('qsRV').value.replace('%', '').replace('N/A', 'NaN')), // Convert to number, handle N/A
+        qsRV: parseFloat(document.getElementById('qsRV').value.replace('%', '')), // Convert to number
         qsTrDep: parseFloat(document.getElementById('qsTrDep').value.replace('ไม่สามารถคำนวณ', 'NaN')),
     };
 
-    // ในการใช้งานจริง ควรมีไฟล์ quotation.html แยกต่างหาก
-    // หรือส่งข้อมูลนี้ไปยัง API เพื่อสร้างใบเสนอราคา
-    alert("ข้อมูลใบเสนอราคาถูกเตรียมไว้แล้ว (ใน Console หรือ Local Storage)\n" + JSON.stringify(data, null, 2));
-    console.log("Quotation Data:", data);
     localStorage.setItem('quotationData', JSON.stringify(data));
-    // window.open('quotation.html', '_blank'); // Uncomment if you have quotation.html
+    window.open('quotation.html', '_blank');
 }
 
 // Event Listeners for input fields
@@ -626,8 +611,8 @@ function addInputListeners(id) {
   } else { // All other number/percent inputs
       el.addEventListener('focus', () => {
           let currentVal = uncomma(el.value);
-          // เคลียร์ช่องถ้าค่าเป็น 0 หรือใกล้ 0 มากๆ เพื่อให้ง่ายต่อการกรอกใหม่
-          if (Math.abs(currentVal) < 0.001) { 
+          // *** แก้ไขตรงนี้ ***: เคลียร์ช่องถ้าค่าเป็น 0 หรือใกล้ 0 มากๆ
+          if (Math.abs(currentVal) < 0.001) { // Changed condition from `currentVal !== 0`
               el.value = ''; // Clear if value is effectively zero
           } else {
               el.value = String(currentVal); // Remove commas for editing
