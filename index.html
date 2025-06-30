@@ -431,8 +431,7 @@ function calculate() {
       document.getElementById('trRate').value = 'ไม่สามารถคำนวณ';
       document.getElementById('qsTrDep').value = 'ไม่สามารถคำนวณ';
       showDownPercent();
-      // Pass total for RV even if months is 0
-      updateQsInfo(carInfo, car, discount, option, down, years, 0, 0, total);
+      updateQsInfo(carInfo, car, discount, option, down, years, 0, 0);
       return;
   }
 
@@ -472,13 +471,12 @@ function calculate() {
   document.getElementById('trRate').value = isNaN(tr) ? 'ไม่สามารถคำนวณ' : format4(tr);
   document.getElementById('qsTrDep').value = isNaN(trDep) ? 'ไม่สามารถคำนวณ' : format4(trDep);
 
-  // Pass total for RV
-  updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep, total);
+  updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep);
 
   showDownPercent();
 }
 
-function updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep, totalAmount) { // Added totalAmount parameter
+function updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep) {
     document.getElementById('qsCarInfo').value = carInfo;
     document.getElementById('qsCarPrice').value = format(car);
     document.getElementById('qsDiscount').value = format(discount);
@@ -487,11 +485,7 @@ function updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep, to
     document.getElementById('qsTrRate').value = isNaN(tr) ? 'ไม่สามารถคำนวณ' : format4(tr);
     document.getElementById('qsTermYears').value = years;
     document.getElementById('qsDeposit').value = format(down / 1.07);
-
-    // Reverted RV calculation to (เงินดาวน์ / ราคาสุทธิ) * 100
-    const rv = (totalAmount > 0) ? (down / totalAmount * 100) : 0;
-    document.getElementById('qsRV').value = format4(rv) + '%'; // Format to 4 decimal places and add '%'
-
+    document.getElementById('qsRV').value = format4(car > 0 ? (down / car * 100) : 0) + '%';
     document.getElementById('qsTrDep').value = isNaN(trDep) ? 'ไม่สามารถคำนวณ' : format4(trDep);
 }
 
@@ -525,7 +519,7 @@ function calculateDownForTargetLease(targetLease) {
   const maxIter = 500; // Increased iterations for binary search precision
 
   for (let i = 0; i < maxIter; i++) {
-    let currentDown = (low + high) / 2;
+    const currentDown = (low + high) / 2;
     if (currentDown < 0) currentDown = 0; // Ensure down payment is not negative
     if (currentDown > total) currentDown = total; // Ensure down payment does not exceed total price
 
@@ -562,61 +556,99 @@ function calculateDownForTargetLease(targetLease) {
 
 // *** IMPORTANT: Updated generateQuotation function to save all relevant data as raw numbers where possible ***
 function generateQuotation() {
-  // This function would typically gather all values from the inputs
-  // and then construct a quotation document or send data to a server.
-  // For demonstration, let's just log the key values.
+    calculate(); // Ensure all values are up-to-date on screen
 
-  const data = {
-    carInfo: document.getElementById('carInfo').value,
-    carPrice: uncomma(document.getElementById('carPrice').value),
-    discount: uncomma(document.getElementById('discount').value),
-    option: uncomma(document.getElementById('option').value),
-    totalAmount: uncomma(document.getElementById('totalAmount').value),
-    downType: document.getElementById('downType').value,
-    downInput: uncomma(document.getElementById('downInput').value),
-    downAmount: uncomma(document.getElementById('downAmount').value),
-    downPercent: uncomma(document.getElementById('qsDownPercent').value.replace('%', '')),
-    interestRate: uncomma(document.getElementById('interestRate').value),
-    termYears: parseInt(document.getElementById('termYears').value) || 0,
-    comBase: document.getElementById('comBase').value,
-    comPercent: parseInt(document.getElementById('comPercent').value) || 0,
-    calculatedCommission: uncomma(document.getElementById('calculatedCommission').value),
-    extraCommission: uncomma(document.getElementById('extra').value),
-    qsExtraCost: uncomma(document.getElementById('qsExtra').value),
-    financeAmount: uncomma(document.getElementById('financeAmt').value),
-    interestPerAnnum: uncomma(document.getElementById('intPA').value),
-    totalInterest: uncomma(document.getElementById('intTotal').value),
-    financeTotalWithInterest: uncomma(document.getElementById('financeTotalWithInterest').value),
-    leaseInVat: uncomma(document.getElementById('leaseInVat').value),
-    leaseExVat: uncomma(document.getElementById('leaseExVat').value),
-    trEffectiveRate: uncomma(document.getElementById('trRate').value),
-    qsDeposit: uncomma(document.getElementById('qsDeposit').value),
-    qsRV: uncomma(document.getElementById('qsRV').value.replace('%', '')),
-    qsTrDep: uncomma(document.getElementById('qsTrDep').value)
-  };
+    const data = {
+        carInfo: document.getElementById('carInfo').value,
+        carPrice: uncomma(document.getElementById('carPrice').value),
+        discount: uncomma(document.getElementById('discount').value),
+        option: uncomma(document.getElementById('option').value),
+        totalAmount: uncomma(document.getElementById('totalAmount').value),
+        downAmount: uncomma(document.getElementById('downAmount').value),
+        downPercent: parseFloat(document.getElementById('downPercentDisplay').innerText.replace(/[()%]/g, '')), // Extract number
+        
+        interestRate: uncomma(document.getElementById('interestRate').value),
+        termYears: parseInt(document.getElementById('termYears').value) || 0,
+        
+        comBase: document.getElementById('comBase').value,
+        comPercent: parseInt(document.getElementById('comPercent').value) || 0,
+        calculatedCommission: uncomma(document.getElementById('calculatedCommission').value),
+        extra: uncomma(document.getElementById('extra').value),
+        qsExtra: uncomma(document.getElementById('qsExtra').value),
 
-  console.log("Quotation Data:", data);
-  alert("ข้อมูลใบเสนอราคาถูกสร้างขึ้นและแสดงใน Console (F12) สำหรับวัตถุประสงค์การสาธิต.");
-  // In a real application, you would send this 'data' object to a backend
-  // or use it to dynamically generate a printable/downloadable quotation.
+        financeAmt: uncomma(document.getElementById('financeAmt').value),
+        intPA: uncomma(document.getElementById('intPA').value),
+        intTotal: uncomma(document.getElementById('intTotal').value),
+        financeTotalWithInterest: uncomma(document.getElementById('financeTotalWithInterest').value),
+        leaseInVat: uncomma(document.getElementById('leaseInVat').value),
+        leaseExVat: uncomma(document.getElementById('leaseExVat').value),
+        trRate: parseFloat(document.getElementById('trRate').value.replace('ไม่สามารถคำนวณ', 'NaN')),
+        
+        // QS Information fields (raw numbers or strings as they appear in the QS table inputs)
+        qsCarInfo: document.getElementById('qsCarInfo').value,
+        qsCarPrice: uncomma(document.getElementById('qsCarPrice').value),
+        qsDiscount: uncomma(document.getElementById('qsDiscount').value),
+        qsOption: uncomma(document.getElementById('qsOption').value),
+        qsDownAmount: uncomma(document.getElementById('qsDownAmount').value),
+        qsDownPercent: parseFloat(document.getElementById('qsDownPercent').value.replace(/[()%]/g, '')), // Extract number
+        qsTrRate: parseFloat(document.getElementById('qsTrRate').value.replace('ไม่สามารถคำนวณ', 'NaN')),
+        qsTermYears: parseInt(document.getElementById('qsTermYears').value) || 0,
+        qsDeposit: uncomma(document.getElementById('qsDeposit').value),
+        qsRV: parseFloat(document.getElementById('qsRV').value.replace('%', '')), // Convert to number
+        qsTrDep: parseFloat(document.getElementById('qsTrDep').value.replace('ไม่สามารถคำนวณ', 'NaN')),
+    };
+
+    localStorage.setItem('quotationData', JSON.stringify(data));
+    window.open('quotation.html', '_blank');
 }
 
+// Event Listeners for input fields
+function addInputListeners(id) {
+  const el = document.getElementById(id);
 
-// Initial calculation when the page loads
-document.addEventListener('DOMContentLoaded', calculate);
+  if (id === 'carInfo') {
+      el.addEventListener('blur', calculate);
+  } else { // All other number/percent inputs
+      el.addEventListener('focus', () => {
+          let currentVal = uncomma(el.value);
+          // *** แก้ไขตรงนี้ ***: เคลียร์ช่องถ้าค่าเป็น 0 หรือใกล้ 0 มากๆ
+          if (Math.abs(currentVal) < 0.001) { // Changed condition from `currentVal !== 0`
+              el.value = ''; // Clear if value is effectively zero
+          } else {
+              el.value = String(currentVal); // Remove commas for editing
+          }
+      });
+      el.addEventListener('blur', () => {
+          let val = uncomma(el.value);
+          if (id === 'termYears' || id === 'comPercent') {
+              el.value = formatNoDecimal(val);
+          } else if (id === 'interestRate') { // Interest rate can have 2 decimal places, but input type is text
+              el.value = format(val, 2);
+          }
+          else {
+              el.value = format(val);
+          }
+          calculate(); // Recalculate on blur
+      });
+      el.addEventListener('input', () => {
+          // Allow only digits and a single decimal point
+          let sanitizedValue = el.value.replace(/[^0-9.]/g, '');
+          const parts = sanitizedValue.split('.');
+          if (parts.length > 2) {
+              sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
+          }
+          el.value = sanitizedValue;
+      });
+  }
+}
 
-// Add event listeners for input changes to trigger recalculation
-document.getElementById('carPrice').addEventListener('input', calculate);
-document.getElementById('discount').addEventListener('input', calculate);
-document.getElementById('option').addEventListener('input', calculate);
-document.getElementById('downInput').addEventListener('input', calculate);
-document.getElementById('interestRate').addEventListener('input', calculate);
-document.getElementById('termYears').addEventListener('input', calculate);
-document.getElementById('comPercent').addEventListener('input', calculate);
-document.getElementById('extra').addEventListener('input', calculate);
-document.getElementById('carInfo').addEventListener('input', function() {
-    document.getElementById('qsCarInfo').value = this.value;
-});
+window.onload = () => {
+  ['carPrice', 'discount', 'option', 'downInput', 'interestRate', 'extra', 'termYears', 'comPercent', 'carInfo'].forEach(addInputListeners);
+  document.getElementById('downType').addEventListener('change', calculate);
+  document.getElementById('comBase').addEventListener('change', calculate);
+  calculate(); // Initial calculation on load
+};
 </script>
+
 </body>
 </html>
