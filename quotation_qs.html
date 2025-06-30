@@ -128,19 +128,7 @@
         <tr><td>ราคาสุทธิ</td><td id="displayTotalAmount"></td></tr>
     </table>
 
-    <h2>ข้อมูล QS (รวม)</h2>
-    <table>
-        <tr><td>QS Extra Cost</td><td id="displayQsExtraCost"></td></tr>
-        <tr><td>เงินดาวน์</td><td id="displayQsDownAmount"></td></tr>
-        <tr><td>เงินดาวน์คิดเป็น %</td><td id="displayQsDownPercent"></td></tr>
-        <tr><td>TR (Effective %)</td><td id="displayQsTrRate"></td></tr>
-        <tr><td>จำนวนปี</td><td id="displayQsTermYears"></td></tr>
-        <tr><td>Deposit</td><td id="displayQsDeposit"></td></tr>
-        <tr><td>RV</td><td id="displayQsRV"></td></tr>
-        <tr><td>TR Dep</td><td id="displayQsTrDep"></td></tr>
-    </table>
-
-    <h2>ข้อมูลสำหรับใบดาวน์</h2>
+    <h2>ข้อมูลสำหรับใบ Down</h2>
     <table>
         <tr><td>QS Extra Cost</td><td id="displaySheetExtraCost"></td></tr>
         <tr><td>เงินดาวน์</td><td id="displaySheetDownAmount"></td></tr>
@@ -195,18 +183,7 @@
                 document.getElementById('displayOption').innerText = format(data.option);
                 document.getElementById('displayTotalAmount').innerText = format(data.totalAmount);
 
-                // Display Combined QS Info
-                document.getElementById('displayQsExtraCost').innerText = format(data.qsExtraCost);
-                document.getElementById('displayQsDownAmount').innerText = format(data.downAmount);
-                document.getElementById('displayQsDownPercent').innerText = isNaN(data.qsDownPercent) ? '-' : format4(data.qsDownPercent) + '%';
-                document.getElementById('displayQsTrRate').innerText = isNaN(data.trRateEffective) ? 'ไม่สามารถคำนวณ' : format4(data.trRateEffective);
-                document.getElementById('displayQsTermYears').innerText = data.termYears || '0';
-                document.getElementById('displayQsDeposit').innerText = format(data.deposit, 4); // Display with 4 decimals
-                document.getElementById('displayQsRV').innerText = isNaN(data.rv) ? '-' : format4(data.rv) + '%';
-                document.getElementById('displayQsTrDep').innerText = isNaN(data.trDep) ? 'ไม่สามารถคำนวณ' : format4(data.trDep);
-
-
-                // Display "ใบดาวน์" specific info
+                // Display "ใบดาวน์" specific info (now "ใบ Down")
                 document.getElementById('displaySheetExtraCost').innerText = format(data.qsExtraCost);
                 document.getElementById('displaySheetDownAmount').innerText = format(data.downAmount);
                 document.getElementById('displaySheetTrRate').innerText = isNaN(data.trRateEffective) ? 'ไม่สามารถคำนวณ' : format4(data.trRateEffective);
@@ -218,7 +195,7 @@
                 document.getElementById('displayDepTrDep').innerText = isNaN(data.trDep) ? 'ไม่สามารถคำนวณ' : format4(data.trDep);
 
             } else {
-                document.body.innerHTML = "<div class='container'><h1>ไม่พบข้อมูลสำหรับ QS</h1><p style='text-align:center;'>กรุณากลับไปที่หน้าคำนวณและกดปุ่ม 'ส่งข้อมูล ทำ QS' อีกครั้ง</p><div class='back-button-container'><button class='back-button' onclick='window.close()'>ปิดหน้านี้</button></div></div>";
+                document.body.innerHTML = "<div class='container'><h1>ไม่พบข้อมูลสำหรับ QS</h1><p style='text-align:center;'>กรุณากลับไปที่หน้าคำนวณและกดปุ่ม 'แสดงข้อมูลสำหรับ QS' อีกครั้ง</p><div class='back-button-container'><button class='back-button' onclick='window.close()'>ปิดหน้านี้</button></div></div>";
             }
         };
     </script>
