@@ -175,10 +175,28 @@
       background-color: #218838;
     }
 
+    .button-group button:last-of-type { /* Style for the new "Send Data to QS" button */
+        background-color: #5a6268; /* Grey for a neutral action */
+    }
+
+    .button-group button:last-of-type:hover {
+        background-color: #494f54;
+    }
+
     #downPercentDisplay {
       font-weight: bold;
       color: var(--highlight-text-color); /* Match calculated values */
       font-size: 1.05em;
+    }
+
+    .note {
+        background-color: #fff3cd; /* Light yellow background for notes */
+        border-left: 5px solid #ffc107; /* Yellow border */
+        padding: 10px 15px;
+        margin-top: 20px;
+        border-radius: 5px;
+        color: #856404;
+        font-size: 0.95em;
     }
 
     /* Responsive adjustments for smaller screens (e.g., mobile phones) */
@@ -315,10 +333,34 @@
     <tr><td class="label">TR Dep</td><td class="value"><input id="qsTrDep" readonly></td></tr>
   </table>
 
+  <h2>ใบดาวน์</h2>
+  <table>
+      <tr><td class="label">QS Extra Cost</td><td class="value"><input id="qsSheetExtraCost" readonly></td></tr>
+      <tr><td class="label">เงินดาวน์</td><td class="value"><input id="qsSheetDownAmount" readonly></td></tr>
+      <tr><td class="label">TR (Effective %)</td><td class="value"><input id="qsSheetTrRate" readonly></td></tr>
+  </table>
+
+  <h2>ใบ Deposit</h2>
+  <table>
+      <tr><td class="label">QS Extra Cost</td><td class="value"><input id="qsDepExtraCost" readonly></td></tr>
+      <tr><td class="label">Deposit</td><td class="value"><input id="qsDepDeposit" readonly></td></tr>
+      <tr><td class="label">RV</td><td class="value"><input id="qsDepRV" readonly></td></tr>
+      <tr><td class="label">TR Dep</td><td class="value"><input id="qsDepTrDep" readonly></td></tr>
+  </table>
+
   <div class="button-group">
     <button onclick="calculate()">คำนวณ</button>
     <button onclick="calculateDownForTargetLease(36000)">📊 คำนวณเงินดาวน์สำหรับค่างวด 36,000 บาท</button>
     <button onclick="generateQuotation()">สร้างใบเสนอราคา</button>
+    <button onclick="sendDataToQS()">แสดงข้อมูลสำหรับ QS</button>
+  </div>
+
+  <div class="note">
+      <strong>ข้อควรทราบ:</strong>
+      <ul>
+          <li>กรณีตัวเลขค่างวดไม่ลงตัว: ให้พิจารณา **ลด TR** และ **ปรับ Extra Cost ขึ้นเล็กน้อย** เพื่อให้ค่างวดลงตัวตามต้องการ</li>
+          <li>ใบ Deposit: กรณี **ไม่สามารถบันทึก (save)** ได้ในระบบ ให้ตรวจสอบค่า **RV** ว่าน้อยกว่า **Purchase option** หรือไม่</li>
+      </ul>
   </div>
 </div>
 
@@ -432,6 +474,7 @@ function calculate() {
       document.getElementById('qsTrDep').value = 'ไม่สามารถคำนวณ';
       showDownPercent();
       updateQsInfo(carInfo, car, discount, option, down, years, 0, 0);
+      updateQSSheets(); // Update new QS sheets on zero months
       return;
   }
 
@@ -472,6 +515,7 @@ function calculate() {
   document.getElementById('qsTrDep').value = isNaN(trDep) ? 'ไม่สามารถคำนวณ' : format4(trDep);
 
   updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep);
+  updateQSSheets(); // Call to update new QS sheets
 
   showDownPercent();
 }
@@ -489,6 +533,25 @@ function updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep) {
     const totalAmount = uncomma(document.getElementById('totalAmount').value); // ดึงค่าราคารวมทั้งหมดปัจจุบัน
     document.getElementById('qsRV').value = format4(totalAmount > 0 ? (down / totalAmount * 100) : 0) + '%';
     document.getElementById('qsTrDep').value = isNaN(trDep) ? 'ไม่สามารถคำนวณ' : format4(trDep);
+}
+
+// New function to update the "ใบดาวน์" and "ใบ Deposit" sections
+function updateQSSheets() {
+    const qsExtraCost = document.getElementById('qsExtra').value;
+    const downAmount = document.getElementById('downAmount').value;
+    const trRate = document.getElementById('trRate').value;
+    const deposit = document.getElementById('qsDeposit').value;
+    const rv = document.getElementById('qsRV').value;
+    const trDep = document.getElementById('qsTrDep').value;
+
+    document.getElementById('qsSheetExtraCost').value = qsExtraCost;
+    document.getElementById('qsSheetDownAmount').value = downAmount;
+    document.getElementById('qsSheetTrRate').value = trRate;
+
+    document.getElementById('qsDepExtraCost').value = qsExtraCost;
+    document.getElementById('qsDepDeposit').value = deposit;
+    document.getElementById('qsDepRV').value = rv;
+    document.getElementById('qsDepTrDep').value = trDep;
 }
 
 function calculateDownForTargetLease(targetLease) {
@@ -556,6 +619,38 @@ function calculateDownForTargetLease(targetLease) {
   document.getElementById('downInput').value = formatNoDecimal(bestDown); // Use formatNoDecimal here
   calculate(); // Recalculate all values based on the found down payment
 }
+
+// Function to open a new page and display QS data
+function sendDataToQS() {
+    calculate(); // Ensure all values are up-to-date
+
+    const data = {
+        carInfo: document.getElementById('carInfo').value,
+        carPrice: uncomma(document.getElementById('carPrice').value),
+        discount: uncomma(document.getElementById('discount').value),
+        option: uncomma(document.getElementById('option').value),
+        totalAmount: uncomma(document.getElementById('totalAmount').value),
+        downAmount: uncomma(document.getElementById('downAmount').value),
+        downPercent: parseFloat(document.getElementById('downPercentDisplay').innerText.replace(/[()%]/g, '')),
+        
+        interestRate: uncomma(document.getElementById('interestRate').value),
+        termYears: parseInt(document.getElementById('termYears').value) || 0,
+        
+        calculatedCommission: uncomma(document.getElementById('calculatedCommission').value),
+        extra: uncomma(document.getElementById('extra').value),
+        qsExtraCost: uncomma(document.getElementById('qsExtra').value), // Renamed for clarity in the new page
+
+        // Values directly from QS Information section (which are already updated by calculate())
+        trRateEffective: parseFloat(document.getElementById('qsTrRate').value.replace('ไม่สามารถคำนวณ', 'NaN')),
+        deposit: uncomma(document.getElementById('qsDeposit').value),
+        rv: parseFloat(document.getElementById('qsRV').value.replace('%', '')),
+        trDep: parseFloat(document.getElementById('qsTrDep').value.replace('ไม่สามารถคำนวณ', 'NaN')),
+    };
+
+    localStorage.setItem('qsData', JSON.stringify(data)); // Store data in localStorage
+    window.open('quotation_qs.html', '_blank'); // Open the new page
+}
+
 
 // *** IMPORTANT: Updated generateQuotation function to save all relevant data as raw numbers where possible ***
 function generateQuotation() {
