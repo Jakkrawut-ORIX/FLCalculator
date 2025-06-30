@@ -9,51 +9,52 @@
         body {
             font-family: 'Kanit', sans-serif;
             margin: 0;
-            padding: 10px; /* Reduced overall padding */
+            padding: 10px;
             background-color: #f4f7f6;
             color: #333;
-            line-height: 1.4; /* Slightly tighter line height */
-            font-size: 0.9em; /* Slightly smaller base font size */
+            line-height: 1.3; /* ลดระยะห่างระหว่างบรรทัด */
+            font-size: 0.9em;
         }
         .container {
-            max-width: 600px; /* Further reduced max-width */
-            margin: 10px auto; /* Reduced margin */
+            max-width: 600px;
+            margin: 10px auto;
             background-color: #ffffff;
-            padding: 20px; /* Reduced padding */
+            padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08); /* Softer shadow */
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
             border: 1px solid #e0e6eb;
         }
         h1 {
             color: #003366;
             text-align: center;
-            margin-bottom: 18px;
-            font-size: 2em; /* Slightly reduced font size */
+            margin-bottom: 15px; /* ลด margin-bottom */
+            margin-top: 15px;    /* ลด margin-top (ถ้ามีผล) */
+            font-size: 2em;
             font-weight: 600;
         }
         h2 {
             color: #003366;
-            margin-top: 20px; /* Reduced margin */
-            margin-bottom: 10px; /* Reduced margin */
-            font-size: 1.5em; /* Slightly reduced font size */
+            margin-top: 18px; /* ลด margin-top */
+            margin-bottom: 8px; /* ลด margin-bottom */
+            font-size: 1.5em;
             border-bottom: 1px solid #003366;
-            padding-bottom: 5px; /* Reduced padding */
+            padding-bottom: 4px; /* ลด padding-bottom */
         }
         table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 0 4px; /* Reduced space between rows */
-            margin-bottom: 10px; /* Reduced margin */
+            border-spacing: 0 3px; /* ลด space ระหว่าง rows ให้กระชับขึ้นอีก */
+            margin-bottom: 8px; /* ลด margin-bottom */
         }
         td {
-            padding: 6px 0; /* Reduced padding */
-            vertical-align: middle; /* Align text vertically in middle */
-            font-size: 0.95em; /* Slightly smaller font size for cells */
+            padding: 5px 0; /* ลด padding */
+            vertical-align: middle;
+            font-size: 0.95em;
             border-bottom: 1px dashed #cfd8dc;
         }
         td:first-child {
             font-weight: 600;
-            width: 40%; /* Adjust width for label to give more space to value */
+            width: 40%;
             color: #555;
         }
         td:last-child {
@@ -65,30 +66,30 @@
             background-color: #fff8e1;
             border-left: 4px solid #ffc107;
             padding: 10px;
-            margin-top: 20px;
+            margin-top: 18px; /* ลด margin-top */
             border-radius: 8px;
             color: #856404;
-            font-size: 0.85em; /* Smaller font size for notes */
+            font-size: 0.85em;
         }
         .note ul {
             margin-bottom: 0;
-            padding-left: 15px; /* Slightly reduced padding */
+            padding-left: 15px;
         }
         .note li {
-            margin-bottom: 3px; /* Smaller space between list items */
+            margin-bottom: 2px; /* ลด margin-bottom */
         }
         .back-button-container {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 18px; /* ลด margin-top */
         }
         .back-button {
-            padding: 9px 18px; /* Reduced padding */
+            padding: 9px 18px;
             background-color: #6c757d;
             color: white;
             border: none;
             border-radius: 7px;
             cursor: pointer;
-            font-size: 0.95em; /* Reduced font size */
+            font-size: 0.95em;
             transition: background-color 0.3s ease;
         }
         .back-button:hover {
@@ -98,8 +99,8 @@
         /* --- Responsive Adjustments for Mobile (768px and below) --- */
         @media (max-width: 768px) {
             body {
-                padding: 5px; /* Even less padding on very small screens */
-                font-size: 0.85em; /* Further reduced base font size */
+                padding: 5px;
+                font-size: 0.85em;
             }
             .container {
                 margin: 5px auto;
@@ -108,29 +109,31 @@
             h1 {
                 font-size: 1.6em;
                 margin-bottom: 12px;
+                margin-top: 12px; /* ลด margin-top */
             }
             h2 {
                 font-size: 1.2em;
                 margin-top: 15px;
-                margin-bottom: 8px;
+                margin-bottom: 7px; /* ลด margin-bottom */
             }
             table {
                 margin-bottom: 8px;
-                border-spacing: 0 2px; /* Even tighter spacing between rows */
+                border-spacing: 0 2px;
             }
             td {
-                padding: 4px 0; /* Minimal padding for cells */
-                font-size: 0.9em; /* Smaller font size for cells */
+                padding: 4px 0;
+                font-size: 0.9em;
             }
             td:first-child {
-                width: 45%; /* Slightly more width for label on very small screens */
+                width: 45%;
             }
             td:last-child {
-                font-size: 0.9em; /* Match font size for value */
+                font-size: 0.9em;
             }
             .note {
-                font-size: 0.8em; /* Very small font for notes */
+                font-size: 0.8em;
                 padding: 8px;
+                margin-top: 15px; /* ลด margin-top */
             }
             .back-button {
                 padding: 8px 15px;
@@ -141,7 +144,7 @@
         /* --- Further Optimization for smaller phones (e.g., iPhone SE, older Androids) --- */
         @media (max-width: 480px) {
             body {
-                font-size: 0.8em; /* Smallest base font size */
+                font-size: 0.8em;
             }
             .container {
                 padding: 10px;
@@ -153,11 +156,11 @@
                 font-size: 1.1em;
             }
             td {
-                font-size: 0.85em; /* Smallest font for table cells */
+                font-size: 0.85em;
                 padding: 3px 0;
             }
             td:first-child {
-                width: 45%; /* Keep reasonable width for label */
+                width: 45%;
             }
             td:last-child {
                 font-size: 0.85em;
