@@ -143,6 +143,11 @@
         <tr><td>TR Dep</td><td id="displayDepTrDep"></td></tr>
     </table>
 
+    <h2>จำนวนปี</h2>
+    <table>
+        <tr><td>จำนวนปี</td><td id="displayTermYears"></td></tr>
+    </table>
+
     <div class="note">
         <strong>ข้อควรทราบ:</strong>
         <ul>
@@ -183,16 +188,19 @@
                 document.getElementById('displayOption').innerText = format(data.option);
                 document.getElementById('displayTotalAmount').innerText = format(data.totalAmount);
 
-                // Display "ใบดาวน์" specific info (now "ใบ Down")
+                // Display "ใบ Down" specific info
                 document.getElementById('displaySheetExtraCost').innerText = format(data.qsExtraCost);
                 document.getElementById('displaySheetDownAmount').innerText = format(data.downAmount);
                 document.getElementById('displaySheetTrRate').innerText = isNaN(data.trRateEffective) ? 'ไม่สามารถคำนวณ' : format4(data.trRateEffective);
 
                 // Display "ใบ Deposit" specific info
                 document.getElementById('displayDepExtraCost').innerText = format(data.qsExtraCost);
-                document.getElementById('displayDepDeposit').innerText = format(data.deposit, 4); // Display with 4 decimals
+                document.getElementById('displayDepDeposit').innerText = format(data.deposit, 4);
                 document.getElementById('displayDepRV').innerText = isNaN(data.rv) ? '-' : format4(data.rv) + '%';
                 document.getElementById('displayDepTrDep').innerText = isNaN(data.trDep) ? 'ไม่สามารถคำนวณ' : format4(data.trDep);
+
+                // Display "จำนวนปี" (new section)
+                document.getElementById('displayTermYears').innerText = data.termYears || '0';
 
             } else {
                 document.body.innerHTML = "<div class='container'><h1>ไม่พบข้อมูลสำหรับ QS</h1><p style='text-align:center;'>กรุณากลับไปที่หน้าคำนวณและกดปุ่ม 'แสดงข้อมูลสำหรับ QS' อีกครั้ง</p><div class='back-button-container'><button class='back-button' onclick='window.close()'>ปิดหน้านี้</button></div></div>";
