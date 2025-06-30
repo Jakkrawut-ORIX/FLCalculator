@@ -16,8 +16,8 @@
       --orix-light-grey: #F8FBFD; /* Very light background for contrast */
       --orix-dark-grey: #333333;
       --orix-border-color: #DDEBF5; /* Soft, slightly bluish border */
-      --input-bg-editable: #ECF7FF; /* Light blue tint for editable inputs */
-      --input-bg-readonly: #EAECEF; /* Slightly darker grey for readonly */
+      --input-bg-editable: #E0F2F7; /* Adjusted: Lighter blue tint for editable inputs */
+      --input-bg-readonly: #DDEBF0; /* Adjusted: Slightly darker grey/blue for readonly */
       --highlight-text-color: var(--orix-logo-blue); /* Emphasize calculated values */
     }
 
@@ -317,7 +317,7 @@
 
   <div class="button-group">
     <button onclick="calculate()">คำนวณ</button>
-    <button onclick="calculateDownForTargetLease(36000)">📌 คำนวณเงินดาวน์สำหรับค่างวด 36,000 บาท</button>
+    <button onclick="calculateDownForTargetLease(36000)">📊 คำนวณเงินดาวน์สำหรับค่างวด 36,000 บาท</button>
     <button onclick="generateQuotation()">สร้างใบเสนอราคา</button>
   </div>
 </div>
@@ -456,7 +456,7 @@ function calculate() {
   const tr = calculateIRR(months, leaseInVat, pvForIRR, 0, 0) * 12 * 100;
 
   // TR Dep Calculation (ปรับปรุงตามสูตรใหม่ล่าสุด)
-  // TR Dep = RATE((จำนวนปี*12),ค่างวดInVAT,((-total)+(-ค่าคอมที่คำนวน*1.07)+(-extra*1.07)),เงินดาวน์,0)*12
+  // TR Dep = RATE((จำนวนปี*12),ค่างวดInVAT,((-total)+(-ค่าคอมที่คำนวณ*1.07)+(-extra*1.07)),เงินดาวน์,0)*12
   const pvForTRDep = -(total + (commission * 1.07) + (extra * 1.07));
   const trDep = calculateIRR(months, leaseInVat, pvForTRDep, down, 0) * 12 * 100;
 
@@ -485,7 +485,9 @@ function updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep) {
     document.getElementById('qsTrRate').value = isNaN(tr) ? 'ไม่สามารถคำนวณ' : format4(tr);
     document.getElementById('qsTermYears').value = years;
     document.getElementById('qsDeposit').value = format(down / 1.07);
-    document.getElementById('qsRV').value = format4(car > 0 ? (down / car * 100) : 0) + '%';
+    // ปรับการคำนวณ qsRV เป็น: เงินดาวน์ / ราคารวมทั้งหมด
+    const totalAmount = uncomma(document.getElementById('totalAmount').value); // ดึงค่าราคารวมทั้งหมดปัจจุบัน
+    document.getElementById('qsRV').value = format4(totalAmount > 0 ? (down / totalAmount * 100) : 0) + '%';
     document.getElementById('qsTrDep').value = isNaN(trDep) ? 'ไม่สามารถคำนวณ' : format4(trDep);
 }
 
@@ -514,16 +516,17 @@ function calculateDownForTargetLease(targetLease) {
   let low = 0;
   let high = total;
   let bestDown = 0;
-  let minDiff = Infinity; // To track the closest lease amount
+  let minDiff = Infinity;
 
-  const maxIter = 500; // Increased iterations for binary search precision
+  const maxIter = 500;
 
   for (let i = 0; i < maxIter; i++) {
-    const currentDown = (low + high) / 2;
-    if (currentDown < 0) currentDown = 0; // Ensure down payment is not negative
-    if (currentDown > total) currentDown = total; // Ensure down payment does not exceed total price
+    // Calculate currentDown, ensuring it's an integer for the down payment
+    const currentDown = Math.round((low + high) / 2); // Use Math.round to get an integer
 
-    // Simulate calculate() to get currentLease based on currentDown
+    if (currentDown < 0) currentDown = 0;
+    if (currentDown > total) currentDown = total;
+
     const finance = total - currentDown;
     const intTotal = finance * (rate / 100) * years;
     // Ensure months is not zero to prevent division by zero in simulation
@@ -538,7 +541,7 @@ function calculateDownForTargetLease(targetLease) {
     }
 
     // Check for convergence or if currentDown is very close to boundaries
-    if (Math.abs(high - low) < 0.01 || diff < 0.1) { // 0.01 for down amount range, 0.1 for lease amount difference
+    if (Math.abs(high - low) < 1 || diff < 0.1) { // Adjusted convergence for integer down payment
         break;
     }
 
@@ -550,7 +553,7 @@ function calculateDownForTargetLease(targetLease) {
   }
 
   document.getElementById('downType').value = 'amount';
-  document.getElementById('downInput').value = format(bestDown);
+  document.getElementById('downInput').value = formatNoDecimal(bestDown); // Use formatNoDecimal here
   calculate(); // Recalculate all values based on the found down payment
 }
 
@@ -611,8 +614,8 @@ function addInputListeners(id) {
   } else { // All other number/percent inputs
       el.addEventListener('focus', () => {
           let currentVal = uncomma(el.value);
-          // *** แก้ไขตรงนี้ ***: เคลียร์ช่องถ้าค่าเป็น 0 หรือใกล้ 0 มากๆ
-          if (Math.abs(currentVal) < 0.001) { // Changed condition from `currentVal !== 0`
+          // แก้ไข: เคลียร์ช่องถ้าค่าเป็น 0 หรือใกล้ 0 มากๆ
+          if (Math.abs(currentVal) < 0.001) {
               el.value = ''; // Clear if value is effectively zero
           } else {
               el.value = String(currentVal); // Remove commas for editing
