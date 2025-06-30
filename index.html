@@ -6,8 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
   <style>
     :root {
       /* ORIX Logo Colors based on provided image */
@@ -278,60 +276,6 @@
         font-size: 0.9em; /* ลด font-size ของปุ่ม */
       }
     }
-
-    /* Styles for the PDF report (hidden by default) */
-    .pdf-report-content {
-      display: none;
-      padding: 20px;
-      font-family: 'Kanit', sans-serif;
-      color: #333;
-      font-size: 12px;
-      line-height: 1.4;
-    }
-    .pdf-report-content h1 {
-      font-size: 24px;
-      text-align: center;
-      color: #003366;
-      margin-bottom: 20px;
-    }
-    .pdf-report-content h2 {
-      font-size: 18px;
-      color: #003366;
-      border-bottom: 1px solid #003366;
-      padding-bottom: 5px;
-      margin-top: 20px;
-      margin-bottom: 10px;
-    }
-    .pdf-report-content table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 15px;
-    }
-    .pdf-report-content td {
-      padding: 6px 0;
-      border-bottom: 1px dashed #ccc;
-      vertical-align: top;
-    }
-    .pdf-report-content td.label {
-      font-weight: 600;
-      width: 45%;
-      color: #555;
-    }
-    .pdf-report-content td.value {
-      text-align: right;
-      font-weight: bold;
-      color: #003366;
-      width: 55%;
-    }
-    .pdf-report-content .note {
-      background-color: #fff8e1;
-      border-left: 4px solid #ffc107;
-      padding: 10px;
-      margin-top: 20px;
-      border-radius: 5px;
-      font-size: 11px;
-      color: #856404;
-    }
   </style>
 </head>
 <body>
@@ -420,77 +364,6 @@
     <button onclick="exportToPdf()">📄 Export PDF</button>
   </div>
 </div>
-
-<div class="pdf-report-content" id="pdfReportContent">
-    <h1>Lease Calculation Report</h1>
-    <p style="text-align: right; font-size: 10px; margin-bottom: 20px;">วันที่: <span id="reportDate"></span></p>
-
-    <h2>ข้อมูลเบื้องต้น</h2>
-    <table>
-        <tr><td class="label">ข้อมูลรถ</td><td class="value" id="pdfCarInfo"></td></tr>
-        <tr><td class="label">ราคารถ</td><td class="value" id="pdfCarPrice"></td></tr>
-        <tr><td class="label">ส่วนลด</td><td class="value" id="pdfDiscount"></td></tr>
-        <tr><td class="label">Option</td><td class="value" id="pdfOption"></td></tr>
-        <tr><td class="label">ราคาสุทธิ</td><td class="value" id="pdfTotalAmount"></td></tr>
-    </table>
-
-    <h2>เงินดาวน์</h2>
-    <table>
-        <tr><td class="label">รูปแบบเงินดาวน์</td><td class="value" id="pdfDownType"></td></tr>
-        <tr><td class="label">เงินดาวน์</td><td class="value" id="pdfDownAmount"></td></tr>
-        <tr><td class="label">เงินดาวน์คิดเป็น</td><td class="value" id="pdfDownPercent"></td></tr>
-    </table>
-
-    <h2>ดอกเบี้ยและระยะเวลา</h2>
-    <table>
-        <tr><td class="label">อัตราดอกเบี้ย (%)</td><td class="value" id="pdfInterestRate"></td></tr>
-        <tr><td class="label">จำนวนปี</td><td class="value" id="pdfTermYears"></td></tr>
-    </table>
-
-    <h2>ค่าคอมมิชชั่น</h2>
-    <table>
-        <tr><td class="label">คิดค่าคอมจาก</td><td class="value" id="pdfComBase"></td></tr>
-        <tr><td class="label">Commission (%)</td><td class="value" id="pdfComPercent"></td></tr>
-        <tr><td class="label">ค่าคอม (ที่คำนวณ)</td><td class="value" id="pdfCalculatedCommission"></td></tr>
-        <tr><td class="label">Extra Commission</td><td class="value" id="pdfExtra"></td></tr>
-        <tr><td class="label">QS Extra Cost</td><td class="value" id="pdfQsExtra"></td></tr>
-    </table>
-
-    <h2>ผลลัพธ์</h2>
-    <table>
-        <tr><td class="label">ยอดจัด</td><td class="value" id="pdfFinanceAmt"></td></tr>
-        <tr><td class="label">ดอกเบี้ยต่อปี</td><td class="value" id="pdfIntPA"></td></tr>
-        <tr><td class="label">ดอกเบี้ยรวม</td><td class="value" id="pdfIntTotal"></td></tr>
-        <tr><td class="label">ยอดจัดรวม</td><td class="value" id="pdfFinanceTotalWithInterest"></td></tr>
-        <tr><td class="label">ค่างวด (In VAT)</td><td class="value" id="pdfLeaseInVat"></td></tr>
-        <tr><td class="label">ค่างวด (Ex VAT)</td><td class="value" id="pdfLeaseExVat"></td></tr>
-        <tr><td class="label">TR (Effective %)</td><td class="value" id="pdfTrRate"></td></tr>
-    </table>
-
-    <h2>QS Information</h2>
-    <table>
-        <tr><td class="label">ข้อมูลรถ (QS)</td><td class="value" id="pdfQsCarInfo"></td></tr>
-        <tr><td class="label">ราคารถ (QS)</td><td class="value" id="pdfQsCarPrice"></td></tr>
-        <tr><td class="label">ส่วนลด (QS)</td><td class="value" id="pdfQsDiscount"></td></tr>
-        <tr><td class="label">Option (QS)</td><td class="value" id="pdfQsOption"></td></tr>
-        <tr><td class="label">เงินดาวน์ (QS)</td><td class="value" id="pdfQsDownAmount"></td></tr>
-        <tr><td class="label">เงินดาวน์คิดเป็น % (QS)</td><td class="value" id="pdfQsDownPercent"></td></tr>
-        <tr><td class="label">TR (Effective %) (QS)</td><td class="value" id="pdfQsTrRate"></td></tr>
-        <tr><td class="label">จำนวนปี (QS)</td><td class="value" id="pdfQsTermYears"></td></tr>
-        <tr><td class="label">Deposit (QS)</td><td class="value" id="pdfQsDeposit"></td></tr>
-        <tr><td class="label">RV (QS)</td><td class="value" id="pdfQsRV"></td></tr>
-        <tr><td class="label">TR Dep (QS)</td><td class="value" id="pdfQsTrDep"></td></tr>
-    </table>
-
-    <div class="note">
-        <strong>ข้อควรทราบ:</strong>
-        <ul>
-            <li>**ตัวเลขค่างวดไม่ลงตัว:** ลอง **ลด TR** และ **ปรับ Extra Cost ขึ้นเล็กน้อย** เพื่อให้ค่างวดลงตัว</li>
-            <li>**ใบ Deposit บันทึกไม่ได้:** ตรวจสอบค่า **RV** ว่าน้อยกว่า **Purchase option** หรือไม่</li>
-        </ul>
-    </div>
-</div>
-
 
 <script>
 // Helper functions for number formatting
@@ -788,94 +661,225 @@ function sendToQsData() {
     window.open('qs_data.html', '_blank');
 }
 
-async function exportToPdf() {
+function exportToPdf() {
     calculate(); // Ensure all values are up-to-date
 
-    const reportContent = document.getElementById('pdfReportContent');
-
-    // Populate the hidden PDF report content with current values
-    document.getElementById('reportDate').innerText = new Date().toLocaleDateString('th-TH', {
-        year: 'numeric', month: 'long', day: 'numeric',
-        hour: '2-digit', minute: '2-digit', second: '2-digit'
-    });
-
-    // Populate Basic Info
-    document.getElementById('pdfCarInfo').innerText = document.getElementById('carInfo').value;
-    document.getElementById('pdfCarPrice').innerText = document.getElementById('carPrice').value;
-    document.getElementById('pdfDiscount').innerText = document.getElementById('discount').value;
-    document.getElementById('pdfOption').innerText = document.getElementById('option').value;
-    document.getElementById('pdfTotalAmount').innerText = document.getElementById('totalAmount').value;
-
-    // Populate Down Payment
-    document.getElementById('pdfDownType').innerText = document.getElementById('downType').options[document.getElementById('downType').selectedIndex].text;
-    document.getElementById('pdfDownAmount').innerText = document.getElementById('downAmount').value;
-    document.getElementById('pdfDownPercent').innerText = document.getElementById('downPercentDisplay').innerText;
-
-    // Populate Interest and Term
-    document.getElementById('pdfInterestRate').innerText = document.getElementById('interestRate').value + '%';
-    document.getElementById('pdfTermYears').innerText = document.getElementById('termYears').value;
-
-    // Populate Commission
-    document.getElementById('pdfComBase').innerText = document.getElementById('comBase').options[document.getElementById('comBase').selectedIndex].text;
-    document.getElementById('pdfComPercent').innerText = document.getElementById('comPercent').value + '%';
-    document.getElementById('pdfCalculatedCommission').innerText = document.getElementById('calculatedCommission').value;
-    document.getElementById('pdfExtra').innerText = document.getElementById('extra').value;
-    document.getElementById('pdfQsExtra').innerText = document.getElementById('qsExtra').value;
-
-    // Populate Results
-    document.getElementById('pdfFinanceAmt').innerText = document.getElementById('financeAmt').value;
-    document.getElementById('pdfIntPA').innerText = document.getElementById('intPA').value;
-    document.getElementById('pdfIntTotal').innerText = document.getElementById('intTotal').value;
-    document.getElementById('pdfFinanceTotalWithInterest').innerText = document.getElementById('financeTotalWithInterest').value;
-    document.getElementById('pdfLeaseInVat').innerText = document.getElementById('leaseInVat').value;
-    document.getElementById('pdfLeaseExVat').innerText = document.getElementById('leaseExVat').value;
-    document.getElementById('pdfTrRate').innerText = document.getElementById('trRate').value;
-
-    // Populate QS Information
-    document.getElementById('pdfQsCarInfo').innerText = document.getElementById('qsCarInfo').value;
-    document.getElementById('pdfQsCarPrice').innerText = document.getElementById('qsCarPrice').value;
-    document.getElementById('pdfQsDiscount').innerText = document.getElementById('qsDiscount').value;
-    document.getElementById('pdfQsOption').innerText = document.getElementById('qsOption').value;
-    document.getElementById('pdfQsDownAmount').innerText = document.getElementById('qsDownAmount').value;
-    document.getElementById('pdfQsDownPercent').innerText = document.getElementById('qsDownPercent').value;
-    document.getElementById('pdfQsTrRate').innerText = document.getElementById('qsTrRate').value;
-    document.getElementById('pdfQsTermYears').innerText = document.getElementById('qsTermYears').value;
-    document.getElementById('pdfQsDeposit').innerText = document.getElementById('qsDeposit').value;
-    document.getElementById('pdfQsRV').innerText = document.getElementById('qsRV').value;
-    document.getElementById('pdfQsTrDep').innerText = document.getElementById('qsTrDep').value;
-
-
-    // Make the content visible for html2canvas to render correctly
-    reportContent.style.display = 'block';
-    
-    // Use html2canvas to render the content as an image
-    const canvas = await html2canvas(reportContent, { scale: 2 }); // Scale for better resolution
-    const imgData = canvas.toDataURL('image/png');
-
-    // Restore display property
-    reportContent.style.display = 'none';
-
-    // Use jsPDF to create the PDF
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4'); // 'p' for portrait, 'mm' for millimeters, 'a4' size
 
-    const imgWidth = 210; // A4 width in mm
-    const pageHeight = 297; // A4 height in mm
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    let heightLeft = imgHeight;
+    const margin = 15; // Left/Right margin
+    let y = 15;         // Current Y position
+    const lineHeight = 5; // Standard line height for text
+    const smallLineHeight = 4; // Smaller line height for dense info
+    const indent = 5; // Indentation for values
+    const labelWidth = 80; // Width for the label column
 
-    let position = 0;
+    // Helper to add text line
+    const addText = (text, x, yPos, size, style = 'normal', color = '#333333') => {
+        doc.setFont('Kanit', style);
+        doc.setFontSize(size);
+        doc.setTextColor(color);
+        doc.text(text, x, yPos);
+    };
 
-    // Add image to PDF, handling multiple pages if content is too long
-    doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
+    // --- Title ---
+    doc.setFont('Kanit', 'bold');
+    doc.setFontSize(18);
+    doc.setTextColor('#003366');
+    doc.text('Lease Calculation Report', doc.internal.pageSize.width / 2, y, { align: 'center' });
+    y += 8;
 
-    while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        doc.addPage();
-        doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-    }
+    doc.setFont('Kanit', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor('#555555');
+    doc.text(`วันที่: ${new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`, doc.internal.pageSize.width - margin, y, { align: 'right' });
+    y += 5;
+
+    // --- Section: ข้อมูลเบื้องต้น ---
+    y += 5;
+    doc.setDrawColor('#003366');
+    doc.setLineWidth(0.5);
+    doc.line(margin, y, doc.internal.pageSize.width - margin, y); // Line below heading
+    addText('ข้อมูลเบื้องต้น', margin, y + 4, 12, 'bold', '#003366');
+    y += 10;
+    
+    addText('ข้อมูลรถ:', margin, y, 9);
+    addText(document.getElementById('carInfo').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('ราคารถ:', margin, y, 9);
+    addText(document.getElementById('carPrice').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('ส่วนลด:', margin, y, 9);
+    addText(document.getElementById('discount').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('Option:', margin, y, 9);
+    addText(document.getElementById('option').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('ราคาสุทธิ:', margin, y, 9, 'bold');
+    addText(document.getElementById('totalAmount').value, margin + labelWidth, y, 9, 'bold', '#E30613', 'right');
+    y += lineHeight;
+
+    // --- Section: เงินดาวน์ ---
+    y += 5;
+    doc.line(margin, y, doc.internal.pageSize.width - margin, y);
+    addText('เงินดาวน์', margin, y + 4, 12, 'bold', '#003366');
+    y += 10;
+
+    addText('รูปแบบเงินดาวน์:', margin, y, 9);
+    addText(document.getElementById('downType').options[document.getElementById('downType').selectedIndex].text, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('เงินดาวน์:', margin, y, 9);
+    addText(document.getElementById('downAmount').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('เงินดาวน์คิดเป็น:', margin, y, 9);
+    addText(document.getElementById('downPercentDisplay').innerText, margin + labelWidth, y, 9, 'bold', '#E30613', 'right');
+    y += lineHeight;
+
+    // --- Section: ดอกเบี้ยและระยะเวลา ---
+    y += 5;
+    doc.line(margin, y, doc.internal.pageSize.width - margin, y);
+    addText('ดอกเบี้ยและระยะเวลา', margin, y + 4, 12, 'bold', '#003366');
+    y += 10;
+
+    addText('อัตราดอกเบี้ย (%):', margin, y, 9);
+    addText(document.getElementById('interestRate').value + '%', margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('จำนวนปี:', margin, y, 9);
+    addText(document.getElementById('termYears').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    // --- Section: ค่าคอมมิชชั่น ---
+    y += 5;
+    doc.line(margin, y, doc.internal.pageSize.width - margin, y);
+    addText('ค่าคอมมิชชั่น', margin, y + 4, 12, 'bold', '#003366');
+    y += 10;
+
+    addText('คิดค่าคอมจาก:', margin, y, 9);
+    addText(document.getElementById('comBase').options[document.getElementById('comBase').selectedIndex].text, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('Commission (%):', margin, y, 9);
+    addText(document.getElementById('comPercent').value + '%', margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('ค่าคอม (ที่คำนวณ):', margin, y, 9);
+    addText(document.getElementById('calculatedCommission').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('Extra Commission:', margin, y, 9);
+    addText(document.getElementById('extra').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('QS Extra Cost:', margin, y, 9, 'bold');
+    addText(document.getElementById('qsExtra').value, margin + labelWidth, y, 9, 'bold', '#E30613', 'right');
+    y += lineHeight;
+
+    // --- Section: ผลลัพธ์ ---
+    y += 5;
+    doc.line(margin, y, doc.internal.pageSize.width - margin, y);
+    addText('ผลลัพธ์', margin, y + 4, 12, 'bold', '#003366');
+    y += 10;
+
+    addText('ยอดจัด:', margin, y, 9);
+    addText(document.getElementById('financeAmt').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('ดอกเบี้ยต่อปี:', margin, y, 9);
+    addText(document.getElementById('intPA').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('ดอกเบี้ยรวม:', margin, y, 9);
+    addText(document.getElementById('intTotal').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('ยอดจัดรวม:', margin, y, 9);
+    addText(document.getElementById('financeTotalWithInterest').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('ค่างวด (In VAT):', margin, y, 9, 'bold');
+    addText(document.getElementById('leaseInVat').value, margin + labelWidth, y, 9, 'bold', '#E30613', 'right');
+    y += lineHeight;
+
+    addText('ค่างวด (Ex VAT):', margin, y, 9);
+    addText(document.getElementById('leaseExVat').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('TR (Effective %):', margin, y, 9, 'bold');
+    addText(document.getElementById('trRate').value, margin + labelWidth, y, 9, 'bold', '#E30613', 'right');
+    y += lineHeight;
+
+    // --- Section: QS Information ---
+    y += 5;
+    doc.line(margin, y, doc.internal.pageSize.width - margin, y);
+    addText('QS Information', margin, y + 4, 12, 'bold', '#003366');
+    y += 10;
+
+    addText('ข้อมูลรถ (QS):', margin, y, 9);
+    addText(document.getElementById('qsCarInfo').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('ราคารถ (QS):', margin, y, 9);
+    addText(document.getElementById('qsCarPrice').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+    
+    addText('ส่วนลด (QS):', margin, y, 9);
+    addText(document.getElementById('qsDiscount').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('Option (QS):', margin, y, 9);
+    addText(document.getElementById('qsOption').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('เงินดาวน์ (QS):', margin, y, 9);
+    addText(document.getElementById('qsDownAmount').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('เงินดาวน์คิดเป็น % (QS):', margin, y, 9);
+    addText(document.getElementById('qsDownPercent').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('TR (Effective %) (QS):', margin, y, 9);
+    addText(document.getElementById('qsTrRate').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('จำนวนปี (QS):', margin, y, 9);
+    addText(document.getElementById('qsTermYears').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('Deposit (QS):', margin, y, 9);
+    addText(document.getElementById('qsDeposit').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('RV (QS):', margin, y, 9);
+    addText(document.getElementById('qsRV').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+    addText('TR Dep (QS):', margin, y, 9);
+    addText(document.getElementById('qsTrDep').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    y += lineHeight;
+
+
+    // --- Note ---
+    y += 5;
+    doc.setDrawColor('#ffc107'); // Yellowish border for note
+    doc.setLineWidth(0.5);
+    doc.roundedRect(margin, y, doc.internal.pageSize.width - (2 * margin), 30, 3, 3, 'S'); // Draw a box for the note
+    
+    y += 4;
+    addText('ข้อควรทราบ:', margin + 2, y, 9, 'bold', '#856404');
+    y += smallLineHeight;
+    addText('  - ตัวเลขค่างวดไม่ลงตัว: ลองลด TR และปรับ Extra Cost ขึ้นเล็กน้อยเพื่อให้ค่างวดลงตัว', margin + 2, y, 8, 'normal', '#856404');
+    y += smallLineHeight;
+    addText('  - ใบ Deposit บันทึกไม่ได้: ตรวจสอบค่า RV ว่าน้อยกว่า Purchase option หรือไม่', margin + 2, y, 8, 'normal', '#856404');
+    y += 10;
+
 
     doc.save('Lease_Calculation_Report.pdf');
 }
