@@ -9,51 +9,51 @@
         body {
             font-family: 'Kanit', sans-serif;
             margin: 0;
-            padding: 15px;
+            padding: 10px; /* Reduced overall padding */
             background-color: #f4f7f6;
             color: #333;
-            line-height: 1.5;
-            font-size: 0.95em;
+            line-height: 1.4; /* Slightly tighter line height */
+            font-size: 0.9em; /* Slightly smaller base font size */
         }
         .container {
-            max-width: 650px;
-            margin: 15px auto;
+            max-width: 600px; /* Further reduced max-width */
+            margin: 10px auto; /* Reduced margin */
             background-color: #ffffff;
-            padding: 25px;
+            padding: 20px; /* Reduced padding */
             border-radius: 10px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08); /* Softer shadow */
             border: 1px solid #e0e6eb;
         }
         h1 {
             color: #003366;
             text-align: center;
-            margin-bottom: 20px;
-            font-size: 2.2em;
+            margin-bottom: 18px;
+            font-size: 2em; /* Slightly reduced font size */
             font-weight: 600;
         }
         h2 {
             color: #003366;
-            margin-top: 25px;
-            margin-bottom: 12px;
-            font-size: 1.6em;
+            margin-top: 20px; /* Reduced margin */
+            margin-bottom: 10px; /* Reduced margin */
+            font-size: 1.5em; /* Slightly reduced font size */
             border-bottom: 1px solid #003366;
-            padding-bottom: 6px;
+            padding-bottom: 5px; /* Reduced padding */
         }
         table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 0 6px;
-            margin-bottom: 15px;
+            border-spacing: 0 4px; /* Reduced space between rows */
+            margin-bottom: 10px; /* Reduced margin */
         }
         td {
-            padding: 8px 0;
-            vertical-align: top;
-            font-size: 1em;
+            padding: 6px 0; /* Reduced padding */
+            vertical-align: middle; /* Align text vertically in middle */
+            font-size: 0.95em; /* Slightly smaller font size for cells */
             border-bottom: 1px dashed #cfd8dc;
         }
         td:first-child {
             font-weight: 600;
-            width: 50%;
+            width: 40%; /* Adjust width for label to give more space to value */
             color: #555;
         }
         td:last-child {
@@ -64,103 +64,112 @@
         .note {
             background-color: #fff8e1;
             border-left: 4px solid #ffc107;
-            padding: 12px;
-            margin-top: 25px;
+            padding: 10px;
+            margin-top: 20px;
             border-radius: 8px;
             color: #856404;
-            font-size: 0.9em;
+            font-size: 0.85em; /* Smaller font size for notes */
         }
         .note ul {
             margin-bottom: 0;
-            padding-left: 18px;
+            padding-left: 15px; /* Slightly reduced padding */
         }
         .note li {
-            margin-bottom: 5px;
+            margin-bottom: 3px; /* Smaller space between list items */
         }
         .back-button-container {
             text-align: center;
-            margin-top: 25px;
+            margin-top: 20px;
         }
         .back-button {
-            padding: 10px 20px;
+            padding: 9px 18px; /* Reduced padding */
             background-color: #6c757d;
             color: white;
             border: none;
             border-radius: 7px;
             cursor: pointer;
-            font-size: 1em;
+            font-size: 0.95em; /* Reduced font size */
             transition: background-color 0.3s ease;
         }
         .back-button:hover {
             background-color: #5a6268;
         }
 
-        /* --- Responsive Adjustments for Mobile --- */
+        /* --- Responsive Adjustments for Mobile (768px and below) --- */
         @media (max-width: 768px) {
             body {
-                padding: 8px;
-                font-size: 0.9em;
+                padding: 5px; /* Even less padding on very small screens */
+                font-size: 0.85em; /* Further reduced base font size */
             }
             .container {
-                margin: 8px auto;
-                padding: 15px; /* Slightly reduced padding for smaller screens */
+                margin: 5px auto;
+                padding: 15px;
             }
             h1 {
-                font-size: 1.8em;
-                margin-bottom: 15px;
+                font-size: 1.6em;
+                margin-bottom: 12px;
             }
             h2 {
-                font-size: 1.4em;
-                margin-top: 20px;
-                margin-bottom: 10px;
+                font-size: 1.2em;
+                margin-top: 15px;
+                margin-bottom: 8px;
             }
-
             table {
-                border-collapse: collapse; /* Ensure no spacing issues */
-                border-spacing: 0;
-                margin-bottom: 15px;
+                margin-bottom: 8px;
+                border-spacing: 0 2px; /* Even tighter spacing between rows */
             }
-
-            /* Make each table row a distinct block */
-            table tr {
-                display: flex; /* Use flexbox to control stacking */
-                flex-direction: column; /* Stack children vertically */
-                margin-bottom: 12px; /* Space between each 'row block' */
-                padding: 10px 15px; /* Padding inside each 'row block' */
-                border: 1px solid #e0e6eb;
-                border-radius: 8px;
-                background-color: #ffffff; /* Keep white background for rows */
-                box-shadow: 0 1px 4px rgba(0,0,0,0.05); /* Subtle shadow for definition */
-            }
-
-            /* Style table cells when stacked */
             td {
-                display: block; /* Ensure each cell takes full width */
-                width: 100%; /* Force full width */
-                padding: 4px 0; /* Adjust padding for stacked items */
-                border-bottom: none; /* Remove horizontal line within the stacked 'row block' */
+                padding: 4px 0; /* Minimal padding for cells */
+                font-size: 0.9em; /* Smaller font size for cells */
             }
-
             td:first-child {
-                font-weight: 600; /* Keep label bold */
-                color: #003366; /* Make labels stand out in ORIX blue */
-                font-size: 0.95em; /* Slightly smaller label font */
-                margin-bottom: 2px; /* Space between label and value */
+                width: 45%; /* Slightly more width for label on very small screens */
             }
-
             td:last-child {
-                text-align: left; /* Align value to the left */
-                font-weight: bold; /* Keep value bold for clarity */
-                color: #333; /* Use a clear dark color for the value */
-                font-size: 1em; /* Value slightly larger than label */
+                font-size: 0.9em; /* Match font size for value */
             }
-
             .note {
-                font-size: 0.85em;
-                padding: 10px;
+                font-size: 0.8em; /* Very small font for notes */
+                padding: 8px;
+            }
+            .back-button {
+                padding: 8px 15px;
+                font-size: 0.9em;
             }
         }
-        /* --- End Responsive Adjustments --- */
+
+        /* --- Further Optimization for smaller phones (e.g., iPhone SE, older Androids) --- */
+        @media (max-width: 480px) {
+            body {
+                font-size: 0.8em; /* Smallest base font size */
+            }
+            .container {
+                padding: 10px;
+            }
+            h1 {
+                font-size: 1.4em;
+            }
+            h2 {
+                font-size: 1.1em;
+            }
+            td {
+                font-size: 0.85em; /* Smallest font for table cells */
+                padding: 3px 0;
+            }
+            td:first-child {
+                width: 45%; /* Keep reasonable width for label */
+            }
+            td:last-child {
+                font-size: 0.85em;
+            }
+            .note {
+                font-size: 0.75em;
+                padding: 6px;
+            }
+            .back-button {
+                font-size: 0.85em;
+            }
+        }
     </style>
 </head>
 <body>
@@ -241,7 +250,7 @@
                 // Display Core QS Info
                 document.getElementById('displayQsExtraCost').innerText = format(data.qsExtraCost);
                 document.getElementById('displayQsTermYears').innerText = data.termYears || '0';
-                document.getElementById('displayLeaseExVat').innerText = format(data.leaseExVat); // Display Lease Ex VAT
+                document.getElementById('displayLeaseExVat').innerText = format(data.leaseExVat);
 
                 // Display "ข้อมูลสำหรับใบ Down"
                 document.getElementById('displayDownAmount').innerText = format(data.downAmount);
