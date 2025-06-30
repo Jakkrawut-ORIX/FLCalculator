@@ -109,13 +109,38 @@
             h2 {
                 font-size: 1.3em;
             }
+            
+            /* --- Responsive Table Adjustments --- */
+            table {
+                border-spacing: 0; /* Remove space between rows for stacking */
+                margin-bottom: 12px;
+            }
+            table tr {
+                display: block; /* Make each table row behave as a block element */
+                margin-bottom: 12px; /* Add space between stacked rows */
+                padding: 8px; /* Add padding to the block row */
+                border: 1px solid #e0e6eb; /* Add a subtle border to separate rows visually */
+                border-radius: 6px;
+                background-color: #fcfcfc; /* Light background for each row block */
+            }
             td {
-                font-size: 0.9em;
-                padding: 7px 0;
+                display: block; /* Make table cells stack vertically */
+                padding: 4px 0; /* Adjust padding for stacked cells */
+                border-bottom: none; /* Remove dashed border when cells are stacked */
             }
             td:first-child {
-                width: 45%; /* Keep reasonable width */
+                width: auto; /* Remove fixed width, allow it to take necessary space */
+                font-weight: 600; /* Keep bold for label */
+                color: #003366; /* Use ORIX blue for labels for clarity */
+                padding-bottom: 2px; /* Small space between label and value when stacked */
             }
+            td:last-child {
+                text-align: left; /* Align values to the left when stacked */
+                font-weight: normal; /* Adjust value font weight if desired */
+                color: #333; /* Use default text color, or a highlight color if preferred */
+            }
+            /* --- End Responsive Table Adjustments --- */
+
             .note {
                 font-size: 0.85em;
                 padding: 10px;
