@@ -135,44 +135,68 @@
       font-size: 1.05em;
     }
 
-    button {
-      width: 100%;
+    .button-group {
+        display: flex;
+        flex-wrap: wrap; /* Allow buttons to wrap to the next line on smaller screens */
+        gap: 10px; /* Space between buttons */
+        margin-top: 15px;
+    }
+
+    .button-group button {
+      flex: 1; /* Allow buttons to grow and shrink */
+      min-width: 180px; /* Minimum width for buttons before wrapping */
       padding: 13px;
       font-size: 1.15em;
-      background-color: var(--orix-logo-blue); /* Default button in ORIX blue */
       color: var(--orix-white);
       border: none;
       border-radius: 7px;
       cursor: pointer;
-      margin-top: 15px;
-      transition: background-color 0.3s ease, transform 0.2s ease;
+      transition: all 0.3s ease; /* Smooth transition for all properties */
       font-weight: 600;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08); /* Softer, modern shadow */
+      margin-top: 0; /* Reset margin-top from global button style */
     }
 
-    button:hover {
-      background-color: #002244; /* Darker ORIX blue on hover */
-      transform: translateY(-1px);
+    /* Soft, modern gradients for each button */
+    .button-group button:nth-of-type(1) { /* คำนวณ */
+      background-image: linear-gradient(145deg, #4A90E2, #357ABD); /* Soft Blue */
+    }
+    .button-group button:nth-of-type(1):hover {
+      background-image: linear-gradient(145deg, #357ABD, #2A68A0);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     }
 
-    button:active {
-      transform: translateY(0);
+    .button-group button:nth-of-type(2) { /* คำนวณเงินดาวน์สำหรับค่างวด 36,000 บาท */
+      background-image: linear-gradient(145deg, #FF7F50, #E6613F); /* Soft Coral/Orange */
     }
-
-    .button-group button:nth-of-type(2) { /* Style for the second button */
-      background-color: var(--orix-logo-red); /* Second button in ORIX red */
-    }
-
     .button-group button:nth-of-type(2):hover {
-      background-color: #B5050F; /* Darker ORIX red on hover */
+      background-image: linear-gradient(145deg, #E6613F, #CC4A2E);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     }
 
-    .button-group button:nth-of-type(3) { /* Style for the third button (new) */
-      background-color: #28a745; /* Green for new button */
+    .button-group button:nth-of-type(3) { /* สร้างใบเสนอราคา */
+      background-image: linear-gradient(145deg, #8BC34A, #7CB342); /* Soft Green/Sage */
     }
-
     .button-group button:nth-of-type(3):hover {
-      background-color: #218838;
+      background-image: linear-gradient(145deg, #7CB342, #6AA037);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .button-group button:nth-of-type(4) { /* ส่งข้อมูล ทำ QS */
+        background-image: linear-gradient(145deg, #AB8EE8, #9B7EDA); /* Soft Lavender/Purple */
+    }
+    .button-group button:nth-of-type(4):hover {
+        background-image: linear-gradient(145deg, #9B7EDA, #8A6DC8);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .button-group button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
     #downPercentDisplay {
@@ -229,10 +253,16 @@
         padding: 8px;
         border-radius: 6px;
       }
-      button {
+      
+      .button-group {
+        flex-direction: column; /* Stack buttons vertically on small screens */
+        gap: 8px;
+      }
+      .button-group button {
+        width: 100%;
+        min-width: unset; /* Remove min-width constraint */
         padding: 10px;
         font-size: 1em;
-        margin-top: 12px;
       }
     }
   </style>
@@ -319,6 +349,7 @@
     <button onclick="calculate()">คำนวณ</button>
     <button onclick="calculateDownForTargetLease(36000)">📊 คำนวณเงินดาวน์สำหรับค่างวด 36,000 บาท</button>
     <button onclick="generateQuotation()">สร้างใบเสนอราคา</button>
+    <button onclick="sendToQsData()">ส่งข้อมูล ทำ QS</button>
   </div>
 </div>
 
@@ -431,7 +462,7 @@ function calculate() {
       document.getElementById('trRate').value = 'ไม่สามารถคำนวณ';
       document.getElementById('qsTrDep').value = 'ไม่สามารถคำนวณ';
       showDownPercent();
-      updateQsInfo(carInfo, car, discount, option, down, years, 0, 0);
+      updateQsInfo(carInfo, car, discount, option, down, years, 0, 0, 0); // Pass qsExtraCost as 0
       return;
   }
 
@@ -445,7 +476,7 @@ function calculate() {
   const extra = getVal('extra');
   const comBaseVal = comBase === "finance" ? finance : intTotal;
   const commission = Math.ceil(comBaseVal * (comPercent / 100));
-  const qsExtra = commission + extra;
+  const qsExtraCost = commission + extra; // Renamed to match QS table
 
   const leaseInVat = Math.ceil(financeTotalWithInterest / months);
   const leaseExVat = leaseInVat / 1.07;
@@ -465,18 +496,17 @@ function calculate() {
   document.getElementById('intPA').value = format(intPA);
   document.getElementById('intTotal').value = format(intTotal);
   document.getElementById('calculatedCommission').value = format(commission);
-  document.getElementById('qsExtra').value = format(qsExtra);
+  document.getElementById('qsExtra').value = format(qsExtraCost); // Use qsExtraCost here
   document.getElementById('leaseInVat').value = format(leaseInVat);
   document.getElementById('leaseExVat').value = format(leaseExVat);
   document.getElementById('trRate').value = isNaN(tr) ? 'ไม่สามารถคำนวณ' : format4(tr);
   document.getElementById('qsTrDep').value = isNaN(trDep) ? 'ไม่สามารถคำนวณ' : format4(trDep);
 
-  updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep);
-
+  updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep, qsExtraCost); // Pass qsExtraCost
   showDownPercent();
 }
 
-function updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep) {
+function updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep, qsExtraCost) { // Added qsExtraCost
     document.getElementById('qsCarInfo').value = carInfo;
     document.getElementById('qsCarPrice').value = format(car);
     document.getElementById('qsDiscount').value = format(discount);
@@ -489,6 +519,7 @@ function updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep) {
     const totalAmount = uncomma(document.getElementById('totalAmount').value); // ดึงค่าราคารวมทั้งหมดปัจจุบัน
     document.getElementById('qsRV').value = format4(totalAmount > 0 ? (down / totalAmount * 100) : 0) + '%';
     document.getElementById('qsTrDep').value = isNaN(trDep) ? 'ไม่สามารถคำนวณ' : format4(trDep);
+    document.getElementById('qsExtra').value = format(qsExtraCost); // Ensure this is updated correctly
 }
 
 function calculateDownForTargetLease(targetLease) {
@@ -557,7 +588,7 @@ function calculateDownForTargetLease(targetLease) {
   calculate(); // Recalculate all values based on the found down payment
 }
 
-// *** IMPORTANT: Updated generateQuotation function to save all relevant data as raw numbers where possible ***
+// Function to generate the quotation (original purpose)
 function generateQuotation() {
     calculate(); // Ensure all values are up-to-date on screen
 
@@ -568,7 +599,7 @@ function generateQuotation() {
         option: uncomma(document.getElementById('option').value),
         totalAmount: uncomma(document.getElementById('totalAmount').value),
         downAmount: uncomma(document.getElementById('downAmount').value),
-        downPercent: parseFloat(document.getElementById('downPercentDisplay').innerText.replace(/[()%]/g, '')), // Extract number
+        downPercent: parseFloat(document.getElementById('downPercentDisplay').innerText.replace(/[()%]/g, '')),
         
         interestRate: uncomma(document.getElementById('interestRate').value),
         termYears: parseInt(document.getElementById('termYears').value) || 0,
@@ -577,7 +608,7 @@ function generateQuotation() {
         comPercent: parseInt(document.getElementById('comPercent').value) || 0,
         calculatedCommission: uncomma(document.getElementById('calculatedCommission').value),
         extra: uncomma(document.getElementById('extra').value),
-        qsExtra: uncomma(document.getElementById('qsExtra').value),
+        qsExtra: uncomma(document.getElementById('qsExtra').value), // This is the qsExtraCost
 
         financeAmt: uncomma(document.getElementById('financeAmt').value),
         intPA: uncomma(document.getElementById('intPA').value),
@@ -593,17 +624,60 @@ function generateQuotation() {
         qsDiscount: uncomma(document.getElementById('qsDiscount').value),
         qsOption: uncomma(document.getElementById('qsOption').value),
         qsDownAmount: uncomma(document.getElementById('qsDownAmount').value),
-        qsDownPercent: parseFloat(document.getElementById('qsDownPercent').value.replace(/[()%]/g, '')), // Extract number
+        qsDownPercent: parseFloat(document.getElementById('qsDownPercent').value.replace(/[()%]/g, '')),
         qsTrRate: parseFloat(document.getElementById('qsTrRate').value.replace('ไม่สามารถคำนวณ', 'NaN')),
         qsTermYears: parseInt(document.getElementById('qsTermYears').value) || 0,
         qsDeposit: uncomma(document.getElementById('qsDeposit').value),
-        qsRV: parseFloat(document.getElementById('qsRV').value.replace('%', '')), // Convert to number
+        qsRV: parseFloat(document.getElementById('qsRV').value.replace('%', '')),
         qsTrDep: parseFloat(document.getElementById('qsTrDep').value.replace('ไม่สามารถคำนวณ', 'NaN')),
     };
 
+    // This quotationData should go to a general quotation display, e.g., 'quotation.html'
     localStorage.setItem('quotationData', JSON.stringify(data));
-    window.open('quotation.html', '_blank');
+    window.open('quotation.html', '_blank'); // Assuming you have a general quotation.html
 }
+
+
+// New function to send data specifically to qs_data.html
+function sendToQsData() {
+    calculate(); // Ensure all values are up-to-date on screen
+
+    const qsExtraCost = uncomma(document.getElementById('qsExtra').value); // Get the calculated QS Extra Cost
+    const downAmount = uncomma(document.getElementById('downAmount').value);
+    const totalAmount = uncomma(document.getElementById('totalAmount').value);
+    const trRateEffective = parseFloat(document.getElementById('trRate').value.replace('ไม่สามารถคำนวณ', 'NaN'));
+    const termYears = parseInt(document.getElementById('termYears').value) || 0;
+    const deposit = uncomma(document.getElementById('qsDeposit').value);
+    const rv = parseFloat(document.getElementById('qsRV').value.replace('%', ''));
+    const trDep = parseFloat(document.getElementById('qsTrDep').value.replace('ไม่สามารถคำนวณ', 'NaN'));
+    const downPercent = parseFloat(document.getElementById('downPercentDisplay').innerText.replace(/[()%]/g, ''));
+    const leaseExVat = uncomma(document.getElementById('leaseExVat').value); // เพิ่มค่านี้
+
+
+    const dataForQs = {
+        // Basic Info
+        carInfo: document.getElementById('carInfo').value,
+        carPrice: uncomma(document.getElementById('carPrice').value),
+        discount: uncomma(document.getElementById('discount').value),
+        option: uncomma(document.getElementById('option').value),
+        totalAmount: totalAmount,
+
+        // QS specific values (matching IDs from your qs_data.html)
+        qsExtraCost: qsExtraCost,
+        downAmount: downAmount, // Using the main downAmount
+        qsDownPercent: downPercent,
+        trRateEffective: trRateEffective,
+        termYears: termYears,
+        deposit: deposit,
+        rv: rv,
+        trDep: trDep,
+        leaseExVat: leaseExVat // ส่งค่านี้ไปด้วย
+    };
+
+    localStorage.setItem('qsData', JSON.stringify(dataForQs)); // Changed key to 'qsData'
+    window.open('qs_data.html', '_blank'); // Changed file to 'qs_data.html'
+}
+
 
 // Event Listeners for input fields
 function addInputListeners(id) {
