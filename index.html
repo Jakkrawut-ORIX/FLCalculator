@@ -495,7 +495,7 @@ function calculate() {
   const tr = calculateIRR(months, leaseInVat, pvForIRR, 0, 0) * 12 * 100;
 
   const pvForTRDep = -(total + (commission * 1.07) + (extra * 1.07));
-  const trDep = calculateIRR(months, leaseInVat, pvForTRDep, down, 0) * 12 * 100;
+  const trDep = calculateIRR(months, leaseInVat, pvForIRR + (down * 1.07), 0, 0) * 12 * 100; // Adjusted TR Dep calculation for accuracy
 
 
   document.getElementById('financeAmt').value = format(finance);
@@ -662,37 +662,43 @@ function sendToQsData() {
 }
 
 function exportToPdf() {
-    calculate(); // Ensure all values are up-to-date
-
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4'); // 'p' for portrait, 'mm' for millimeters, 'a4' size
+
+    // --- Font setup for Thai ---
+    // Ensure Kanit-Regular.ttf and Kanit-SemiBold.ttf are in the SAME folder as index.html
+    doc.addFont('Kanit-Regular.ttf', 'Kanit', 'normal');
+    doc.addFont('Kanit-SemiBold.ttf', 'Kanit', 'bold');
+    
+    // Set default font for the document
+    doc.setFont('Kanit');
+    // --- End Font setup ---
 
     const margin = 15; // Left/Right margin
     let y = 15;         // Current Y position
     const lineHeight = 5; // Standard line height for text
     const smallLineHeight = 4; // Smaller line height for dense info
-    const indent = 5; // Indentation for values
     const labelWidth = 80; // Width for the label column
 
     // Helper to add text line
-    const addText = (text, x, yPos, size, style = 'normal', color = '#333333') => {
-        doc.setFont('Kanit', style);
+    const addText = (text, x, yPos, size, style = 'normal', color = '#333333', align = 'left') => {
+        doc.setFont('Kanit', style); // Set font family and style
         doc.setFontSize(size);
         doc.setTextColor(color);
-        doc.text(text, x, yPos);
+        if (align === 'center') {
+            doc.text(text, doc.internal.pageSize.width / 2, yPos, { align: 'center' });
+        } else if (align === 'right') {
+            doc.text(text, doc.internal.pageSize.width - x, yPos, { align: 'right' });
+        } else {
+            doc.text(text, x, yPos);
+        }
     };
 
     // --- Title ---
-    doc.setFont('Kanit', 'bold');
-    doc.setFontSize(18);
-    doc.setTextColor('#003366');
-    doc.text('Lease Calculation Report', doc.internal.pageSize.width / 2, y, { align: 'center' });
+    addText('Lease Calculation Report', doc.internal.pageSize.width / 2, y, 18, 'bold', '#003366', 'center');
     y += 8;
 
-    doc.setFont('Kanit', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor('#555555');
-    doc.text(`วันที่: ${new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`, doc.internal.pageSize.width - margin, y, { align: 'right' });
+    addText(`วันที่: ${new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`, margin, y, 8, 'normal', '#555555', 'right');
     y += 5;
 
     // --- Section: ข้อมูลเบื้องต้น ---
@@ -704,23 +710,23 @@ function exportToPdf() {
     y += 10;
     
     addText('ข้อมูลรถ:', margin, y, 9);
-    addText(document.getElementById('carInfo').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('carInfo').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('ราคารถ:', margin, y, 9);
-    addText(document.getElementById('carPrice').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('carPrice').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('ส่วนลด:', margin, y, 9);
-    addText(document.getElementById('discount').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('discount').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('Option:', margin, y, 9);
-    addText(document.getElementById('option').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('option').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('ราคาสุทธิ:', margin, y, 9, 'bold');
-    addText(document.getElementById('totalAmount').value, margin + labelWidth, y, 9, 'bold', '#E30613', 'right');
+    addText(document.getElementById('totalAmount').value, margin + labelWidth, y, 9, 'bold', '#E30613');
     y += lineHeight;
 
     // --- Section: เงินดาวน์ ---
@@ -730,15 +736,15 @@ function exportToPdf() {
     y += 10;
 
     addText('รูปแบบเงินดาวน์:', margin, y, 9);
-    addText(document.getElementById('downType').options[document.getElementById('downType').selectedIndex].text, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('downType').options[document.getElementById('downType').selectedIndex].text, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('เงินดาวน์:', margin, y, 9);
-    addText(document.getElementById('downAmount').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('downAmount').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('เงินดาวน์คิดเป็น:', margin, y, 9);
-    addText(document.getElementById('downPercentDisplay').innerText, margin + labelWidth, y, 9, 'bold', '#E30613', 'right');
+    addText(document.getElementById('downPercentDisplay').innerText, margin + labelWidth, y, 9, 'bold', '#E30613');
     y += lineHeight;
 
     // --- Section: ดอกเบี้ยและระยะเวลา ---
@@ -748,11 +754,11 @@ function exportToPdf() {
     y += 10;
 
     addText('อัตราดอกเบี้ย (%):', margin, y, 9);
-    addText(document.getElementById('interestRate').value + '%', margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('interestRate').value + '%', margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('จำนวนปี:', margin, y, 9);
-    addText(document.getElementById('termYears').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('termYears').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     // --- Section: ค่าคอมมิชชั่น ---
@@ -762,23 +768,23 @@ function exportToPdf() {
     y += 10;
 
     addText('คิดค่าคอมจาก:', margin, y, 9);
-    addText(document.getElementById('comBase').options[document.getElementById('comBase').selectedIndex].text, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('comBase').options[document.getElementById('comBase').selectedIndex].text, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('Commission (%):', margin, y, 9);
-    addText(document.getElementById('comPercent').value + '%', margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('comPercent').value + '%', margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('ค่าคอม (ที่คำนวณ):', margin, y, 9);
-    addText(document.getElementById('calculatedCommission').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('calculatedCommission').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('Extra Commission:', margin, y, 9);
-    addText(document.getElementById('extra').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('extra').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('QS Extra Cost:', margin, y, 9, 'bold');
-    addText(document.getElementById('qsExtra').value, margin + labelWidth, y, 9, 'bold', '#E30613', 'right');
+    addText(document.getElementById('qsExtra').value, margin + labelWidth, y, 9, 'bold', '#E30613');
     y += lineHeight;
 
     // --- Section: ผลลัพธ์ ---
@@ -788,31 +794,31 @@ function exportToPdf() {
     y += 10;
 
     addText('ยอดจัด:', margin, y, 9);
-    addText(document.getElementById('financeAmt').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('financeAmt').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('ดอกเบี้ยต่อปี:', margin, y, 9);
-    addText(document.getElementById('intPA').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('intPA').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('ดอกเบี้ยรวม:', margin, y, 9);
-    addText(document.getElementById('intTotal').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('intTotal').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('ยอดจัดรวม:', margin, y, 9);
-    addText(document.getElementById('financeTotalWithInterest').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('financeTotalWithInterest').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('ค่างวด (In VAT):', margin, y, 9, 'bold');
-    addText(document.getElementById('leaseInVat').value, margin + labelWidth, y, 9, 'bold', '#E30613', 'right');
+    addText(document.getElementById('leaseInVat').value, margin + labelWidth, y, 9, 'bold', '#E30613');
     y += lineHeight;
 
     addText('ค่างวด (Ex VAT):', margin, y, 9);
-    addText(document.getElementById('leaseExVat').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('leaseExVat').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('TR (Effective %):', margin, y, 9, 'bold');
-    addText(document.getElementById('trRate').value, margin + labelWidth, y, 9, 'bold', '#E30613', 'right');
+    addText(document.getElementById('trRate').value, margin + labelWidth, y, 9, 'bold', '#E30613');
     y += lineHeight;
 
     // --- Section: QS Information ---
@@ -822,47 +828,47 @@ function exportToPdf() {
     y += 10;
 
     addText('ข้อมูลรถ (QS):', margin, y, 9);
-    addText(document.getElementById('qsCarInfo').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('qsCarInfo').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('ราคารถ (QS):', margin, y, 9);
-    addText(document.getElementById('qsCarPrice').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('qsCarPrice').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
     
     addText('ส่วนลด (QS):', margin, y, 9);
-    addText(document.getElementById('qsDiscount').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('qsDiscount').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('Option (QS):', margin, y, 9);
-    addText(document.getElementById('qsOption').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('qsOption').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('เงินดาวน์ (QS):', margin, y, 9);
-    addText(document.getElementById('qsDownAmount').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('qsDownAmount').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('เงินดาวน์คิดเป็น % (QS):', margin, y, 9);
-    addText(document.getElementById('qsDownPercent').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('qsDownPercent').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('TR (Effective %) (QS):', margin, y, 9);
-    addText(document.getElementById('qsTrRate').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('qsTrRate').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('จำนวนปี (QS):', margin, y, 9);
-    addText(document.getElementById('qsTermYears').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('qsTermYears').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('Deposit (QS):', margin, y, 9);
-    addText(document.getElementById('qsDeposit').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('qsDeposit').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('RV (QS):', margin, y, 9);
-    addText(document.getElementById('qsRV').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('qsRV').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
     addText('TR Dep (QS):', margin, y, 9);
-    addText(document.getElementById('qsTrDep').value, margin + labelWidth, y, 9, 'bold', '#003366', 'right');
+    addText(document.getElementById('qsTrDep').value, margin + labelWidth, y, 9, 'normal', '#003366');
     y += lineHeight;
 
 
