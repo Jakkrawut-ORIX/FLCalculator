@@ -430,7 +430,6 @@ function calculate() {
       document.getElementById('leaseExVat').value = format(0);
       document.getElementById('trRate').value = 'ไม่สามารถคำนวณ';
       document.getElementById('qsTrDep').value = 'ไม่สามารถคำนวณ';
-      // *** เปลี่ยนลำดับ: เรียก showDownPercent ก่อน updateQsInfo ***
       showDownPercent();
       updateQsInfo(carInfo, car, discount, option, down, years, 0, 0);
       return;
@@ -472,9 +471,9 @@ function calculate() {
   document.getElementById('trRate').value = isNaN(tr) ? 'ไม่สามารถคำนวณ' : format4(tr);
   document.getElementById('qsTrDep').value = isNaN(trDep) ? 'ไม่สามารถคำนวณ' : format4(trDep);
 
-  // *** เปลี่ยนลำดับ: เรียก showDownPercent ก่อน updateQsInfo ***
-  showDownPercent(); // อัปเดต qsDownPercent ก่อน
-  updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep); // แล้วค่อยให้ updateQsInfo ดึงค่าไปใช้
+  updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep);
+
+  showDownPercent();
 }
 
 function updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep) {
@@ -486,11 +485,7 @@ function updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep) {
     document.getElementById('qsTrRate').value = isNaN(tr) ? 'ไม่สามารถคำนวณ' : format4(tr);
     document.getElementById('qsTermYears').value = years;
     document.getElementById('qsDeposit').value = format(down / 1.07);
-
-    // ดึงค่าเปอร์เซ็นต์เงินดาวน์ที่คำนวณไว้แล้วจาก input 'qsDownPercent'
-    const downPercentValue = document.getElementById('qsDownPercent').value;
-    document.getElementById('qsRV').value = downPercentValue; // กำหนดค่านี้ให้กับ 'qsRV'
-
+    document.getElementById('qsRV').value = format4(car > 0 ? (down / car * 100) : 0) + '%';
     document.getElementById('qsTrDep').value = isNaN(trDep) ? 'ไม่สามารถคำนวณ' : format4(trDep);
 }
 
@@ -616,8 +611,8 @@ function addInputListeners(id) {
   } else { // All other number/percent inputs
       el.addEventListener('focus', () => {
           let currentVal = uncomma(el.value);
-          // เคลียร์ช่องถ้าค่าเป็น 0 หรือใกล้ 0 มากๆ
-          if (Math.abs(currentVal) < 0.001) {
+          // *** แก้ไขตรงนี้ ***: เคลียร์ช่องถ้าค่าเป็น 0 หรือใกล้ 0 มากๆ
+          if (Math.abs(currentVal) < 0.001) { // Changed condition from `currentVal !== 0`
               el.value = ''; // Clear if value is effectively zero
           } else {
               el.value = String(currentVal); // Remove commas for editing
