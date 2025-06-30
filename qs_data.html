@@ -9,51 +9,51 @@
         body {
             font-family: 'Kanit', sans-serif;
             margin: 0;
-            padding: 15px; /* Reduced padding */
+            padding: 15px;
             background-color: #f4f7f6;
             color: #333;
-            line-height: 1.5; /* Slightly reduced line height */
-            font-size: 0.95em; /* Slightly smaller base font size */
+            line-height: 1.5;
+            font-size: 0.95em;
         }
         .container {
-            max-width: 650px; /* Slightly reduced max-width */
-            margin: 15px auto; /* Reduced margin */
+            max-width: 650px;
+            margin: 15px auto;
             background-color: #ffffff;
-            padding: 25px; /* Reduced padding */
+            padding: 25px;
             border-radius: 10px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1); /* Softer shadow */
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
             border: 1px solid #e0e6eb;
         }
         h1 {
             color: #003366;
             text-align: center;
-            margin-bottom: 20px; /* Reduced margin */
-            font-size: 2.2em; /* Slightly reduced font size */
+            margin-bottom: 20px;
+            font-size: 2.2em;
             font-weight: 600;
         }
         h2 {
             color: #003366;
-            margin-top: 25px; /* Reduced margin */
-            margin-bottom: 12px; /* Reduced margin */
-            font-size: 1.6em; /* Slightly reduced font size */
-            border-bottom: 1px solid #003366; /* Thinner border */
-            padding-bottom: 6px; /* Reduced padding */
+            margin-top: 25px;
+            margin-bottom: 12px;
+            font-size: 1.6em;
+            border-bottom: 1px solid #003366;
+            padding-bottom: 6px;
         }
         table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 0 6px; /* Reduced space between rows */
-            margin-bottom: 15px; /* Reduced margin */
+            border-spacing: 0 6px;
+            margin-bottom: 15px;
         }
         td {
-            padding: 8px 0; /* Reduced padding */
+            padding: 8px 0;
             vertical-align: top;
-            font-size: 1em; /* Reduced font size */
+            font-size: 1em;
             border-bottom: 1px dashed #cfd8dc;
         }
         td:first-child {
             font-weight: 600;
-            width: 50%; /* Adjusted width for better balance */
+            width: 50%;
             color: #555;
         }
         td:last-child {
@@ -62,38 +62,40 @@
             color: #003366;
         }
         .note {
-            background-color: #fff8e1; /* Lighter warning background */
-            border-left: 4px solid #ffc107; /* Thinner border */
-            padding: 12px; /* Reduced padding */
-            margin-top: 25px; /* Reduced margin */
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin-top: 25px;
             border-radius: 8px;
             color: #856404;
-            font-size: 0.9em; /* Smaller font size for notes */
+            font-size: 0.9em;
         }
         .note ul {
             margin-bottom: 0;
-            padding-left: 18px; /* Slightly reduced padding */
+            padding-left: 18px;
         }
         .note li {
-            margin-bottom: 5px; /* Space between list items */
+            margin-bottom: 5px;
         }
         .back-button-container {
             text-align: center;
-            margin-top: 25px; /* Reduced margin */
+            margin-top: 25px;
         }
         .back-button {
-            padding: 10px 20px; /* Reduced padding */
+            padding: 10px 20px;
             background-color: #6c757d;
             color: white;
             border: none;
             border-radius: 7px;
             cursor: pointer;
-            font-size: 1em; /* Reduced font size */
+            font-size: 1em;
             transition: background-color 0.3s ease;
         }
         .back-button:hover {
             background-color: #5a6268;
         }
+
+        /* --- Responsive Adjustments for Mobile --- */
         @media (max-width: 768px) {
             body {
                 padding: 8px;
@@ -101,51 +103,64 @@
             }
             .container {
                 margin: 8px auto;
-                padding: 18px;
+                padding: 15px; /* Slightly reduced padding for smaller screens */
             }
             h1 {
                 font-size: 1.8em;
+                margin-bottom: 15px;
             }
             h2 {
-                font-size: 1.3em;
+                font-size: 1.4em;
+                margin-top: 20px;
+                margin-bottom: 10px;
             }
-            
-            /* --- Responsive Table Adjustments --- */
+
             table {
-                border-spacing: 0; /* Remove space between rows for stacking */
-                margin-bottom: 12px;
+                border-collapse: collapse; /* Ensure no spacing issues */
+                border-spacing: 0;
+                margin-bottom: 15px;
             }
+
+            /* Make each table row a distinct block */
             table tr {
-                display: block; /* Make each table row behave as a block element */
-                margin-bottom: 12px; /* Add space between stacked rows */
-                padding: 8px; /* Add padding to the block row */
-                border: 1px solid #e0e6eb; /* Add a subtle border to separate rows visually */
-                border-radius: 6px;
-                background-color: #fcfcfc; /* Light background for each row block */
+                display: flex; /* Use flexbox to control stacking */
+                flex-direction: column; /* Stack children vertically */
+                margin-bottom: 12px; /* Space between each 'row block' */
+                padding: 10px 15px; /* Padding inside each 'row block' */
+                border: 1px solid #e0e6eb;
+                border-radius: 8px;
+                background-color: #ffffff; /* Keep white background for rows */
+                box-shadow: 0 1px 4px rgba(0,0,0,0.05); /* Subtle shadow for definition */
             }
+
+            /* Style table cells when stacked */
             td {
-                display: block; /* Make table cells stack vertically */
-                padding: 4px 0; /* Adjust padding for stacked cells */
-                border-bottom: none; /* Remove dashed border when cells are stacked */
+                display: block; /* Ensure each cell takes full width */
+                width: 100%; /* Force full width */
+                padding: 4px 0; /* Adjust padding for stacked items */
+                border-bottom: none; /* Remove horizontal line within the stacked 'row block' */
             }
+
             td:first-child {
-                width: auto; /* Remove fixed width, allow it to take necessary space */
-                font-weight: 600; /* Keep bold for label */
-                color: #003366; /* Use ORIX blue for labels for clarity */
-                padding-bottom: 2px; /* Small space between label and value when stacked */
+                font-weight: 600; /* Keep label bold */
+                color: #003366; /* Make labels stand out in ORIX blue */
+                font-size: 0.95em; /* Slightly smaller label font */
+                margin-bottom: 2px; /* Space between label and value */
             }
+
             td:last-child {
-                text-align: left; /* Align values to the left when stacked */
-                font-weight: normal; /* Adjust value font weight if desired */
-                color: #333; /* Use default text color, or a highlight color if preferred */
+                text-align: left; /* Align value to the left */
+                font-weight: bold; /* Keep value bold for clarity */
+                color: #333; /* Use a clear dark color for the value */
+                font-size: 1em; /* Value slightly larger than label */
             }
-            /* --- End Responsive Table Adjustments --- */
 
             .note {
                 font-size: 0.85em;
                 padding: 10px;
             }
         }
+        /* --- End Responsive Adjustments --- */
     </style>
 </head>
 <body>
@@ -166,7 +181,8 @@
     <table>
         <tr><td>QS Extra Cost</td><td id="displayQsExtraCost"></td></tr>
         <tr><td>จำนวนปี</td><td id="displayQsTermYears"></td></tr>
-        <tr><td>ค่างวด (Ex VAT)</td><td id="displayLeaseExVat"></td></tr> </table>
+        <tr><td>ค่างวด (Ex VAT)</td><td id="displayLeaseExVat"></td></tr>
+    </table>
 
     <h2>ข้อมูลสำหรับใบ Down</h2>
     <table>
