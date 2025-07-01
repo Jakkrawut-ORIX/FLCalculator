@@ -214,80 +214,79 @@
     /* Responsive adjustments for smaller screens (e.g., mobile phones) */
     @media screen and (max-width: 768px) {
       body {
-        padding: 4px; /* Even less body padding */
-        font-size: 0.88em; /* Slightly smaller base font */
+        padding: 4px;
+        font-size: 0.9em; /* Adjusted for better fit */
       }
       .container {
-        margin: 4px; /* Even less container margin */
-        padding: 8px; /* Even less container padding */
+        margin: 4px;
+        padding: 10px;
       }
 
       h1 {
-        font-size: 1.5em; /* Smaller h1 */
-        margin-bottom: 10px;
+        font-size: 1.6em;
+        margin-bottom: 12px;
       }
 
       h2 {
-        font-size: 1.25em; /* Smaller h2 */
-        margin-top: 12px; /* Reduced h2 margin-top */
-        margin-bottom: 4px; /* Very tight h2 margin-bottom */
+        font-size: 1.3em;
+        margin-top: 15px;
+        margin-bottom: 5px;
         padding-bottom: 0;
       }
 
       table {
-        margin-bottom: 6px; /* Reduced table margin-bottom */
-        border-spacing: 0 2px; /* Very tight row spacing */
+        margin-bottom: 6px;
       }
 
+      /* Core change: Make table rows flex containers */
+      table tr {
+        display: flex;
+        align-items: center; /* Vertically align label and input */
+        margin-bottom: 6px;
+        flex-wrap: wrap; /* Allows wrapping if needed, though unlikely with this setup */
+      }
+      
+      /* Remove block display and set specific widths */
       td {
-        padding: 3px 0; /* Very tight cell padding */
-        display: block;
-        width: 100%;
-        text-align: left;
+        padding: 3px 0;
+        border-bottom: none;
       }
 
       td.label {
-        width: 100%;
-        margin-bottom: 0px;
-        padding-left: 5px;
+        width: 40%; /* Allocate 40% width to the label */
+        padding-right: 8px; /* Add space between label and input */
         box-sizing: border-box;
+        font-weight: 600;
+        text-align: left;
       }
 
       td.value {
-        width: 100%;
-        padding-right: 5px;
+        width: 60%; /* Allocate 60% width to the value/input field */
         box-sizing: border-box;
       }
 
       td.value input:not([readonly]),
       td.value select,
       td.value input[readonly] {
-        font-size: 0.9em;
-        padding: 5px 8px; /* Reduced input padding */
-      }
-
-      td {
-        border-bottom: none;
+        font-size: 1em; /* Keep font size consistent with body */
+        padding: 6px 8px;
+        width: 100%; /* Make input fill its container (td.value) */
       }
       
-      table tr {
-        margin-bottom: 6px; /* Very tight spacing between row groups */
-        padding-bottom: 0;
-      }
       table tr:last-child {
         border-bottom: none;
       }
 
       .button-group {
         flex-direction: column;
-        gap: 6px; /* Very tight button gap */
-        margin-top: 12px; /* Reduced button group margin-top */
+        gap: 8px;
+        margin-top: 15px;
       }
       .button-group button {
         width: 100%;
         min-width: unset;
-        padding: 10px; /* Reduced button padding */
-        font-size: 0.95em; /* Reduced button font size */
+        padding: 12px;
+        font-size: 1em;
       }
     }
   </style>
