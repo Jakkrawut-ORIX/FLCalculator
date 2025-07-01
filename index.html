@@ -554,6 +554,8 @@ function calculateDownForTargetLease(targetLease) {
   const discount = getVal('discount');
   const option = getVal('option');
   const total = car - discount + option;
+  document.getElementById('totalAmount').value = format(total); // เพื่อให้แน่ใจว่าค่า totalAmount ถูกอัปเดตก่อนใช้งาน
+
   const rate = getVal('interestRate');
   const years = getIntVal('termYears');
   const months = years * 12;
@@ -577,7 +579,8 @@ function calculateDownForTargetLease(targetLease) {
 
   for (let i = 0; i < maxIter; i++) {
     // Calculate currentDown, ensuring it's an integer for the down payment
-    const currentDown = Math.round((low + high) / 2); // Use Math.round to get an integer
+    // เปลี่ยนจาก Math.round เป็น Math.ceil เพื่อปัดเงินดาวน์ขึ้นเสมอ
+    const currentDown = Math.ceil((low + high) / 2); 
 
     if (currentDown < 0) currentDown = 0;
     if (currentDown > total) currentDown = total;
