@@ -35,27 +35,32 @@
     }
     .header {
       display: flex;
-      justify-content: flex-end; /* ข้อมูลบริษัทชิดขวาสุด */
-      align-items: center;
+      justify-content: space-between; /* โลโก้ซ้ายสุด, ข้อมูลบริษัทขวาสุด */
+      align-items: center; /* จัดกึ่งกลางในแนวตั้งระหว่างโลโก้กับข้อมูลบริษัท */
       flex-wrap: wrap;
+      border-bottom: 2px solid var(--orix-logo-blue);
       padding-bottom: 10px;
       margin-bottom: 15px;
+    }
+    .logo img {
+      max-width: 75px; /* ลดขนาดโลโก้ลงอีก */
+      height: auto;
     }
     .company-info {
       text-align: right;
       color: var(--orix-mid-grey);
-      line-height: 1.1;
-      margin-top: 0;
+      line-height: 1.1; /* ทำให้ระยะห่างระหว่างบรรทัดของที่อยู่กระชับขึ้น */
+      margin-top: 0; /* ลบ margin-top เพราะ align-items: center จะจัดการให้ */
     }
     .company-info p {
-        margin: 0;
-        white-space: nowrap;
-        font-size: 7pt;
+        margin: 0; /* ลบ margin เริ่มต้นของ p เพื่อให้ชิดกัน */
+        white-space: nowrap; /* ป้องกันไม่ให้ข้อความขึ้นบรรทัดใหม่โดยไม่จำเป็น */
+        font-size: 7pt; /* ลดขนาดที่อยู่และเบอร์โทรศัพท์ลง 2pt จาก 9pt เดิม */
     }
     .company-info p .company-name {
-        font-size: 9pt;
-        font-weight: 600;
-        white-space: normal;
+        font-size: 9pt; /* ให้ชื่อบริษัทใหญ่เท่าเดิม */
+        font-weight: 600; /* เพิ่มความหนาให้ชื่อบริษัทโดดเด่นขึ้น */
+        white-space: normal; /* อนุญาตให้ชื่อบริษัทขึ้นบรรทัดใหม่ได้ หากยาวเกินไป */
     }
     h1 {
       text-align: center;
@@ -175,7 +180,7 @@
       }
       .header {
         flex-direction: row; 
-        justify-content: flex-end; 
+        justify-content: space-between; /* โลโก้ซ้ายสุด, ข้อมูลบริษัทขวาสุด */
         align-items: center; 
         padding-bottom: 5px;
         margin-bottom: 10px;
@@ -298,8 +303,8 @@
         padding-bottom: 5mm;
         align-items: center; 
       }
-      .logo {
-          display: none; 
+      .logo img {
+        max-width: 65px; /* ปรับขนาดโลโก้ให้เหมาะสมกับการพิมพ์ */
       }
       .company-info {
           text-align: right; 
@@ -342,8 +347,16 @@
 <body>
   <div class="quotation-container">
     <div class="header">
+      <div class="logo">
+        <img src="orix_logo.png" alt="ORIX Logo" />
+      </div>
       <div class="company-info">
-        </div>
+        <p><span class="company-name">บริษัท ไทยโอริกซ์ลีสซิ่ง จำกัด</span></p>
+        <p>555 รสา วัน (อาคาร บี) ยูนิต 1801 ชั้น 18 และ ชั้น 19</p>
+        <p>ถนนพหลโยธิน แขวงจตุจักร เขตจตุจักร</p>
+        <p>กรุงเทพฯ 10900</p>
+        <p>โทรศัพท์: 66(0) 2792-4500</p>
+      </div>
     </div>
 
     <h1>ใบเสนอราคาเบื้องต้น</h1>
@@ -408,7 +421,7 @@
     function loadPayload() {
       if (location.hash.startsWith('#data=')) {
         try {
-            return JSON.parse(atob(decodeURIComponent(location.hash.slice(6))));
+            return JSON.parse(atob(decodeURIComponent(location.hash.slice(6)));
         } catch (e) {
             console.error("Error decoding URL hash:", e);
         }
