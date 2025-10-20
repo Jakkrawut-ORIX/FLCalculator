@@ -18,25 +18,33 @@
       --input-bg-editable: #FFFFF0; 
       --input-bg-readonly: #EAEFF3; 
       --highlight-text-color: var(--orix-logo-blue); 
+
+      /* NEW: Button Gradient Start/End Colors */
+      --btn-blue-start: #004080;
+      --btn-blue-end: #00264d;
+      --btn-red-start: #FF3B49;
+      --btn-red-end: #B0050D;
+      --btn-secondary-start: #4A73A2;
+      --btn-secondary-end: #375F8A;
     }
 
     body {
       font-family: 'Kanit', sans-serif;
       margin: 0; 
-      padding: 2px; /* ลด padding รอบนอกให้เหลือแค่ 2px */
+      padding: 2px; 
       background: var(--orix-light-grey);
       color: var(--orix-dark-grey);
-      line-height: 1.4; /* ลด line-height */
-      font-size: 0.9em; /* ลดขนาดฟอนต์เริ่มต้น */
+      line-height: 1.4; 
+      font-size: 0.9em; 
     }
 
     .container {
       width: 100%; 
-      margin: 5px auto; /* ลด margin บน/ล่าง */
+      margin: 5px auto; 
       background: var(--orix-white);
-      padding: 10px; /* ลด padding ภายใน */
-      border-radius: 6px; /* ลดความโค้งมน */
-      box-shadow: 0 3px 10px rgba(0, 51, 102, 0.1); /* ลดขนาดเงา */
+      padding: 10px; 
+      border-radius: 6px; 
+      box-shadow: 0 3px 10px rgba(0, 51, 102, 0.1); 
       transition: box-shadow 0.3s ease;
       box-sizing: border-box; 
     }
@@ -48,18 +56,18 @@
     h1 {
       text-align: center;
       color: var(--orix-logo-blue);
-      margin-bottom: 15px; /* ลด margin */
-      font-size: 1.5em; /* ลดขนาด H1 */
+      margin-bottom: 15px; 
+      font-size: 1.5em; 
       font-weight: 700;
     }
 
     h2 {
       margin-top: 15px; 
-      margin-bottom: 5px; /* ลด margin */
+      margin-bottom: 5px; 
       color: var(--orix-logo-blue);
-      font-size: 1.2em; /* ลดขนาด H2 */
+      font-size: 1.2em; 
       font-weight: 600;
-      border-left: 4px solid var(--orix-logo-blue); /* ลดขนาดเส้นคั่น */
+      border-left: 4px solid var(--orix-logo-blue); 
       padding-left: 6px; 
     }
 
@@ -68,11 +76,10 @@
     /* ---------------------------------------------------- */
     .data-section {
         display: grid;
-        /* **สำคัญ:** ปรับเป็น 2 คอลัมน์สำหรับมือถือ: Label 45%, Input 55% */
         grid-template-columns: 45% 55%; 
-        gap: 5px 8px; /* ลดระยะห่าง */
+        gap: 5px 8px; 
         align-items: center;
-        padding: 5px 0; /* ลด padding */
+        padding: 5px 0; 
         border-bottom: 1px solid var(--orix-light-grey);
     }
     
@@ -81,10 +88,10 @@
     }
 
     .data-label {
-      font-weight: 500; /* ลดความหนาของ Label */
+      font-weight: 500; 
       color: var(--orix-dark-grey);
-      margin-bottom: 0; /* ไม่มี margin ด้านล่าง เพราะอยู่บรรทัดเดียวกัน */
-      font-size: 0.95em; /* ลดขนาดฟอนต์ Label */
+      margin-bottom: 0; 
+      font-size: 0.95em; 
     }
 
     .data-value {
@@ -94,15 +101,15 @@
     .data-value input:not([readonly]),
     .data-value select {
       width: 100%;
-      padding: 6px 8px; /* ลด padding ใน Input */
+      padding: 6px 8px; 
       border: 1px solid var(--orix-border-color);
-      border-radius: 4px; /* ลดความโค้งมน */
+      border-radius: 4px; 
       background: var(--input-bg-editable);
       color: var(--orix-dark-grey);
       box-sizing: border-box;
       text-align: right;
-      font-size: 0.95em; /* ลดขนาดฟอนต์ Input */
-      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05); /* ลดขนาดเงาจม */
+      font-size: 0.95em; 
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05); 
     }
     
     .data-value input#carInfo {
@@ -126,7 +133,7 @@
       font-weight: bold;
       color: var(--highlight-text-color);
       font-size: 0.95em;
-      padding-left: 8px; /* ลด padding */
+      padding-left: 8px; 
     }
 
     /* ---------------------------------------------------- */
@@ -134,27 +141,74 @@
     /* ---------------------------------------------------- */
     .button-group {
         display: grid;
-        grid-template-columns: repeat(2, 1fr); /* ปุ่ม 2 คอลัมน์บนมือถือ */
-        gap: 8px; /* ลดระยะห่าง */
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 8px; 
         margin-top: 15px; 
     }
 
     .button-group button {
-      padding: 10px 12px; /* ลดขนาดปุ่ม */
+      padding: 10px 12px; 
       font-size: 0.9em; 
+      color: var(--orix-white);
+      border: none;
       border-radius: 4px; 
+      cursor: pointer;
+      transition: all 0.3s ease;
       font-weight: 600;
+      /* NEW: เพิ่มเงาให้ตัวอักษรเพื่อความคมชัด */
+      text-shadow: 0 1px 2px rgba(0,0,0,0.25); 
     }
 
-    /* ... (Button specific colors remain the same) ... */
+    /* ORIX Brand Colors for Buttons - IMPROVED */
+    .button-group button:nth-of-type(1) { /* คำนวณ - ORIX Blue */
+      /* NEW: Linear Gradient ที่ดูมีมิติมากขึ้น */
+      background: linear-gradient(145deg, var(--btn-blue-start), var(--orix-logo-blue));
+      /* NEW: เงาที่ชัดเจนขึ้น */
+      box-shadow: 0 4px 12px rgba(0, 51, 102, 0.35); 
+    }
+    .button-group button:nth-of-type(1):hover {
+      background: linear-gradient(145deg, var(--orix-logo-blue), var(--btn-blue-end));
+      /* NEW: ยกปุ่มขึ้นเล็กน้อย */
+      transform: translateY(-2px); 
+      /* NEW: เงาที่เด่นชัดขึ้นเมื่อ Hover */
+      box-shadow: 0 8px 18px rgba(0, 51, 102, 0.45);
+    }
+
+    .button-group button:nth-of-type(2) { /* ค่างวด 36,000 - ORIX Red */
+      background: linear-gradient(145deg, var(--btn-red-start), var(--orix-logo-red));
+      box-shadow: 0 4px 12px rgba(227, 6, 19, 0.35); 
+    }
+    .button-group button:nth-of-type(2):hover {
+      background: linear-gradient(145deg, var(--orix-logo-red), var(--btn-red-end));
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(227, 6, 19, 0.45);
+    }
     
+    .button-group button:nth-of-type(3), 
+    .button-group button:nth-of-type(4) { /* ใบเสนอราคา & QS Data - Secondary Blue */
+        background: linear-gradient(145deg, var(--btn-secondary-start), var(--btn-secondary-end));
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+    .button-group button:nth-of-type(3):hover, 
+    .button-group button:nth-of-type(4):hover {
+        background: linear-gradient(145deg, var(--btn-secondary-end), #2C4B6E);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .button-group button:active {
+      /* NEW: เมื่อถูกกด ให้ปุ่มยุบลงเล็กน้อย */
+      transform: translateY(0);
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); 
+    }
+
     /* ---------------------------------------------------- */
     /* ** Desktop/Tablet Adjustments (Min-Width) ** */
     /* ---------------------------------------------------- */
     @media screen and (min-width: 601px) {
       body {
           padding: 10px; 
-          font-size: 1.05em; /* เพิ่มขนาดฟอนต์กลับไปสำหรับจอใหญ่ */
+          font-size: 1.05em; 
       }
       
       .container {
@@ -179,7 +233,6 @@
       }
       
       .data-section {
-        /* บนจอใหญ่ (601px ขึ้นไป) ใช้ 2 คอลัมน์แบบเดิมที่ใหญ่กว่า */
         grid-template-columns: 40% 60%; 
         gap: 8px 15px;
         padding: 10px 0;
@@ -205,7 +258,6 @@
       }
 
       .button-group {
-        /* บนจอใหญ่ให้ปุ่มเรียงเป็นแถวหลายคอลัมน์ */
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
         gap: 15px;
         margin-top: 30px;
@@ -217,14 +269,6 @@
         border-radius: 8px;
       }
     }
-    /* Button specific colors (ซ้ำไว้เพื่อให้โค้ดสมบูรณ์ในตัวเอง) */
-    .button-group button:nth-of-type(1) {background: linear-gradient(145deg, #004080, var(--orix-logo-blue));box-shadow: 0 3px 10px rgba(0, 51, 102, 0.3);}
-    .button-group button:nth-of-type(1):hover {background: linear-gradient(145deg, var(--orix-logo-blue), #00264d);transform: translateY(-2px);box-shadow: 0 6px 15px rgba(0, 51, 102, 0.4);}
-    .button-group button:nth-of-type(2) {background: linear-gradient(145deg, #FF3B49, var(--orix-logo-red));box-shadow: 0 3px 10px rgba(227, 6, 19, 0.3);}
-    .button-group button:nth-of-type(2):hover {background: linear-gradient(145deg, var(--orix-logo-red), #B0050D);transform: translateY(-2px);box-shadow: 0 6px 15px rgba(227, 6, 19, 0.4);}
-    .button-group button:nth-of-type(3), .button-group button:nth-of-type(4) {background: linear-gradient(145deg, #4A73A2, #375F8A);box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);}
-    .button-group button:nth-of-type(3):hover, .button-group button:nth-of-type(4):hover {background: linear-gradient(145deg, #375F8A, #2C4B6E);transform: translateY(-1px);box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);}
-    .button-group button:active {transform: translateY(0);box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);}
   </style>
 </head>
 <body>
@@ -312,7 +356,6 @@
 // Helper functions for number formatting
 function format(n, decimals = 2) {
   if (isNaN(n) || n === null) return "0.00";
-  // Use Intl.NumberFormat for robust formatting with commas
   return new Intl.NumberFormat('en-US', {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals
@@ -332,7 +375,6 @@ function format4(n) {
 }
 
 function uncomma(s) {
-  // Handles both comma-formatted and non-formatted numbers, returns 0 if invalid
   const cleaned = String(s).replace(/,/g, '');
   const num = parseFloat(cleaned);
   return isNaN(num) ? 0 : num;
