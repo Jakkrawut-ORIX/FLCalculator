@@ -2,12 +2,12 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>ORIX Financial Lease Calculator — Split Sections</title>
+  <title>ORIX Financial Lease Calculator — Balloon Toggle</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- Google Font: Noto Sans Thai -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
+  https://fonts.googleapis.com
+  https://fonts.gstatic.com
+  https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap
   <style>
     :root {
       /* ORIX Minimal palette */
@@ -99,9 +99,7 @@
     /* Rows */
     .row { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
     .row.two { grid-template-columns: 1fr; }
-    @media (min-width: 900px) {
-      .row.two { grid-template-columns: 1fr 1fr; }
-    }
+    @media (min-width: 900px) { .row.two { grid-template-columns: 1fr 1fr; } }
 
     /* Section + Fields */
     .section { border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
@@ -186,7 +184,7 @@
 
   <main>
 
-    <!-- Row 1: ข้อมูลเบื้องต้น (เต็มความกว้าง) -->
+    <!-- Row 1: ข้อมูลเบื้องต้น -->
     <div class="row">
       <section class="card">
         <div class="card-head"><h2>ข้อมูลเบื้องต้น</h2></div>
@@ -217,7 +215,7 @@
       </section>
     </div>
 
-    <!-- Row 2: ซ้าย = เงินดาวน์ | บอลลูน  |  ขวา = ดอกเบี้ย | ค่าคอม -->
+    <!-- Row 2: ซ้าย = เงินดาวน์ | บอลลูน , ขวา = ดอกเบี้ย | ค่าคอม -->
     <div class="row two">
 
       <!-- ซ้าย: เงินดาวน์ | บอลลูน -->
@@ -243,33 +241,18 @@
               <div class="control"><input id="downAmount" readonly></div>
             </div>
 
+            <!-- NEW: Balloon Toggle -->
             <div class="field">
-              <div class="label">รูปแบบบอลลูน</div>
-              <div class="control">
-                <select id="balloonType">
-                  <!-- Default = amount -->
-                  <option value="amount" selected>ระบุเป็นจำนวนเงิน</option>
-                  <option value="percent">เป็น % ของราคาสุทธิ</option>
-                </select>
+              <div class="label">ใช้บอลลูน (เปิด/ปิด)</div>
+              <div class="control" style="text-align:left;">
+                <input id="balloonEnabled" type="checkbox" />
               </div>
             </div>
             <div class="field">
-              <div class="label">เปอร์เซ็นต์บอลลูน</div>
+              <div class="label">เปอร์เซ็นต์บอลลูน (%)</div>
               <div class="control">
-                <select id="balloonPercentSelect" disabled>
-                  <option value="5">5%</option>
-                  <option value="10" selected>10%</option>
-                  <option value="15">15%</option>
-                  <option value="20">20%</option>
-                  <option value="25">25%</option>
-                  <option value="30">30%</option>
-                  <option value="35">35% (สูงสุด)</option>
-                </select>
+                <input id="balloonPercentInput" type="number" min="0" max="35" step="0.1" value="0.0" disabled />
               </div>
-            </div>
-            <div class="field">
-              <div class="label">จำนวนเงินบอลลูน</div>
-              <div class="control"><input id="balloonManualInput" type="text" value="0.00"></div>
             </div>
             <div class="field">
               <div class="label">ยอดบอลลูน <span class="muted">( <span id="balloonPercentInline">0.0000%</span> )</span></div>
@@ -421,7 +404,7 @@
 
     </div>
 
-    <!-- Row 4: Actions (เต็มความกว้าง) -->
+    <!-- Row 4: Actions -->
     <div class="row">
       <section class="card">
         <div class="card-head"><h2>คำสั่ง</h2></div>
@@ -508,12 +491,18 @@
       document.getElementById('downPercentInline').innerText = `${format4(pct)}%`;
       const q = document.getElementById('qsDownPercent'); if(q) q.value = `${format4(pct)}%`;
     }
-    function updateBalloonPctInline(){
+    function updateBalloonPctInline(pctValue){
+      // pctValue optional to avoid precision drift; fallback from computed amount
+      if (typeof pctValue === 'number') {
+        document.getElementById('balloonPercentInline').innerText = `${format4(pctValue)}%`;
+        const qs = document.getElementById('qsBalloonPercent'); if(qs) qs.value = `${format4(pctValue)}%`;
+        return;
+      }
       const total=uncomma(document.getElementById('totalAmount').value);
       const bal=uncomma(document.getElementById('balloonAmount').value);
       const pct = total>0?(bal/total*100):0;
       document.getElementById('balloonPercentInline').innerText = `${format4(pct)}%`;
-      const q = document.getElementById('qsBalloonPercent'); if(q) q.value = `${format4(pct)}%`;
+      const qs = document.getElementById('qsBalloonPercent'); if(qs) qs.value = `${format4(pct)}%`;
     }
 
     // ========= Core calc =========
@@ -533,35 +522,32 @@
       down = Math.min(Math.max(down,0), total);
       document.getElementById('downAmount').value = format(down);
 
-      // Balloon (≤ 35% of total) — Default mode is amount
-      const typeBal=document.getElementById('balloonType').value;
-      const cap=Math.max(total*0.35,0);
-      let balloon=0, balPct=0;
+      // Balloon Toggle (Percent only, 0..35)
+      const enabled = document.getElementById('balloonEnabled').checked;
+      const pctInput = document.getElementById('balloonPercentInput');
+      pctInput.disabled = !enabled;
 
-      const pctSel=document.getElementById('balloonPercentSelect');
-      const amtInp=document.getElementById('balloonManualInput');
-      if(typeBal==='percent'){
-        pctSel.disabled=false;  amtInp.disabled=true;
-        const raw = parseFloat(pctSel.value)||0;
-        balPct = Math.min(Math.max(raw,0),35);
-        if(raw!==balPct){
-          pctSel.value = String(balPct);
-          alert('เปอร์เซ็นต์บอลลูนสูงสุดคือ 35%');
-        }
-        balloon = total*(balPct/100);
-      }else{
-        pctSel.disabled=true;   amtInp.disabled=false;
-        let manual = uncomma(amtInp.value);
-        if (manual<0) manual=0;
-        if (manual>cap) manual=cap;
-        balloon = manual;
-        balPct = total>0 ? (balloon/total*100) : 0;
-        if (balPct>35) balPct=35;
+      let balloon = 0;
+      let balloonPct = 0;
+
+      if (enabled) {
+        let p = parseFloat(pctInput.value);
+        if (isNaN(p)) p = 0;
+        if (p < 0) p = 0;
+        if (p > 35) p = 35;
+        // reflect clamped value back to UI if changed
+        if (parseFloat(pctInput.value) !== p) pctInput.value = p.toFixed(1);
+        balloonPct = p;
+        balloon = total * (balloonPct / 100);
+      } else {
+        // keep shown pct input but ignore in calc; balloon=0
+        balloonPct = 0;
+        balloon = 0;
       }
 
       document.getElementById('balloonAmount').value = format(balloon);
       updateDownPctInline();
-      updateBalloonPctInline();
+      updateBalloonPctInline(balloonPct);
 
       const finance = total - down;
       const years=getInt('termYears'), months=years*12;
@@ -670,16 +656,17 @@
       document.getElementById('totalAmount').value = format(total);
       const years=getInt('termYears'), months=years*12;
 
-      // Balloon
-      const typeBal=document.getElementById('balloonType').value;
-      let bal=0; const cap=Math.max(total*0.35,0);
-      if(typeBal==='percent'){
-        const pct=Math.min(Math.max(parseFloat(document.getElementById('balloonPercentSelect').value)||0,0),35);
-        bal = total*(pct/100);
-      }else{
-        let manual = uncomma(document.getElementById('balloonManualInput').value);
-        if (manual<0) manual=0; if (manual>cap) manual=cap;
-        bal=manual;
+      // Balloon from toggle
+      const enabled = document.getElementById('balloonEnabled').checked;
+      let bal=0;
+      if (enabled) {
+        let p = parseFloat(document.getElementById('balloonPercentInput').value);
+        if (isNaN(p)) p = 0;
+        if (p < 0) p = 0;
+        if (p > 35) p = 35;
+        bal = total * (p/100);
+      } else {
+        bal = 0;
       }
 
       if(months===0){ alert('กรุณาระบุจำนวนปีให้ถูกต้อง'); return; }
@@ -734,49 +721,38 @@
       const el=document.getElementById(id); if(!el) return;
       el.addEventListener('focus', ()=>{ let v=uncomma(el.value); el.value=(Math.abs(v)<0.001)?'':String(v); });
       el.addEventListener('input', ()=>{
-        let s=el.value.replace(/[^0-9.]/g,'');
+        let s=el.value.replace(/[^0-9.\-]/g,'');
         const parts=s.split('.'); if(parts.length>2) s=parts[0]+'.'+parts.slice(1).join('');
         el.value=s;
       });
       el.addEventListener('blur', ()=>{
         let v=uncomma(el.value);
         if(id==='termYears') el.value=formatNoDecimal(v);
-        else if(['interestRate','comPercent','targetIrr'].includes(id)) el.value=format(v,2);
+        else if(['interestRate','comPercent','targetIrr','balloonPercentInput'].includes(id)) el.value=isNaN(v)?'0.0':(parseFloat(v).toFixed(id==='balloonPercentInput'?1:2));
         else el.value=format(v);
         calculate();
       });
     }
-    function toggleBalloonUI(){
-      const type=document.getElementById('balloonType').value;
-      const pctSel=document.getElementById('balloonPercentSelect');
-      const amtInp=document.getElementById('balloonManualInput');
-      if(type==='percent'){ pctSel.disabled=false;  amtInp.disabled=true; }
-      else{                pctSel.disabled=true;   amtInp.disabled=false; }
-    }
-    function toggleInterestMode(){
-      const mode=document.getElementById('interestMode').value;
-      const flat=document.getElementById('interestRate');
-      const irr=document.getElementById('targetIrr');
-      if(mode==='flat'){ flat.disabled=false; irr.disabled=true; }
-      else{             flat.disabled=true;  irr.disabled=false; }
-    }
 
     window.onload = ()=>{
-      ['carPrice','discount','option','downInput','interestRate','extra','termYears','comPercent','balloonManualInput','targetIrr']
+      ['carPrice','discount','option','downInput','interestRate','extra','termYears','comPercent','balloonPercentInput','targetIrr']
         .forEach(addNumericListeners);
 
       document.getElementById('downType').addEventListener('change', calculate);
       document.getElementById('comBase').addEventListener('change', calculate);
-      document.getElementById('balloonType').addEventListener('change', ()=>{ toggleBalloonUI(); calculate(); });
-      document.getElementById('balloonPercentSelect').addEventListener('change', calculate);
-      document.getElementById('interestMode').addEventListener('change', ()=>{ toggleInterestMode(); calculate(); });
 
-      // Default: Balloon = amount, 0.00
-      document.getElementById('balloonType').value = 'amount';
-      document.getElementById('balloonManualInput').value = '0.00';
+      // Balloon toggle & percent
+      document.getElementById('balloonEnabled').addEventListener('change', calculate);
+      document.getElementById('balloonPercentInput').addEventListener('input', calculate);
 
-      toggleBalloonUI();
-      toggleInterestMode();
+      // Interest mode
+      document.getElementById('interestMode').addEventListener('change', calculate);
+
+      // Defaults: Balloon OFF, percent = 0.0
+      document.getElementById('balloonEnabled').checked = false;
+      document.getElementById('balloonPercentInput').value = '0.0';
+      document.getElementById('balloonPercentInput').disabled = true;
+
       calculate();
     };
   </script>
