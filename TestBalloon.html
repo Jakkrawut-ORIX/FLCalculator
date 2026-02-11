@@ -2,12 +2,12 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>ORIX Financial Lease Calculator — Balloon Toggle</title>
+  <title>ORIX Financial Lease Calculator — Balloon Toggle (Fixed)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- Google Font: Noto Sans Thai -->
-  https://fonts.googleapis.com
-  https://fonts.gstatic.com
-  https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet"/>
   <style>
     :root {
       /* ORIX Minimal palette */
@@ -33,6 +33,10 @@
       --ring: rgba(0, 51, 102, 0.25);
       --shadow: 0 8px 24px rgba(18, 22, 28, 0.06);
       --radius: 12px;
+
+      /* Row/Field sizing */
+      --head-min-h: 48px;  /* หัวการ์ดสูงเท่ากัน */
+      --field-min-h: 52px; /* แถวฟิลด์สูงสม่ำเสมอ */
     }
 
     * { box-sizing: border-box; }
@@ -85,12 +89,16 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
+      display: flex;
+      flex-direction: column; /* ให้เนื้อหาขยายเต็มความสูงได้ */
+      min-height: 0;
     }
     .card + .card { margin-top: 14px; }
     .card-head {
       padding: 12px 14px;
       border-bottom: 1px solid var(--line);
       display: flex; align-items: center; gap: 10px; justify-content: space-between;
+      min-height: var(--head-min-h);
     }
     .card-head h2 {
       margin: 0; font-size: 14px; font-weight: 600; color: var(--orix-blue); letter-spacing: .2px;
@@ -99,17 +107,30 @@
     /* Rows */
     .row { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
     .row.two { grid-template-columns: 1fr; }
-    @media (min-width: 900px) { .row.two { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 900px) {
+      .row.two {
+        grid-template-columns: 1fr 1fr;
+        align-items: stretch;       /* ยืดการ์ดให้สูงเท่ากัน */
+      }
+      .row.two > .card {
+        height: 100%;
+      }
+    }
 
     /* Section + Fields */
-    .section { border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
-    .fields { display: grid; grid-template-columns: 1fr; }
+    .section { border-radius: 10px; overflow: hidden; border-top: 0; border-bottom: 0; }
+    .fields {
+      display: grid; grid-template-columns: 1fr;
+      /* ให้แต่ละแถวมีความสูงขั้นต่ำเท่ากัน */
+      grid-auto-rows: minmax(var(--field-min-h), auto);
+    }
     @media (min-width: 640px) { .fields { grid-template-columns: 1fr 1fr; } }
 
     .field {
       display: grid; grid-template-columns: 46% 54%;
       align-items: center; gap: 10px; padding: 10px 12px;
       border-bottom: 1px solid var(--line); background: #fff;
+      min-height: var(--field-min-h);
     }
     .field:nth-child(even) { background: #FCFEFF; }
     .field:last-child { border-bottom: none; }
@@ -241,7 +262,7 @@
               <div class="control"><input id="downAmount" readonly></div>
             </div>
 
-            <!-- NEW: Balloon Toggle -->
+            <!-- Balloon Toggle (Percent Only) -->
             <div class="field">
               <div class="label">ใช้บอลลูน (เปิด/ปิด)</div>
               <div class="control" style="text-align:left;">
@@ -437,10 +458,10 @@
           const adj=(type===1?1:0);
           const dfp=Math.pow(1+rate, t-adj);
           f+= pmt/dfp;
-          df+= -(t-adj)*pmt/Math.pow(1+rate, t+1-adj);
+          df+= -(t-adj)*pmt / Math.pow(1+rate, t+1-adj);
         }
         f+= fv/Math.pow(1+rate, nper);
-        df+= -nper*fv/Math.pow(1+rate, nper+1);
+        df+= -nper*fv / Math.pow(1+rate, nper+1);
         if(Math.abs(f)<tol) return rate;
         const nr=rate - f/df;
         if(Math.abs(nr-rate)<tol) return nr;
@@ -492,7 +513,6 @@
       const q = document.getElementById('qsDownPercent'); if(q) q.value = `${format4(pct)}%`;
     }
     function updateBalloonPctInline(pctValue){
-      // pctValue optional to avoid precision drift; fallback from computed amount
       if (typeof pctValue === 'number') {
         document.getElementById('balloonPercentInline').innerText = `${format4(pctValue)}%`;
         const qs = document.getElementById('qsBalloonPercent'); if(qs) qs.value = `${format4(pctValue)}%`;
@@ -525,6 +545,8 @@
       // Balloon Toggle (Percent only, 0..35)
       const enabled = document.getElementById('balloonEnabled').checked;
       const pctInput = document.getElementById('balloonPercentInput');
+
+      // เปิด/ปิดช่องกรอกเปอร์เซ็นต์ตามสวิตช์ (แก้เคสที่เคยไม่รีเฟรช)
       pctInput.disabled = !enabled;
 
       let balloon = 0;
@@ -535,12 +557,11 @@
         if (isNaN(p)) p = 0;
         if (p < 0) p = 0;
         if (p > 35) p = 35;
-        // reflect clamped value back to UI if changed
+        // เขียนค่าที่ clamp กลับ
         if (parseFloat(pctInput.value) !== p) pctInput.value = p.toFixed(1);
         balloonPct = p;
         balloon = total * (balloonPct / 100);
       } else {
-        // keep shown pct input but ignore in calc; balloon=0
         balloonPct = 0;
         balloon = 0;
       }
@@ -713,8 +734,8 @@
       }
     }
 
-    function generateQuotation(){ calculate(); /* เก็บ/เปิดหน้าถัดไปตาม workflow ของคุณ */ }
-    function sendToQsData(){ calculate(); /* เก็บ/เปิดหน้าถัดไปตาม workflow ของคุณ */ }
+    function generateQuotation(){ calculate(); /* เก็บ/เปิดหน้าถัดไป (ถ้ามี) */ }
+    function sendToQsData(){ calculate(); /* เก็บ/เปิดหน้าถัดไป (ถ้ามี) */ }
 
     // ========= UI wiring =========
     function addNumericListeners(id){
@@ -728,8 +749,17 @@
       el.addEventListener('blur', ()=>{
         let v=uncomma(el.value);
         if(id==='termYears') el.value=formatNoDecimal(v);
-        else if(['interestRate','comPercent','targetIrr','balloonPercentInput'].includes(id)) el.value=isNaN(v)?'0.0':(parseFloat(v).toFixed(id==='balloonPercentInput'?1:2));
-        else el.value=format(v);
+        else if(['interestRate','comPercent','targetIrr','balloonPercentInput'].includes(id)) {
+          if (isNaN(v)) v = 0;
+          // balloonPercentInput fix: 0..35 with 1 decimal
+          if (id==='balloonPercentInput') {
+            if (v < 0) v = 0;
+            if (v > 35) v = 35;
+            el.value = parseFloat(v).toFixed(1);
+          } else {
+            el.value = format(v,2);
+          }
+        } else el.value=format(v);
         calculate();
       });
     }
@@ -742,7 +772,11 @@
       document.getElementById('comBase').addEventListener('change', calculate);
 
       // Balloon toggle & percent
-      document.getElementById('balloonEnabled').addEventListener('change', calculate);
+      document.getElementById('balloonEnabled').addEventListener('change', ()=>{
+        const pct = document.getElementById('balloonPercentInput');
+        pct.disabled = !document.getElementById('balloonEnabled').checked;
+        calculate();
+      });
       document.getElementById('balloonPercentInput').addEventListener('input', calculate);
 
       // Interest mode
