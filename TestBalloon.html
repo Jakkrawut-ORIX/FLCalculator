@@ -2,12 +2,12 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>ORIX Financial Lease Calculator — Balloon Toggle (Fixed)</title>
+  <title>ORIX Financial Lease Calculator — Balloon Dual Mode</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- Google Font: Noto Sans Thai -->
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  https://fonts.googleapis.com
+  https://fonts.gstatic.com
+  https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap
   <style>
     :root {
       /* ORIX Minimal palette */
@@ -35,8 +35,8 @@
       --radius: 12px;
 
       /* Row/Field sizing */
-      --head-min-h: 48px;  /* หัวการ์ดสูงเท่ากัน */
-      --field-min-h: 52px; /* แถวฟิลด์สูงสม่ำเสมอ */
+      --head-min-h: 48px;
+      --field-min-h: 52px;
     }
 
     * { box-sizing: border-box; }
@@ -89,8 +89,7 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
-      display: flex;
-      flex-direction: column; /* ให้เนื้อหาขยายเต็มความสูงได้ */
+      display: flex; flex-direction: column;
       min-height: 0;
     }
     .card + .card { margin-top: 14px; }
@@ -108,20 +107,14 @@
     .row { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
     .row.two { grid-template-columns: 1fr; }
     @media (min-width: 900px) {
-      .row.two {
-        grid-template-columns: 1fr 1fr;
-        align-items: stretch;       /* ยืดการ์ดให้สูงเท่ากัน */
-      }
-      .row.two > .card {
-        height: 100%;
-      }
+      .row.two { grid-template-columns: 1fr 1fr; align-items: stretch; }
+      .row.two > .card { height: 100%; }
     }
 
     /* Section + Fields */
     .section { border-radius: 10px; overflow: hidden; border-top: 0; border-bottom: 0; }
     .fields {
       display: grid; grid-template-columns: 1fr;
-      /* ให้แต่ละแถวมีความสูงขั้นต่ำเท่ากัน */
       grid-auto-rows: minmax(var(--field-min-h), auto);
     }
     @media (min-width: 640px) { .fields { grid-template-columns: 1fr 1fr; } }
@@ -191,7 +184,7 @@
     </div>
   </header>
 
-  <!-- Legend บนสุด (จุดเดียว) -->
+  <!-- Legend บนสุด -->
   <div class="legend-global">
     <span class="legend-item">
       <span class="legend-box" style="background:#FFFDF0;border-color:#F3E6BA;"></span>
@@ -236,7 +229,7 @@
       </section>
     </div>
 
-    <!-- Row 2: ซ้าย = เงินดาวน์ | บอลลูน , ขวา = ดอกเบี้ย | ค่าคอม -->
+    <!-- Row 2 -->
     <div class="row two">
 
       <!-- ซ้าย: เงินดาวน์ | บอลลูน -->
@@ -244,6 +237,7 @@
         <div class="card-head"><h2>เงินดาวน์ | บอลลูน</h2></div>
         <div class="section">
           <div class="fields">
+            <!-- Down -->
             <div class="field">
               <div class="label">รูปแบบดาวน์</div>
               <div class="control">
@@ -262,19 +256,38 @@
               <div class="control"><input id="downAmount" readonly></div>
             </div>
 
-            <!-- Balloon Toggle (Percent Only) -->
+            <!-- Balloon Toggle + Dual mode -->
             <div class="field">
               <div class="label">ใช้บอลลูน (เปิด/ปิด)</div>
               <div class="control" style="text-align:left;">
                 <input id="balloonEnabled" type="checkbox" />
               </div>
             </div>
+
             <div class="field">
-              <div class="label">เปอร์เซ็นต์บอลลูน (%)</div>
+              <div class="label">รูปแบบการกรอกบอลลูน</div>
+              <div class="control">
+                <select id="balloonMode" disabled>
+                  <option value="percent" selected>เปอร์เซ็นต์ (%)</option>
+                  <option value="amount">จำนวนเงิน (บาท)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="label">% บอลลูน (0-35%)</div>
               <div class="control">
                 <input id="balloonPercentInput" type="number" min="0" max="35" step="0.1" value="0.0" disabled />
               </div>
             </div>
+
+            <div class="field">
+              <div class="label">จำนวนเงินบอลลูน</div>
+              <div class="control">
+                <input id="balloonAmountInput" type="text" value="0.00" disabled />
+              </div>
+            </div>
+
             <div class="field">
               <div class="label">ยอดบอลลูน <span class="muted">( <span id="balloonPercentInline">0.0000%</span> )</span></div>
               <div class="control"><input id="balloonAmount" readonly></div>
@@ -337,7 +350,7 @@
 
     </div>
 
-    <!-- Row 3: ซ้าย = ผลลัพธ์ | ขวา = OWS -->
+    <!-- Row 3 -->
     <div class="row two">
 
       <!-- ผลลัพธ์ -->
@@ -345,57 +358,21 @@
         <div class="card-head"><h2>ผลลัพธ์</h2></div>
         <div class="section">
           <div class="fields">
-            <div class="field">
-              <div class="label">ยอดจัด</div>
-              <div class="control"><input id="financeAmt" readonly></div>
-            </div>
-            <div class="field">
-              <div class="label">ดอกเบี้ยต่อปี (Ex VAT)</div>
-              <div class="control"><input id="intPA" readonly></div>
-            </div>
-            <div class="field">
-              <div class="label">ดอกเบี้ยรวม (Ex VAT)</div>
-              <div class="control"><input id="intTotal" readonly></div>
-            </div>
-            <div class="field">
-              <div class="label">ยอดจัดรวม (ฐานผ่อน)</div>
-              <div class="control"><input id="financeTotalWithInterest" readonly></div>
-            </div>
+            <div class="field"><div class="label">ยอดจัด</div><div class="control"><input id="financeAmt" readonly></div></div>
+            <div class="field"><div class="label">ดอกเบี้ยต่อปี (Ex VAT)</div><div class="control"><input id="intPA" readonly></div></div>
+            <div class="field"><div class="label">ดอกเบี้ยรวม (Ex VAT)</div><div class="control"><input id="intTotal" readonly></div></div>
+            <div class="field"><div class="label">ยอดจัดรวม (ฐานผ่อน)</div><div class="control"><input id="financeTotalWithInterest" readonly></div></div>
 
-            <div class="field">
-              <div class="label">ค่างวด (Ex VAT) / งวด</div>
-              <div class="control"><input id="leaseExVat" readonly></div>
-            </div>
-            <div class="field">
-              <div class="label">VAT 7% / งวด</div>
-              <div class="control"><input id="leaseVat" readonly></div>
-            </div>
-            <div class="field">
-              <div class="label">ค่างวด (In VAT) / งวด</div>
-              <div class="control"><input id="leaseInVat" readonly></div>
-            </div>
+            <div class="field"><div class="label">ค่างวด (Ex VAT) / งวด</div><div class="control"><input id="leaseExVat" readonly></div></div>
+            <div class="field"><div class="label">VAT 7% / งวด</div><div class="control"><input id="leaseVat" readonly></div></div>
+            <div class="field"><div class="label">ค่างวด (In VAT) / งวด</div><div class="control"><input id="leaseInVat" readonly></div></div>
 
-            <div class="field">
-              <div class="label">OWS Extra (Ex VAT)</div>
-              <div class="control"><input id="owsExtraEx" readonly></div>
-            </div>
-            <div class="field">
-              <div class="label">VAT 7% (OWS Extra)</div>
-              <div class="control"><input id="owsExtraVat" readonly></div>
-            </div>
-            <div class="field">
-              <div class="label">OWS Extra (In VAT)</div>
-              <div class="control"><input id="owsExtraIn" readonly></div>
-            </div>
+            <div class="field"><div class="label">OWS Extra (Ex VAT)</div><div class="control"><input id="owsExtraEx" readonly></div></div>
+            <div class="field"><div class="label">VAT 7% (OWS Extra)</div><div class="control"><input id="owsExtraVat" readonly></div></div>
+            <div class="field"><div class="label">OWS Extra (In VAT)</div><div class="control"><input id="owsExtraIn" readonly></div></div>
 
-            <div class="field">
-              <div class="label">IRR %</div>
-              <div class="control"><input id="trRate" readonly></div>
-            </div>
-            <div class="field">
-              <div class="label">Customer TR</div>
-              <div class="control"><input id="customerTr" readonly></div>
-            </div>
+            <div class="field"><div class="label">IRR %</div><div class="control"><input id="trRate" readonly></div></div>
+            <div class="field"><div class="label">Customer TR</div><div class="control"><input id="customerTr" readonly></div></div>
           </div>
         </div>
       </section>
@@ -525,6 +502,30 @@
       const qs = document.getElementById('qsBalloonPercent'); if(qs) qs.value = `${format4(pct)}%`;
     }
 
+    // แปลง-ซิงก์ค่า บอลลูน ระหว่าง % และ จำนวนเงิน
+    function syncBalloonInputsFromPercent() {
+      const total = uncomma(document.getElementById('totalAmount').value);
+      const cap = Math.max(total * 0.35, 0);
+      let p = parseFloat(document.getElementById('balloonPercentInput').value);
+      if (isNaN(p)) p = 0;
+      if (p < 0) p = 0;
+      if (p > 35) p = 35;
+      const amount = Math.min(cap, Math.max(0, total * (p/100)));
+      document.getElementById('balloonPercentInput').value = p.toFixed(1);
+      document.getElementById('balloonAmountInput').value = format(amount);
+    }
+    function syncBalloonInputsFromAmount() {
+      const total = uncomma(document.getElementById('totalAmount').value);
+      const cap = Math.max(total * 0.35, 0);
+      let amt = uncomma(document.getElementById('balloonAmountInput').value);
+      if (isNaN(amt)) amt = 0;
+      if (amt < 0) amt = 0;
+      if (amt > cap) amt = cap;
+      const pct = total > 0 ? (amt/total*100) : 0;
+      document.getElementById('balloonAmountInput').value = format(amt);
+      document.getElementById('balloonPercentInput').value = pct.toFixed(1);
+    }
+
     // ========= Core calc =========
     function calculate(){
       const getVal=id=>uncomma(document.getElementById(id).value);
@@ -542,30 +543,51 @@
       down = Math.min(Math.max(down,0), total);
       document.getElementById('downAmount').value = format(down);
 
-      // Balloon Toggle (Percent only, 0..35)
+      // Balloon Toggle + Dual mode
       const enabled = document.getElementById('balloonEnabled').checked;
+      const mode = document.getElementById('balloonMode').value;
       const pctInput = document.getElementById('balloonPercentInput');
+      const amtInput = document.getElementById('balloonAmountInput');
 
-      // เปิด/ปิดช่องกรอกเปอร์เซ็นต์ตามสวิตช์ (แก้เคสที่เคยไม่รีเฟรช)
-      pctInput.disabled = !enabled;
+      // Enable/disable controls
+      document.getElementById('balloonMode').disabled = !enabled;
+      pctInput.disabled = !enabled || mode !== 'percent';
+      amtInput.disabled = !enabled || mode !== 'amount';
 
+      // When enabled: clamp/sync; when disabled: balloon=0
       let balloon = 0;
       let balloonPct = 0;
 
+      const cap = Math.max(total * 0.35, 0);
+
       if (enabled) {
-        let p = parseFloat(pctInput.value);
-        if (isNaN(p)) p = 0;
-        if (p < 0) p = 0;
-        if (p > 35) p = 35;
-        // เขียนค่าที่ clamp กลับ
-        if (parseFloat(pctInput.value) !== p) pctInput.value = p.toFixed(1);
-        balloonPct = p;
-        balloon = total * (balloonPct / 100);
+        if (mode === 'percent') {
+          // ensure amount input shows converted value (for clarity)
+          syncBalloonInputsFromPercent();
+          let p = parseFloat(pctInput.value);
+          if (isNaN(p)) p = 0;
+          if (p < 0) p = 0;
+          if (p > 35) p = 35;
+          balloon = Math.min(cap, Math.max(0, total * (p/100)));
+          balloonPct = p;
+        } else {
+          // mode=amount
+          // sanitize amount input and sync percent field
+          syncBalloonInputsFromAmount();
+          let a = uncomma(amtInput.value);
+          if (isNaN(a)) a = 0;
+          if (a < 0) a = 0;
+          if (a > cap) a = cap;
+          balloon = a;
+          balloonPct = total > 0 ? (balloon/total*100) : 0;
+          if (balloonPct > 35) balloonPct = 35;
+        }
       } else {
-        balloonPct = 0;
         balloon = 0;
+        balloonPct = 0;
       }
 
+      // set computed balloon output
       document.getElementById('balloonAmount').value = format(balloon);
       updateDownPctInline();
       updateBalloonPctInline(balloonPct);
@@ -578,9 +600,9 @@
       const extra=getVal('extra');
 
       // Interest mode
-      const mode=document.getElementById('interestMode').value;
+      const iMode=document.getElementById('interestMode').value;
       let rate=getVal('interestRate');
-      if(mode==='target_irr' && months>0 && total>0){
+      if(iMode==='target_irr' && months>0 && total>0){
         const target= getVal('targetIrr');
         const inputs = { total, down, balloon, years, months, comBase, comPercent, extra };
         const solved = solveFlatForTargetIRR(target, inputs);
@@ -677,26 +699,32 @@
       document.getElementById('totalAmount').value = format(total);
       const years=getInt('termYears'), months=years*12;
 
-      // Balloon from toggle
+      // Balloon from toggle+mode
       const enabled = document.getElementById('balloonEnabled').checked;
+      const mode = document.getElementById('balloonMode').value;
       let bal=0;
       if (enabled) {
-        let p = parseFloat(document.getElementById('balloonPercentInput').value);
-        if (isNaN(p)) p = 0;
-        if (p < 0) p = 0;
-        if (p > 35) p = 35;
-        bal = total * (p/100);
+        if (mode === 'percent') {
+          let p = parseFloat(document.getElementById('balloonPercentInput').value);
+          if (isNaN(p)) p = 0; if (p<0) p=0; if (p>35) p=35;
+          bal = total*(p/100);
+        } else {
+          const cap = Math.max(total*0.35, 0);
+          let a = uncomma(document.getElementById('balloonAmountInput').value);
+          if (isNaN(a)) a = 0; if (a<0) a=0; if (a>cap) a=cap;
+          bal = a;
+        }
       } else {
         bal = 0;
       }
 
       if(months===0){ alert('กรุณาระบุจำนวนปีให้ถูกต้อง'); return; }
 
-      const mode=document.getElementById('interestMode').value;
+      const iMode=document.getElementById('interestMode').value;
       const comBase=document.getElementById('comBase').value;
       const comPercent=getVal('comPercent'), extra=getVal('extra');
       let rate;
-      if(mode==='target_irr'){
+      if(iMode==='target_irr'){
         const targetEff=getVal('targetIrr');
         if(total<=0||targetEff<0){ alert('กรุณาระบุ ราคาสุทธิ และ IRR เป้าหมาย ให้ถูกต้อง'); return; }
         const inputs={ total, down:0, balloon:bal, years, months, comBase, comPercent, extra };
@@ -734,8 +762,8 @@
       }
     }
 
-    function generateQuotation(){ calculate(); /* เก็บ/เปิดหน้าถัดไป (ถ้ามี) */ }
-    function sendToQsData(){ calculate(); /* เก็บ/เปิดหน้าถัดไป (ถ้ามี) */ }
+    function generateQuotation(){ calculate(); }
+    function sendToQsData(){ calculate(); }
 
     // ========= UI wiring =========
     function addNumericListeners(id){
@@ -749,43 +777,87 @@
       el.addEventListener('blur', ()=>{
         let v=uncomma(el.value);
         if(id==='termYears') el.value=formatNoDecimal(v);
-        else if(['interestRate','comPercent','targetIrr','balloonPercentInput'].includes(id)) {
+        else if(['interestRate','comPercent','targetIrr'].includes(id)) {
           if (isNaN(v)) v = 0;
-          // balloonPercentInput fix: 0..35 with 1 decimal
-          if (id==='balloonPercentInput') {
-            if (v < 0) v = 0;
-            if (v > 35) v = 35;
-            el.value = parseFloat(v).toFixed(1);
-          } else {
-            el.value = format(v,2);
-          }
-        } else el.value=format(v);
+          el.value = format(v,2);
+        } else if (id==='balloonAmountInput') {
+          el.value = format(v);
+        } else if (id==='balloonPercentInput') {
+          if (isNaN(v)) v=0;
+          if (v<0) v=0;
+          if (v>35) v=35;
+          el.value = parseFloat(v).toFixed(1);
+        } else {
+          el.value = format(v);
+        }
+        // เมื่อเลิกกรอก ให้ sync ช่องคู่กันเพื่อความต่อเนื่อง
+        if (id==='balloonPercentInput') syncBalloonInputsFromPercent();
+        if (id==='balloonAmountInput') syncBalloonInputsFromAmount();
         calculate();
       });
     }
 
     window.onload = ()=>{
-      ['carPrice','discount','option','downInput','interestRate','extra','termYears','comPercent','balloonPercentInput','targetIrr']
+      // Numeric inputs
+      ['carPrice','discount','option','downInput','interestRate','extra','termYears','comPercent','balloonPercentInput','balloonAmountInput','targetIrr']
         .forEach(addNumericListeners);
 
+      // Down & commission base
       document.getElementById('downType').addEventListener('change', calculate);
       document.getElementById('comBase').addEventListener('change', calculate);
 
-      // Balloon toggle & percent
+      // Balloon toggle
       document.getElementById('balloonEnabled').addEventListener('change', ()=>{
-        const pct = document.getElementById('balloonPercentInput');
-        pct.disabled = !document.getElementById('balloonEnabled').checked;
+        const enabled = document.getElementById('balloonEnabled').checked;
+        document.getElementById('balloonMode').disabled = !enabled;
+        const mode = document.getElementById('balloonMode').value;
+        document.getElementById('balloonPercentInput').disabled = !enabled || mode!=='percent';
+        document.getElementById('balloonAmountInput').disabled  = !enabled || mode!=='amount';
         calculate();
       });
-      document.getElementById('balloonPercentInput').addEventListener('input', calculate);
+
+      // Balloon mode switch (percent <-> amount)
+      document.getElementById('balloonMode').addEventListener('change', (e)=>{
+        const total = uncomma(document.getElementById('totalAmount').value);
+        const enabled = document.getElementById('balloonEnabled').checked;
+        const mode = e.target.value;
+        // enable/disable inputs
+        document.getElementById('balloonPercentInput').disabled = !enabled || mode!=='percent';
+        document.getElementById('balloonAmountInput').disabled  = !enabled || mode!=='amount';
+        // convert the current value to the new mode (preserve numerical meaning)
+        if (enabled) {
+          if (mode==='percent') {
+            // we currently have amount → convert to percent
+            syncBalloonInputsFromAmount();
+          } else {
+            // percent → convert to amount
+            syncBalloonInputsFromPercent();
+          }
+        }
+        calculate();
+      });
+
+      // Live input for quick feedback
+      document.getElementById('balloonPercentInput').addEventListener('input', ()=>{
+        syncBalloonInputsFromPercent();
+        calculate();
+      });
+      document.getElementById('balloonAmountInput').addEventListener('input', ()=>{
+        // show raw while typing then calc
+        calculate();
+      });
 
       // Interest mode
       document.getElementById('interestMode').addEventListener('change', calculate);
 
-      // Defaults: Balloon OFF, percent = 0.0
+      // Defaults: Balloon OFF, mode=percent, pct=0.0, amount=0.00
       document.getElementById('balloonEnabled').checked = false;
+      document.getElementById('balloonMode').value = 'percent';
       document.getElementById('balloonPercentInput').value = '0.0';
+      document.getElementById('balloonAmountInput').value = '0.00';
+      document.getElementById('balloonMode').disabled = true;
       document.getElementById('balloonPercentInput').disabled = true;
+      document.getElementById('balloonAmountInput').disabled = true;
 
       calculate();
     };
