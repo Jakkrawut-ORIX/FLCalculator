@@ -8,73 +8,78 @@
   https://fonts.googleapis.com
   https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap
   <style>
-    :root {
-      /* ORIX Minimal palette */
-      --orix-blue: #003366;     /* primary accent */
-      --blue-600: #0A3B6F;
-      --blue-050: #F6FAFD;
+:root {
+  /* ORIX Minimal palette */
+  --orix-blue: #003366;     /* primary accent */
+  --blue-600: #0A3B6F;
+  --blue-050: #F6FAFD;
 
-      --ink-900: #12161C;
-      --ink-700: #2E3A46;
-      --ink-600: #475569;
-      --ink-500: #64748B;
-      --line: #E6EBF0;
-      --white: #FFFFFF;
+  --ink-900: #12161C;
+  --ink-700: #2E3A46;
+  --ink-600: #475569;
+  --ink-500: #64748B;
+  --line: #E6EBF0;
+  --white: #FFFFFF;
 
-      /* Inputs: editable vs readonly (ชัดเจน) */
-      --editable-bg: #FAFBFC;
-      --editable-border: #E5EBF2;
-      --readonly-bg: #FFF4E5;    /* Soft Amber for auto fields */
-      --readonly-border: #F3CDA0;
-      --readonly-text: #7A4E00;
+  /* Inputs: editable vs readonly (แยกสีชัดเจน) */
+  /* ▼ ใหม่: สีเหลืองอ่อนมาก สำหรับช่องกรอกได้ */
+  --editable-bg: #FFFDF0;          /* very light yellow */
+  --editable-border: #F3E6BA;      /* warm light border */
 
-      --ring: rgba(0, 51, 102, 0.25);
-      --shadow: 0 8px 24px rgba(18, 22, 28, 0.06);
-      --radius: 12px;
+  /* ▼ ช่องคำนวณ/ห้ามแก้ไข (เพิ่มเฉดแอมเบอร์อ่อนเหมือนเดิม) */
+  --readonly-bg: #FFF4E5;          /* soft amber */
+  --readonly-border: #F3CDA0;
+  --readonly-text: #7A4E00;
 
-      /* Tag colors */
-      --tag-edit-bg: #E9F3FF;     /* light blue */
-      --tag-edit-text: #0B3A6A;
-      --tag-ro-bg: #FFE9C9;       /* light amber */
-      --tag-ro-text: #7A4E00;
-    }
+  /* ความโค้ง統一 (ใช้ร่วมกันทั้ง editable/readonly) */
+  --input-radius: 12px;
 
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Noto Sans Thai', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      font-weight: 300;
-      margin: 0;
-      color: var(--ink-700);
-      background: linear-gradient(180deg, var(--blue-050), #fff 200px);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
+  --ring: rgba(0, 51, 102, 0.25);
+  --shadow: 0 8px 24px rgba(18, 22, 28, 0.06);
+  --radius: 12px;
 
-    /* Header minimal */
-    header {
-      background: var(--white);
-      border-bottom: 1px solid var(--line);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .nav {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 14px 16px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .brand {
-      width: 8px; height: 26px; border-radius: 4px; background: var(--orix-blue);
-    }
-    .title {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--ink-900);
-      letter-spacing: .1px;
-    }
+  /* Tag colors */
+  --tag-edit-bg: #E9F3FF;     /* light blue */
+  --tag-edit-text: #0B3A6A;
+  --tag-ro-bg: #FFE9C9;       /* light amber */
+  --tag-ro-text: #7A4E00;
+}
+
+/* … (โค้ดส่วนอื่นคงเดิม) … */
+
+/* ช่องกรอกได้ (Editable) — ปรับเป็นเหลืองอ่อน + โฟกัสสี ORIX */
+.control input:not([readonly]),
+.control select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--editable-border);
+  border-radius: var(--input-radius);   /* ใช้มุมโค้งเดียวกัน */
+  background: var(--editable-bg);       /* เหลืองอ่อนมาก */
+  color: var(--ink-700);
+  text-align: right;
+  font-weight: 400;
+  outline: none;
+  transition: .15s ease;
+}
+.control input#carInfo { text-align: left; }
+.control input:focus,
+.control select:focus {
+  border-color: var(--orix-blue);
+  box-shadow: 0 0 0 3px var(--ring);
+  background: #fff;
+}
+
+/* ช่องคำนวณ/ห้ามแก้ไข (Read-only/Disabled) — โค้งเหมือนกันทุกช่อง */
+.control input[readonly],
+.control select:disabled,
+.control input:disabled {
+  background: var(--readonly-bg);
+  border: 1px solid var(--readonly-border);
+  color: var(--readonly-text);
+  cursor: not-allowed;
+  font-weight: 600;
+  border-radius: var(--input-radius);   /* <-- ทำให้โค้งเท่ากัน */
+}
 
     main {
       max-width: 1100px;
