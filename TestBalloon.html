@@ -2,16 +2,16 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>ORIX Financial Lease Calculator — Minimal</title>
+  <title>ORIX Financial Lease Calculator — Split Sections</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Google Font: Noto Sans Thai (บาง/เบา) -->
+  <!-- Google Font: Noto Sans Thai -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       /* ORIX Minimal palette */
-      --orix-blue: #003366;     /* primary accent */
+      --orix-blue: #003366;
       --blue-600: #0A3B6F;
       --blue-050: #F6FAFD;
 
@@ -22,19 +22,14 @@
       --line: #E6EBF0;
       --white: #FFFFFF;
 
-      /* Inputs: สี/สไตล์ แยกชัดเจน */
-      /* Editable = เหลืองอ่อนมาก */
+      /* Inputs (แยกชัดเจน) */
       --editable-bg: #FFFDF0;       /* very light yellow */
-      --editable-border: #F3E6BA;   /* warm light border */
-
-      /* Read-only/Disabled = ฟ้าอ่อน */
+      --editable-border: #F3E6BA;
       --readonly-bg: #EAF4FF;       /* light blue */
-      --readonly-border: #BBD8FF;   /* light blue border */
-      --readonly-text: #0B3A6A;     /* deep blue text */
+      --readonly-border: #BBD8FF;
+      --readonly-text: #0B3A6A;
 
-      /* ความโค้ง統一 */
       --input-radius: 12px;
-
       --ring: rgba(0, 51, 102, 0.25);
       --shadow: 0 8px 24px rgba(18, 22, 28, 0.06);
       --radius: 12px;
@@ -51,54 +46,36 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Header minimal */
+    /* Header */
     header {
       background: var(--white);
       border-bottom: 1px solid var(--line);
       position: sticky;
-      top: 0;
-      z-index: 10;
+      top: 0; z-index: 10;
     }
     .nav {
       max-width: 1100px;
       margin: 0 auto;
       padding: 14px 16px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
+      display: flex; gap: 10px; align-items: center;
     }
-    .brand {
-      width: 8px; height: 26px; border-radius: 4px; background: var(--orix-blue);
-    }
-    .title {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--ink-900);
-      letter-spacing: .1px;
-    }
+    .brand { width: 8px; height: 26px; border-radius: 4px; background: var(--orix-blue); }
+    .title { font-size: 18px; font-weight: 600; color: var(--ink-900); letter-spacing: .1px; }
 
-    main {
-      max-width: 1100px;
-      margin: 8px auto 28px;
-      padding: 0 16px;
-    }
+    /* Container */
+    main { max-width: 1100px; margin: 8px auto 28px; padding: 0 16px; }
 
     /* Global Legend */
     .legend-global {
       max-width: 1100px;
       margin: 8px auto 0;
       padding: 8px 16px;
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      align-items: center;
-      font-size: 12px;
-      color: var(--ink-600);
+      display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
+      font-size: 12px; color: var(--ink-600);
     }
     .legend-item { display: inline-flex; align-items: center; gap: 8px; }
     .legend-box {
-      width: 14px; height: 14px; border-radius: 4px; display: inline-block;
-      border: 1px solid var(--line);
+      width: 14px; height: 14px; border-radius: 4px; display: inline-block; border: 1px solid var(--line);
     }
 
     /* Card */
@@ -113,22 +90,18 @@
     .card-head {
       padding: 12px 14px;
       border-bottom: 1px solid var(--line);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      justify-content: space-between;
+      display: flex; align-items: center; gap: 10px; justify-content: space-between;
     }
     .card-head h2 {
-      margin: 0;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--orix-blue);
-      letter-spacing: .2px;
+      margin: 0; font-size: 14px; font-weight: 600; color: var(--orix-blue); letter-spacing: .2px;
     }
 
-    /* Grid */
-    .grid { display: grid; grid-template-columns: 1fr; gap: 12px; padding: 12px; }
-    @media (min-width: 900px) { .grid.two { grid-template-columns: 1fr 1fr; } }
+    /* Rows */
+    .row { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
+    .row.two { grid-template-columns: 1fr; }
+    @media (min-width: 900px) {
+      .row.two { grid-template-columns: 1fr 1fr; }
+    }
 
     /* Section + Fields */
     .section { border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
@@ -150,27 +123,20 @@
     }
     .muted { color: var(--ink-500); font-size: 12px; }
 
-    /* Editable = เหลืองอ่อนมาก */
+    /* Inputs */
     .control input:not([readonly]), .control select {
-      width: 100%;
-      padding: 10px 12px;
+      width: 100%; padding: 10px 12px;
       border: 1px solid var(--editable-border);
       border-radius: var(--input-radius);
       background: var(--editable-bg);
       color: var(--ink-700);
-      text-align: right;
-      font-weight: 400;
-      outline: none;
-      transition: .15s ease;
+      text-align: right; font-weight: 400;
+      outline: none; transition: .15s ease;
     }
     .control input#carInfo { text-align: left; }
     .control input:focus, .control select:focus {
-      border-color: var(--orix-blue);
-      box-shadow: 0 0 0 3px var(--ring);
-      background: #fff;
+      border-color: var(--orix-blue); box-shadow: 0 0 0 3px var(--ring); background: #fff;
     }
-
-    /* Read-only/Disabled = ฟ้าอ่อน */
     .control input[readonly],
     .control select:disabled,
     .control input:disabled {
@@ -182,7 +148,7 @@
       border-radius: var(--input-radius);
     }
 
-    /* Buttons */
+    /* Actions */
     .actions { display: grid; gap: 10px; padding: 12px; grid-template-columns: 1fr 1fr; }
     @media (min-width: 680px) { .actions { grid-template-columns: repeat(4, 1fr); } }
     .btn {
@@ -206,7 +172,7 @@
     </div>
   </header>
 
-  <!-- Global Legend (คำอธิบายบนสุด) -->
+  <!-- Legend บนสุด (จุดเดียว) -->
   <div class="legend-global">
     <span class="legend-item">
       <span class="legend-box" style="background:#FFFDF0;border-color:#F3E6BA;"></span>
@@ -219,265 +185,266 @@
   </div>
 
   <main>
-    <div class="grid two">
-      <!-- LEFT: Inputs -->
-      <div>
 
-        <!-- Base Info -->
-        <section class="card">
-          <div class="card-head"><h2>ข้อมูลเบื้องต้น</h2></div>
-          <div class="section">
-            <div class="fields">
-              <div class="field">
-                <div class="label">ข้อมูลรถ</div>
-                <div class="control"><input id="carInfo" type="text" value=""></div>
-              </div>
-              <div class="field">
-                <div class="label">ราคารถ</div>
-                <div class="control"><input id="carPrice" type="text" value="0.00"></div>
-              </div>
-              <div class="field">
-                <div class="label">ส่วนลด</div>
-                <div class="control"><input id="discount" type="text" value="0.00"></div>
-              </div>
-              <div class="field">
-                <div class="label">Option</div>
-                <div class="control"><input id="option" type="text" value="0.00"></div>
-              </div>
-              <div class="field">
-                <div class="label">ราคาสุทธิ</div>
-                <div class="control"><input id="totalAmount" readonly></div>
-              </div>
+    <!-- Row 1: ข้อมูลเบื้องต้น (เต็มความกว้าง) -->
+    <div class="row">
+      <section class="card">
+        <div class="card-head"><h2>ข้อมูลเบื้องต้น</h2></div>
+        <div class="section">
+          <div class="fields">
+            <div class="field">
+              <div class="label">ข้อมูลรถ</div>
+              <div class="control"><input id="carInfo" type="text" value=""></div>
+            </div>
+            <div class="field">
+              <div class="label">ราคารถ</div>
+              <div class="control"><input id="carPrice" type="text" value="0.00"></div>
+            </div>
+            <div class="field">
+              <div class="label">ส่วนลด</div>
+              <div class="control"><input id="discount" type="text" value="0.00"></div>
+            </div>
+            <div class="field">
+              <div class="label">Option</div>
+              <div class="control"><input id="option" type="text" value="0.00"></div>
+            </div>
+            <div class="field">
+              <div class="label">ราคาสุทธิ</div>
+              <div class="control"><input id="totalAmount" readonly></div>
             </div>
           </div>
-        </section>
-
-        <!-- Down & Balloon -->
-        <section class="card">
-          <div class="card-head"><h2>เงินดาวน์ &amp; บอลลูน</h2></div>
-          <div class="section">
-            <div class="fields">
-              <div class="field">
-                <div class="label">รูปแบบดาวน์</div>
-                <div class="control">
-                  <select id="downType">
-                    <option value="percent">เป็น %</option>
-                    <option value="amount">เป็นจำนวนเงิน</option>
-                  </select>
-                </div>
-              </div>
-              <div class="field">
-                <div class="label">กรอก % หรือ จำนวน</div>
-                <div class="control"><input id="downInput" type="text" value="0.00"></div>
-              </div>
-              <div class="field">
-                <div class="label">เงินดาวน์ <span class="muted">( <span id="downPercentInline">0.0000%</span> )</span></div>
-                <div class="control"><input id="downAmount" readonly></div>
-              </div>
-
-              <div class="field">
-                <div class="label">รูปแบบบอลลูน</div>
-                <div class="control">
-                  <!-- Default = amount -->
-                  <select id="balloonType">
-                    <option value="amount" selected>ระบุเป็นจำนวนเงิน</option>
-                    <option value="percent">เป็น % ของราคาสุทธิ</option>
-                  </select>
-                </div>
-              </div>
-              <div class="field">
-                <div class="label">เปอร์เซ็นต์บอลลูน</div>
-                <div class="control">
-                  <select id="balloonPercentSelect" disabled>
-                    <option value="5">5%</option>
-                    <option value="10" selected>10%</option>
-                    <option value="15">15%</option>
-                    <option value="20">20%</option>
-                    <option value="25">25%</option>
-                    <option value="30">30%</option>
-                    <option value="35">35% (สูงสุด)</option>
-                  </select>
-                </div>
-              </div>
-              <div class="field">
-                <div class="label">จำนวนเงินบอลลูน</div>
-                <div class="control"><input id="balloonManualInput" type="text" value="0.00"></div>
-              </div>
-              <div class="field">
-                <div class="label">ยอดบอลลูน <span class="muted">( <span id="balloonPercentInline">0.0000%</span> )</span></div>
-                <div class="control"><input id="balloonAmount" readonly></div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Interest & Commission -->
-        <section class="card">
-          <div class="card-head"><h2>ดอกเบี้ย &amp; ค่าคอม</h2></div>
-          <div class="section">
-            <div class="fields">
-              <div class="field">
-                <div class="label">โหมดดอกเบี้ย</div>
-                <div class="control">
-                  <select id="interestMode">
-                    <option value="flat" selected>กำหนด Flat Rate (%)</option>
-                    <option value="target_irr">กำหนด IRR เป้าหมาย (% ต่อปี)</option>
-                  </select>
-                </div>
-              </div>
-              <div class="field">
-                <div class="label">Flat Rate (%)</div>
-                <div class="control"><input id="interestRate" type="text" value="0.00"></div>
-              </div>
-              <div class="field">
-                <div class="label">IRR เป้าหมาย (% ต่อปี)</div>
-                <div class="control"><input id="targetIrr" type="text" value="0.00" disabled></div>
-              </div>
-              <div class="field">
-                <div class="label">จำนวนปี</div>
-                <div class="control"><input id="termYears" type="number" step="1" value="0"></div>
-              </div>
-
-              <div class="field">
-                <div class="label">คิดค่าคอมจาก</div>
-                <div class="control">
-                  <select id="comBase">
-                    <option value="interest">ดอกเบี้ยรวม</option>
-                    <option value="finance">ยอดจัด</option>
-                  </select>
-                </div>
-              </div>
-              <div class="field">
-                <div class="label">Commission (%)</div>
-                <div class="control"><input id="comPercent" type="text" value="0.00"></div>
-              </div>
-              <div class="field">
-                <div class="label">ค่าคอม (Ex VAT)</div>
-                <div class="control"><input id="calculatedCommission" readonly></div>
-              </div>
-              <div class="field">
-                <div class="label">Extra Commission (Ex VAT)</div>
-                <div class="control"><input id="extra" type="text" value="0.00"></div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-      </div>
-
-      <!-- RIGHT: Results & OWS -->
-      <div>
-
-        <!-- Results -->
-        <section class="card">
-          <div class="card-head"><h2>ผลลัพธ์</h2></div>
-          <div class="section">
-            <div class="fields">
-              <div class="field">
-                <div class="label">ยอดจัด</div>
-                <div class="control"><input id="financeAmt" readonly></div>
-              </div>
-              <div class="field">
-                <div class="label">ดอกเบี้ยต่อปี (Ex VAT)</div>
-                <div class="control"><input id="intPA" readonly></div>
-              </div>
-              <div class="field">
-                <div class="label">ดอกเบี้ยรวม (Ex VAT)</div>
-                <div class="control"><input id="intTotal" readonly></div>
-              </div>
-              <div class="field">
-                <div class="label">ยอดจัดรวม (ฐานผ่อน)</div>
-                <div class="control"><input id="financeTotalWithInterest" readonly></div>
-              </div>
-
-              <!-- Installment breakdown -->
-              <div class="field">
-                <div class="label">ค่างวด (Ex VAT) / งวด</div>
-                <div class="control"><input id="leaseExVat" readonly></div>
-              </div>
-              <div class="field">
-                <div class="label">VAT 7% / งวด</div>
-                <div class="control"><input id="leaseVat" readonly></div>
-              </div>
-              <div class="field">
-                <div class="label">ค่างวด (In VAT) / งวด</div>
-                <div class="control"><input id="leaseInVat" readonly></div>
-              </div>
-
-              <!-- OWS Extra breakdown -->
-              <div class="field">
-                <div class="label">OWS Extra (Ex VAT)</div>
-                <div class="control"><input id="owsExtraEx" readonly></div>
-              </div>
-              <div class="field">
-                <div class="label">VAT 7% (OWS Extra)</div>
-                <div class="control"><input id="owsExtraVat" readonly></div>
-              </div>
-              <div class="field">
-                <div class="label">OWS Extra (In VAT)</div>
-                <div class="control"><input id="owsExtraIn" readonly></div>
-              </div>
-
-              <!-- Rates -->
-              <div class="field">
-                <div class="label">IRR %</div>
-                <div class="control"><input id="trRate" readonly></div>
-              </div>
-              <div class="field">
-                <div class="label">Customer TR</div>
-                <div class="control"><input id="customerTr" readonly></div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- OWS Information -->
-        <section class="card">
-          <div class="card-head"><h2>OWS Information</h2></div>
-          <div class="section">
-            <div class="fields">
-              <div class="field"><div class="label">ข้อมูลรถ</div><div class="control"><input id="qsCarInfo" readonly></div></div>
-              <div class="field"><div class="label">ราคารถ</div><div class="control"><input id="qsCarPrice" readonly></div></div>
-              <div class="field"><div class="label">ส่วนลด</div><div class="control"><input id="qsDiscount" readonly></div></div>
-              <div class="field"><div class="label">Option</div><div class="control"><input id="qsOption" readonly></div></div>
-              <div class="field"><div class="label">เงินดาวน์</div><div class="control"><input id="qsDownAmount" readonly></div></div>
-              <div class="field"><div class="label">เงินดาวน์คิดเป็น %</div><div class="control"><input id="qsDownPercent" readonly></div></div>
-              <div class="field"><div class="label">บอลลูน (บาท)</div><div class="control"><input id="qsBalloonAmount" readonly></div></div>
-              <div class="field"><div class="label">บอลลูนคิดเป็น %</div><div class="control"><input id="qsBalloonPercent" readonly></div></div>
-              <div class="field"><div class="label">IRR %</div><div class="control"><input id="qsTrRate" readonly></div></div>
-              <div class="field"><div class="label">จำนวนปี</div><div class="control"><input id="qsTermYears" readonly></div></div>
-              <div class="field"><div class="label">Deposit</div><div class="control"><input id="qsDeposit" readonly></div></div>
-              <div class="field"><div class="label">OWS Extra (Ex VAT)</div><div class="control"><input id="qsExtraEx" readonly></div></div>
-              <div class="field"><div class="label">VAT 7% (OWS Extra)</div><div class="control"><input id="qsExtraVat" readonly></div></div>
-              <div class="field"><div class="label">OWS Extra (In VAT)</div><div class="control"><input id="qsExtraIn" readonly></div></div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Actions -->
-        <section class="card">
-          <div class="card-head"><h2>คำสั่ง</h2></div>
-          <div class="actions">
-            <button class="btn btn-primary" onclick="calculate()">คำนวณ</button>
-            <button class="btn btn-danger" onclick="calculateDownForTargetLease(36000)">ค่างวด 36,000</button>
-            <button class="btn btn-ghost" onclick="generateQuotation()">ใบเสนอราคา</button>
-            <button class="btn btn-ghost" onclick="sendToQsData()">ส่งข้อมูล OWS</button>
-          </div>
-        </section>
-
-      </div>
+        </div>
+      </section>
     </div>
+
+    <!-- Row 2: ซ้าย = เงินดาวน์ | บอลลูน  |  ขวา = ดอกเบี้ย | ค่าคอม -->
+    <div class="row two">
+
+      <!-- ซ้าย: เงินดาวน์ | บอลลูน -->
+      <section class="card">
+        <div class="card-head"><h2>เงินดาวน์ | บอลลูน</h2></div>
+        <div class="section">
+          <div class="fields">
+            <div class="field">
+              <div class="label">รูปแบบดาวน์</div>
+              <div class="control">
+                <select id="downType">
+                  <option value="percent">เป็น %</option>
+                  <option value="amount">เป็นจำนวนเงิน</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <div class="label">กรอก % หรือ จำนวน</div>
+              <div class="control"><input id="downInput" type="text" value="0.00"></div>
+            </div>
+            <div class="field">
+              <div class="label">เงินดาวน์ <span class="muted">( <span id="downPercentInline">0.0000%</span> )</span></div>
+              <div class="control"><input id="downAmount" readonly></div>
+            </div>
+
+            <div class="field">
+              <div class="label">รูปแบบบอลลูน</div>
+              <div class="control">
+                <select id="balloonType">
+                  <!-- Default = amount -->
+                  <option value="amount" selected>ระบุเป็นจำนวนเงิน</option>
+                  <option value="percent">เป็น % ของราคาสุทธิ</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <div class="label">เปอร์เซ็นต์บอลลูน</div>
+              <div class="control">
+                <select id="balloonPercentSelect" disabled>
+                  <option value="5">5%</option>
+                  <option value="10" selected>10%</option>
+                  <option value="15">15%</option>
+                  <option value="20">20%</option>
+                  <option value="25">25%</option>
+                  <option value="30">30%</option>
+                  <option value="35">35% (สูงสุด)</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <div class="label">จำนวนเงินบอลลูน</div>
+              <div class="control"><input id="balloonManualInput" type="text" value="0.00"></div>
+            </div>
+            <div class="field">
+              <div class="label">ยอดบอลลูน <span class="muted">( <span id="balloonPercentInline">0.0000%</span> )</span></div>
+              <div class="control"><input id="balloonAmount" readonly></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ขวา: ดอกเบี้ย | ค่าคอม -->
+      <section class="card">
+        <div class="card-head"><h2>ดอกเบี้ย | ค่าคอม</h2></div>
+        <div class="section">
+          <div class="fields">
+            <div class="field">
+              <div class="label">โหมดดอกเบี้ย</div>
+              <div class="control">
+                <select id="interestMode">
+                  <option value="flat" selected>กำหนด Flat Rate (%)</option>
+                  <option value="target_irr">กำหนด IRR เป้าหมาย (% ต่อปี)</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <div class="label">Flat Rate (%)</div>
+              <div class="control"><input id="interestRate" type="text" value="0.00"></div>
+            </div>
+            <div class="field">
+              <div class="label">IRR เป้าหมาย (% ต่อปี)</div>
+              <div class="control"><input id="targetIrr" type="text" value="0.00" disabled></div>
+            </div>
+            <div class="field">
+              <div class="label">จำนวนปี</div>
+              <div class="control"><input id="termYears" type="number" step="1" value="0"></div>
+            </div>
+
+            <div class="field">
+              <div class="label">คิดค่าคอมจาก</div>
+              <div class="control">
+                <select id="comBase">
+                  <option value="interest">ดอกเบี้ยรวม</option>
+                  <option value="finance">ยอดจัด</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <div class="label">Commission (%)</div>
+              <div class="control"><input id="comPercent" type="text" value="0.00"></div>
+            </div>
+            <div class="field">
+              <div class="label">ค่าคอม (Ex VAT)</div>
+              <div class="control"><input id="calculatedCommission" readonly></div>
+            </div>
+            <div class="field">
+              <div class="label">Extra Commission (Ex VAT)</div>
+              <div class="control"><input id="extra" type="text" value="0.00"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Row 3: ซ้าย = ผลลัพธ์ | ขวา = OWS -->
+    <div class="row two">
+
+      <!-- ผลลัพธ์ -->
+      <section class="card">
+        <div class="card-head"><h2>ผลลัพธ์</h2></div>
+        <div class="section">
+          <div class="fields">
+            <div class="field">
+              <div class="label">ยอดจัด</div>
+              <div class="control"><input id="financeAmt" readonly></div>
+            </div>
+            <div class="field">
+              <div class="label">ดอกเบี้ยต่อปี (Ex VAT)</div>
+              <div class="control"><input id="intPA" readonly></div>
+            </div>
+            <div class="field">
+              <div class="label">ดอกเบี้ยรวม (Ex VAT)</div>
+              <div class="control"><input id="intTotal" readonly></div>
+            </div>
+            <div class="field">
+              <div class="label">ยอดจัดรวม (ฐานผ่อน)</div>
+              <div class="control"><input id="financeTotalWithInterest" readonly></div>
+            </div>
+
+            <div class="field">
+              <div class="label">ค่างวด (Ex VAT) / งวด</div>
+              <div class="control"><input id="leaseExVat" readonly></div>
+            </div>
+            <div class="field">
+              <div class="label">VAT 7% / งวด</div>
+              <div class="control"><input id="leaseVat" readonly></div>
+            </div>
+            <div class="field">
+              <div class="label">ค่างวด (In VAT) / งวด</div>
+              <div class="control"><input id="leaseInVat" readonly></div>
+            </div>
+
+            <div class="field">
+              <div class="label">OWS Extra (Ex VAT)</div>
+              <div class="control"><input id="owsExtraEx" readonly></div>
+            </div>
+            <div class="field">
+              <div class="label">VAT 7% (OWS Extra)</div>
+              <div class="control"><input id="owsExtraVat" readonly></div>
+            </div>
+            <div class="field">
+              <div class="label">OWS Extra (In VAT)</div>
+              <div class="control"><input id="owsExtraIn" readonly></div>
+            </div>
+
+            <div class="field">
+              <div class="label">IRR %</div>
+              <div class="control"><input id="trRate" readonly></div>
+            </div>
+            <div class="field">
+              <div class="label">Customer TR</div>
+              <div class="control"><input id="customerTr" readonly></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- OWS Information -->
+      <section class="card">
+        <div class="card-head"><h2>OWS Information</h2></div>
+        <div class="section">
+          <div class="fields">
+            <div class="field"><div class="label">ข้อมูลรถ</div><div class="control"><input id="qsCarInfo" readonly></div></div>
+            <div class="field"><div class="label">ราคารถ</div><div class="control"><input id="qsCarPrice" readonly></div></div>
+            <div class="field"><div class="label">ส่วนลด</div><div class="control"><input id="qsDiscount" readonly></div></div>
+            <div class="field"><div class="label">Option</div><div class="control"><input id="qsOption" readonly></div></div>
+            <div class="field"><div class="label">เงินดาวน์</div><div class="control"><input id="qsDownAmount" readonly></div></div>
+            <div class="field"><div class="label">เงินดาวน์คิดเป็น %</div><div class="control"><input id="qsDownPercent" readonly></div></div>
+            <div class="field"><div class="label">บอลลูน (บาท)</div><div class="control"><input id="qsBalloonAmount" readonly></div></div>
+            <div class="field"><div class="label">บอลลูนคิดเป็น %</div><div class="control"><input id="qsBalloonPercent" readonly></div></div>
+            <div class="field"><div class="label">IRR %</div><div class="control"><input id="qsTrRate" readonly></div></div>
+            <div class="field"><div class="label">จำนวนปี</div><div class="control"><input id="qsTermYears" readonly></div></div>
+            <div class="field"><div class="label">Deposit</div><div class="control"><input id="qsDeposit" readonly></div></div>
+            <div class="field"><div class="label">OWS Extra (Ex VAT)</div><div class="control"><input id="qsExtraEx" readonly></div></div>
+            <div class="field"><div class="label">VAT 7% (OWS Extra)</div><div class="control"><input id="qsExtraVat" readonly></div></div>
+            <div class="field"><div class="label">OWS Extra (In VAT)</div><div class="control"><input id="qsExtraIn" readonly></div></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Row 4: Actions (เต็มความกว้าง) -->
+    <div class="row">
+      <section class="card">
+        <div class="card-head"><h2>คำสั่ง</h2></div>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="calculate()">คำนวณ</button>
+          <button class="btn btn-danger" onclick="calculateDownForTargetLease(36000)">ค่างวด 36,000</button>
+          <button class="btn btn-ghost" onclick="generateQuotation()">ใบเสนอราคา</button>
+          <button class="btn btn-ghost" onclick="sendToQsData()">ส่งข้อมูล OWS</button>
+        </div>
+      </section>
+    </div>
+
   </main>
 
   <script>
-    // ========= Helpers =========
+    /* ========= Helpers ========= */
     function format(n, d=2){ if(isNaN(n)||n===null) return d===0?"0":(d===4?"0.0000":"0.00");
       return new Intl.NumberFormat('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}).format(parseFloat(n));}
     function formatNoDecimal(n){ return format(n,0); }
     function format4(n){ return format(n,4); }
     function uncomma(s){ const c=String(s).replace(/,/g,''); const v=parseFloat(c); return isNaN(v)?0:v; }
 
-    // IRR (per period) Newton
+    // IRR per period (Newton)
     function calculateIRR(nper, pmt, pv, fv=0, type=0){
       if (pmt===0 && pv===0) return NaN; if (nper<=0) return NaN;
       let rate=0.05/12, tol=1e-7, maxIter=500;
@@ -500,7 +467,7 @@
       return NaN;
     }
 
-    // ===== Target IRR Solver (find Flat Rate) =====
+    // Target IRR Solver (Flat Rate)
     function effFromFlat(flatRatePct, inputs, smooth=true){
       const { total, down, balloon, years, months, comBase, comPercent, extra } = inputs;
       const finance = total - down;
@@ -566,7 +533,7 @@
       down = Math.min(Math.max(down,0), total);
       document.getElementById('downAmount').value = format(down);
 
-      // Balloon (<= 35% of total) — Default mode is amount
+      // Balloon (≤ 35% of total) — Default mode is amount
       const typeBal=document.getElementById('balloonType').value;
       const cap=Math.max(total*0.35,0);
       let balloon=0, balPct=0;
@@ -759,8 +726,8 @@
       }
     }
 
-    function generateQuotation(){ calculate(); /* เก็บ/เปิดหน้าถัดไปตาม workflow เดิม (ถ้ามี) */ }
-    function sendToQsData(){ calculate(); /* เก็บ/เปิดหน้าถัดไปตาม workflow เดิม (ถ้ามี) */ }
+    function generateQuotation(){ calculate(); /* เก็บ/เปิดหน้าถัดไปตาม workflow ของคุณ */ }
+    function sendToQsData(){ calculate(); /* เก็บ/เปิดหน้าถัดไปตาม workflow ของคุณ */ }
 
     // ========= UI wiring =========
     function addNumericListeners(id){
@@ -804,7 +771,7 @@
       document.getElementById('balloonPercentSelect').addEventListener('change', calculate);
       document.getElementById('interestMode').addEventListener('change', ()=>{ toggleInterestMode(); calculate(); });
 
-      // Defaults: Balloon = amount, value=0
+      // Default: Balloon = amount, 0.00
       document.getElementById('balloonType').value = 'amount';
       document.getElementById('balloonManualInput').value = '0.00';
 
