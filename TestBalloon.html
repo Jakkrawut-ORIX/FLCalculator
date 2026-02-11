@@ -2,89 +2,103 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>ORIX Financial Lease Calculator — Minimal (Editable vs Auto)</title>
+  <title>ORIX Financial Lease Calculator — Minimal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- Google Font: Noto Sans Thai (บาง/เบา) -->
-  https://fonts.googleapis.com
-  https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
-:root {
-  /* ORIX Minimal palette */
-  --orix-blue: #003366;     /* primary accent */
-  --blue-600: #0A3B6F;
-  --blue-050: #F6FAFD;
+    :root {
+      /* ORIX Minimal palette */
+      --orix-blue: #003366;     /* primary accent */
+      --blue-600: #0A3B6F;
+      --blue-050: #F6FAFD;
 
-  --ink-900: #12161C;
-  --ink-700: #2E3A46;
-  --ink-600: #475569;
-  --ink-500: #64748B;
-  --line: #E6EBF0;
-  --white: #FFFFFF;
+      --ink-900: #12161C;
+      --ink-700: #2E3A46;
+      --ink-600: #475569;
+      --ink-500: #64748B;
+      --line: #E6EBF0;
+      --white: #FFFFFF;
 
-  /* Inputs: editable vs readonly (แยกสีชัดเจน) */
-  /* ▼ ใหม่: สีเหลืองอ่อนมาก สำหรับช่องกรอกได้ */
-  --editable-bg: #FFFDF0;          /* very light yellow */
-  --editable-border: #F3E6BA;      /* warm light border */
+      /* Inputs: สี/สไตล์ แยกชัดเจน */
+      /* Editable = เหลืองอ่อนมาก */
+      --editable-bg: #FFFDF0;       /* very light yellow */
+      --editable-border: #F3E6BA;   /* warm light border */
 
-  /* ▼ ช่องคำนวณ/ห้ามแก้ไข (เพิ่มเฉดแอมเบอร์อ่อนเหมือนเดิม) */
-  --readonly-bg: #FFF4E5;          /* soft amber */
-  --readonly-border: #F3CDA0;
-  --readonly-text: #7A4E00;
+      /* Read-only/Disabled = ฟ้าอ่อน */
+      --readonly-bg: #EAF4FF;       /* light blue */
+      --readonly-border: #BBD8FF;   /* light blue border */
+      --readonly-text: #0B3A6A;     /* deep blue text */
 
-  /* ความโค้ง統一 (ใช้ร่วมกันทั้ง editable/readonly) */
-  --input-radius: 12px;
+      /* ความโค้ง統一 */
+      --input-radius: 12px;
 
-  --ring: rgba(0, 51, 102, 0.25);
-  --shadow: 0 8px 24px rgba(18, 22, 28, 0.06);
-  --radius: 12px;
+      --ring: rgba(0, 51, 102, 0.25);
+      --shadow: 0 8px 24px rgba(18, 22, 28, 0.06);
+      --radius: 12px;
+    }
 
-  /* Tag colors */
-  --tag-edit-bg: #E9F3FF;     /* light blue */
-  --tag-edit-text: #0B3A6A;
-  --tag-ro-bg: #FFE9C9;       /* light amber */
-  --tag-ro-text: #7A4E00;
-}
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Noto Sans Thai', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-weight: 300;
+      margin: 0;
+      color: var(--ink-700);
+      background: linear-gradient(180deg, var(--blue-050), #fff 200px);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
 
-/* … (โค้ดส่วนอื่นคงเดิม) … */
-
-/* ช่องกรอกได้ (Editable) — ปรับเป็นเหลืองอ่อน + โฟกัสสี ORIX */
-.control input:not([readonly]),
-.control select {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--editable-border);
-  border-radius: var(--input-radius);   /* ใช้มุมโค้งเดียวกัน */
-  background: var(--editable-bg);       /* เหลืองอ่อนมาก */
-  color: var(--ink-700);
-  text-align: right;
-  font-weight: 400;
-  outline: none;
-  transition: .15s ease;
-}
-.control input#carInfo { text-align: left; }
-.control input:focus,
-.control select:focus {
-  border-color: var(--orix-blue);
-  box-shadow: 0 0 0 3px var(--ring);
-  background: #fff;
-}
-
-/* ช่องคำนวณ/ห้ามแก้ไข (Read-only/Disabled) — โค้งเหมือนกันทุกช่อง */
-.control input[readonly],
-.control select:disabled,
-.control input:disabled {
-  background: var(--readonly-bg);
-  border: 1px solid var(--readonly-border);
-  color: var(--readonly-text);
-  cursor: not-allowed;
-  font-weight: 600;
-  border-radius: var(--input-radius);   /* <-- ทำให้โค้งเท่ากัน */
-}
+    /* Header minimal */
+    header {
+      background: var(--white);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 14px 16px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .brand {
+      width: 8px; height: 26px; border-radius: 4px; background: var(--orix-blue);
+    }
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ink-900);
+      letter-spacing: .1px;
+    }
 
     main {
       max-width: 1100px;
-      margin: 16px auto 28px;
+      margin: 8px auto 28px;
       padding: 0 16px;
+    }
+
+    /* Global Legend */
+    .legend-global {
+      max-width: 1100px;
+      margin: 8px auto 0;
+      padding: 8px 16px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      align-items: center;
+      font-size: 12px;
+      color: var(--ink-600);
+    }
+    .legend-item { display: inline-flex; align-items: center; gap: 8px; }
+    .legend-box {
+      width: 14px; height: 14px; border-radius: 4px; display: inline-block;
+      border: 1px solid var(--line);
     }
 
     /* Card */
@@ -101,8 +115,8 @@
       border-bottom: 1px solid var(--line);
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: 10px;
+      justify-content: space-between;
     }
     .card-head h2 {
       margin: 0;
@@ -111,22 +125,6 @@
       color: var(--orix-blue);
       letter-spacing: .2px;
     }
-
-    /* Legend for tags */
-    .legend {
-      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-      font-size: 12px; color: var(--ink-600);
-    }
-    .tag {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 3px 8px; border-radius: 999px;
-      font-size: 12px; font-weight: 600;
-      border: 1px solid transparent;
-      user-select: none;
-    }
-    .tag .ico { font-size: 12px; line-height: 1; }
-    .tag-edit { background: var(--tag-edit-bg); color: var(--tag-edit-text); border-color: #CCE6FF; }
-    .tag-ro   { background: var(--tag-ro-bg);   color: var(--tag-ro-text);   border-color: #F6D9A8; }
 
     /* Grid */
     .grid { display: grid; grid-template-columns: 1fr; gap: 12px; padding: 12px; }
@@ -147,15 +145,23 @@
 
     .label {
       font-size: 13px; color: var(--ink-600);
-      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
       font-weight: 400;
     }
+    .muted { color: var(--ink-500); font-size: 12px; }
 
+    /* Editable = เหลืองอ่อนมาก */
     .control input:not([readonly]), .control select {
-      width: 100%; padding: 10px 12px;
+      width: 100%;
+      padding: 10px 12px;
       border: 1px solid var(--editable-border);
-      border-radius: 10px; background: var(--editable-bg);
-      color: var(--ink-700); text-align: right; font-weight: 400; outline: none; transition: .15s ease;
+      border-radius: var(--input-radius);
+      background: var(--editable-bg);
+      color: var(--ink-700);
+      text-align: right;
+      font-weight: 400;
+      outline: none;
+      transition: .15s ease;
     }
     .control input#carInfo { text-align: left; }
     .control input:focus, .control select:focus {
@@ -164,23 +170,19 @@
       background: #fff;
     }
 
-    /* Readonly / disabled explicit style (ชัดเจน) */
-    .control input[readonly] {
-      background: var(--readonly-bg);
-      border: 1px solid var(--readonly-border);
-      color: var(--readonly-text);
-      cursor: not-allowed;
-      font-weight: 600;
-    }
+    /* Read-only/Disabled = ฟ้าอ่อน */
+    .control input[readonly],
     .control select:disabled,
     .control input:disabled {
       background: var(--readonly-bg);
       border: 1px solid var(--readonly-border);
       color: var(--readonly-text);
       cursor: not-allowed;
+      font-weight: 600;
+      border-radius: var(--input-radius);
     }
 
-    /* Button set */
+    /* Buttons */
     .actions { display: grid; gap: 10px; padding: 12px; grid-template-columns: 1fr 1fr; }
     @media (min-width: 680px) { .actions { grid-template-columns: repeat(4, 1fr); } }
     .btn {
@@ -204,6 +206,18 @@
     </div>
   </header>
 
+  <!-- Global Legend (คำอธิบายบนสุด) -->
+  <div class="legend-global">
+    <span class="legend-item">
+      <span class="legend-box" style="background:#FFFDF0;border-color:#F3E6BA;"></span>
+      ช่องกรอกได้ (Editable)
+    </span>
+    <span class="legend-item">
+      <span class="legend-box" style="background:#EAF4FF;border-color:#BBD8FF;"></span>
+      คำนวณอัตโนมัติ / ห้ามแก้ไข
+    </span>
+  </div>
+
   <main>
     <div class="grid two">
       <!-- LEFT: Inputs -->
@@ -211,33 +225,27 @@
 
         <!-- Base Info -->
         <section class="card">
-          <div class="card-head">
-            <h2>ข้อมูลเบื้องต้น</h2>
-            <div class="legend">
-              <span class="tag tag-edit"><span class="ico">✏️</span> แก้ไขได้</span>
-              <span class="tag tag-ro"><span class="ico">🔒</span> คำนวณ</span>
-            </div>
-          </div>
+          <div class="card-head"><h2>ข้อมูลเบื้องต้น</h2></div>
           <div class="section">
             <div class="fields">
               <div class="field">
-                <div class="label">ข้อมูลรถ <span class="tag tag-edit" data-tag></span></div>
+                <div class="label">ข้อมูลรถ</div>
                 <div class="control"><input id="carInfo" type="text" value=""></div>
               </div>
               <div class="field">
-                <div class="label">ราคารถ <span class="tag" data-tag></span></div>
+                <div class="label">ราคารถ</div>
                 <div class="control"><input id="carPrice" type="text" value="0.00"></div>
               </div>
               <div class="field">
-                <div class="label">ส่วนลด <span class="tag" data-tag></span></div>
+                <div class="label">ส่วนลด</div>
                 <div class="control"><input id="discount" type="text" value="0.00"></div>
               </div>
               <div class="field">
-                <div class="label">Option <span class="tag" data-tag></span></div>
+                <div class="label">Option</div>
                 <div class="control"><input id="option" type="text" value="0.00"></div>
               </div>
               <div class="field">
-                <div class="label">ราคาสุทธิ <span class="tag" data-tag></span></div>
+                <div class="label">ราคาสุทธิ</div>
                 <div class="control"><input id="totalAmount" readonly></div>
               </div>
             </div>
@@ -250,7 +258,7 @@
           <div class="section">
             <div class="fields">
               <div class="field">
-                <div class="label">รูปแบบดาวน์ <span class="tag" data-tag></span></div>
+                <div class="label">รูปแบบดาวน์</div>
                 <div class="control">
                   <select id="downType">
                     <option value="percent">เป็น %</option>
@@ -259,16 +267,16 @@
                 </div>
               </div>
               <div class="field">
-                <div class="label">กรอก % หรือ จำนวน <span class="tag" data-tag></span></div>
+                <div class="label">กรอก % หรือ จำนวน</div>
                 <div class="control"><input id="downInput" type="text" value="0.00"></div>
               </div>
               <div class="field">
-                <div class="label">เงินดาวน์ <span class="muted">( <span id="downPercentInline">0.0000%</span> )</span> <span class="tag" data-tag></span></div>
+                <div class="label">เงินดาวน์ <span class="muted">( <span id="downPercentInline">0.0000%</span> )</span></div>
                 <div class="control"><input id="downAmount" readonly></div>
               </div>
 
               <div class="field">
-                <div class="label">รูปแบบบอลลูน <span class="tag" data-tag></span></div>
+                <div class="label">รูปแบบบอลลูน</div>
                 <div class="control">
                   <!-- Default = amount -->
                   <select id="balloonType">
@@ -278,7 +286,7 @@
                 </div>
               </div>
               <div class="field">
-                <div class="label">เปอร์เซ็นต์บอลลูน <span class="tag" data-tag></span></div>
+                <div class="label">เปอร์เซ็นต์บอลลูน</div>
                 <div class="control">
                   <select id="balloonPercentSelect" disabled>
                     <option value="5">5%</option>
@@ -292,11 +300,11 @@
                 </div>
               </div>
               <div class="field">
-                <div class="label">จำนวนเงินบอลลูน <span class="tag" data-tag></span></div>
+                <div class="label">จำนวนเงินบอลลูน</div>
                 <div class="control"><input id="balloonManualInput" type="text" value="0.00"></div>
               </div>
               <div class="field">
-                <div class="label">ยอดบอลลูน <span class="muted">( <span id="balloonPercentInline">0.0000%</span> )</span> <span class="tag" data-tag></span></div>
+                <div class="label">ยอดบอลลูน <span class="muted">( <span id="balloonPercentInline">0.0000%</span> )</span></div>
                 <div class="control"><input id="balloonAmount" readonly></div>
               </div>
             </div>
@@ -309,7 +317,7 @@
           <div class="section">
             <div class="fields">
               <div class="field">
-                <div class="label">โหมดดอกเบี้ย <span class="tag" data-tag></span></div>
+                <div class="label">โหมดดอกเบี้ย</div>
                 <div class="control">
                   <select id="interestMode">
                     <option value="flat" selected>กำหนด Flat Rate (%)</option>
@@ -318,20 +326,20 @@
                 </div>
               </div>
               <div class="field">
-                <div class="label">Flat Rate (%) <span class="tag" data-tag></span></div>
+                <div class="label">Flat Rate (%)</div>
                 <div class="control"><input id="interestRate" type="text" value="0.00"></div>
               </div>
               <div class="field">
-                <div class="label">IRR เป้าหมาย (% ต่อปี) <span class="tag" data-tag></span></div>
+                <div class="label">IRR เป้าหมาย (% ต่อปี)</div>
                 <div class="control"><input id="targetIrr" type="text" value="0.00" disabled></div>
               </div>
               <div class="field">
-                <div class="label">จำนวนปี <span class="tag" data-tag></span></div>
+                <div class="label">จำนวนปี</div>
                 <div class="control"><input id="termYears" type="number" step="1" value="0"></div>
               </div>
 
               <div class="field">
-                <div class="label">คิดค่าคอมจาก <span class="tag" data-tag></span></div>
+                <div class="label">คิดค่าคอมจาก</div>
                 <div class="control">
                   <select id="comBase">
                     <option value="interest">ดอกเบี้ยรวม</option>
@@ -340,15 +348,15 @@
                 </div>
               </div>
               <div class="field">
-                <div class="label">Commission (%) <span class="tag" data-tag></span></div>
+                <div class="label">Commission (%)</div>
                 <div class="control"><input id="comPercent" type="text" value="0.00"></div>
               </div>
               <div class="field">
-                <div class="label">ค่าคอม (Ex VAT) <span class="tag" data-tag></span></div>
+                <div class="label">ค่าคอม (Ex VAT)</div>
                 <div class="control"><input id="calculatedCommission" readonly></div>
               </div>
               <div class="field">
-                <div class="label">Extra Commission (Ex VAT) <span class="tag" data-tag></span></div>
+                <div class="label">Extra Commission (Ex VAT)</div>
                 <div class="control"><input id="extra" type="text" value="0.00"></div>
               </div>
             </div>
@@ -366,57 +374,57 @@
           <div class="section">
             <div class="fields">
               <div class="field">
-                <div class="label">ยอดจัด <span class="tag" data-tag></span></div>
+                <div class="label">ยอดจัด</div>
                 <div class="control"><input id="financeAmt" readonly></div>
               </div>
               <div class="field">
-                <div class="label">ดอกเบี้ยต่อปี (Ex VAT) <span class="tag" data-tag></span></div>
+                <div class="label">ดอกเบี้ยต่อปี (Ex VAT)</div>
                 <div class="control"><input id="intPA" readonly></div>
               </div>
               <div class="field">
-                <div class="label">ดอกเบี้ยรวม (Ex VAT) <span class="tag" data-tag></span></div>
+                <div class="label">ดอกเบี้ยรวม (Ex VAT)</div>
                 <div class="control"><input id="intTotal" readonly></div>
               </div>
               <div class="field">
-                <div class="label">ยอดจัดรวม (ฐานผ่อน) <span class="tag" data-tag></span></div>
+                <div class="label">ยอดจัดรวม (ฐานผ่อน)</div>
                 <div class="control"><input id="financeTotalWithInterest" readonly></div>
               </div>
 
               <!-- Installment breakdown -->
               <div class="field">
-                <div class="label">ค่างวด (Ex VAT) / งวด <span class="tag" data-tag></span></div>
+                <div class="label">ค่างวด (Ex VAT) / งวด</div>
                 <div class="control"><input id="leaseExVat" readonly></div>
               </div>
               <div class="field">
-                <div class="label">VAT 7% / งวด <span class="tag" data-tag></span></div>
+                <div class="label">VAT 7% / งวด</div>
                 <div class="control"><input id="leaseVat" readonly></div>
               </div>
               <div class="field">
-                <div class="label">ค่างวด (In VAT) / งวด <span class="tag" data-tag></span></div>
+                <div class="label">ค่างวด (In VAT) / งวด</div>
                 <div class="control"><input id="leaseInVat" readonly></div>
               </div>
 
               <!-- OWS Extra breakdown -->
               <div class="field">
-                <div class="label">OWS Extra (Ex VAT) <span class="tag" data-tag></span></div>
+                <div class="label">OWS Extra (Ex VAT)</div>
                 <div class="control"><input id="owsExtraEx" readonly></div>
               </div>
               <div class="field">
-                <div class="label">VAT 7% (OWS Extra) <span class="tag" data-tag></span></div>
+                <div class="label">VAT 7% (OWS Extra)</div>
                 <div class="control"><input id="owsExtraVat" readonly></div>
               </div>
               <div class="field">
-                <div class="label">OWS Extra (In VAT) <span class="tag" data-tag></span></div>
+                <div class="label">OWS Extra (In VAT)</div>
                 <div class="control"><input id="owsExtraIn" readonly></div>
               </div>
 
               <!-- Rates -->
               <div class="field">
-                <div class="label">IRR % <span class="tag" data-tag></span></div>
+                <div class="label">IRR %</div>
                 <div class="control"><input id="trRate" readonly></div>
               </div>
               <div class="field">
-                <div class="label">Customer TR <span class="tag" data-tag></span></div>
+                <div class="label">Customer TR</div>
                 <div class="control"><input id="customerTr" readonly></div>
               </div>
             </div>
@@ -428,20 +436,20 @@
           <div class="card-head"><h2>OWS Information</h2></div>
           <div class="section">
             <div class="fields">
-              <div class="field"><div class="label">ข้อมูลรถ <span class="tag" data-tag></span></div><div class="control"><input id="qsCarInfo" readonly></div></div>
-              <div class="field"><div class="label">ราคารถ <span class="tag" data-tag></span></div><div class="control"><input id="qsCarPrice" readonly></div></div>
-              <div class="field"><div class="label">ส่วนลด <span class="tag" data-tag></span></div><div class="control"><input id="qsDiscount" readonly></div></div>
-              <div class="field"><div class="label">Option <span class="tag" data-tag></span></div><div class="control"><input id="qsOption" readonly></div></div>
-              <div class="field"><div class="label">เงินดาวน์ <span class="tag" data-tag></span></div><div class="control"><input id="qsDownAmount" readonly></div></div>
-              <div class="field"><div class="label">เงินดาวน์คิดเป็น % <span class="tag" data-tag></span></div><div class="control"><input id="qsDownPercent" readonly></div></div>
-              <div class="field"><div class="label">บอลลูน (บาท) <span class="tag" data-tag></span></div><div class="control"><input id="qsBalloonAmount" readonly></div></div>
-              <div class="field"><div class="label">บอลลูนคิดเป็น % <span class="tag" data-tag></span></div><div class="control"><input id="qsBalloonPercent" readonly></div></div>
-              <div class="field"><div class="label">IRR % <span class="tag" data-tag></span></div><div class="control"><input id="qsTrRate" readonly></div></div>
-              <div class="field"><div class="label">จำนวนปี <span class="tag" data-tag></span></div><div class="control"><input id="qsTermYears" readonly></div></div>
-              <div class="field"><div class="label">Deposit <span class="tag" data-tag></span></div><div class="control"><input id="qsDeposit" readonly></div></div>
-              <div class="field"><div class="label">OWS Extra (Ex VAT) <span class="tag" data-tag></span></div><div class="control"><input id="qsExtraEx" readonly></div></div>
-              <div class="field"><div class="label">VAT 7% (OWS Extra) <span class="tag" data-tag></span></div><div class="control"><input id="qsExtraVat" readonly></div></div>
-              <div class="field"><div class="label">OWS Extra (In VAT) <span class="tag" data-tag></span></div><div class="control"><input id="qsExtraIn" readonly></div></div>
+              <div class="field"><div class="label">ข้อมูลรถ</div><div class="control"><input id="qsCarInfo" readonly></div></div>
+              <div class="field"><div class="label">ราคารถ</div><div class="control"><input id="qsCarPrice" readonly></div></div>
+              <div class="field"><div class="label">ส่วนลด</div><div class="control"><input id="qsDiscount" readonly></div></div>
+              <div class="field"><div class="label">Option</div><div class="control"><input id="qsOption" readonly></div></div>
+              <div class="field"><div class="label">เงินดาวน์</div><div class="control"><input id="qsDownAmount" readonly></div></div>
+              <div class="field"><div class="label">เงินดาวน์คิดเป็น %</div><div class="control"><input id="qsDownPercent" readonly></div></div>
+              <div class="field"><div class="label">บอลลูน (บาท)</div><div class="control"><input id="qsBalloonAmount" readonly></div></div>
+              <div class="field"><div class="label">บอลลูนคิดเป็น %</div><div class="control"><input id="qsBalloonPercent" readonly></div></div>
+              <div class="field"><div class="label">IRR %</div><div class="control"><input id="qsTrRate" readonly></div></div>
+              <div class="field"><div class="label">จำนวนปี</div><div class="control"><input id="qsTermYears" readonly></div></div>
+              <div class="field"><div class="label">Deposit</div><div class="control"><input id="qsDeposit" readonly></div></div>
+              <div class="field"><div class="label">OWS Extra (Ex VAT)</div><div class="control"><input id="qsExtraEx" readonly></div></div>
+              <div class="field"><div class="label">VAT 7% (OWS Extra)</div><div class="control"><input id="qsExtraVat" readonly></div></div>
+              <div class="field"><div class="label">OWS Extra (In VAT)</div><div class="control"><input id="qsExtraIn" readonly></div></div>
             </div>
           </div>
         </section>
@@ -462,7 +470,7 @@
   </main>
 
   <script>
-    /* ========= Helpers ========= */
+    // ========= Helpers =========
     function format(n, d=2){ if(isNaN(n)||n===null) return d===0?"0":(d===4?"0.0000":"0.00");
       return new Intl.NumberFormat('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}).format(parseFloat(n));}
     function formatNoDecimal(n){ return format(n,0); }
@@ -492,7 +500,7 @@
       return NaN;
     }
 
-    // Solver for Target IRR (find Flat Rate)
+    // ===== Target IRR Solver (find Flat Rate) =====
     function effFromFlat(flatRatePct, inputs, smooth=true){
       const { total, down, balloon, years, months, comBase, comPercent, extra } = inputs;
       const finance = total - down;
@@ -541,7 +549,7 @@
       const q = document.getElementById('qsBalloonPercent'); if(q) q.value = `${format4(pct)}%`;
     }
 
-    /* ====== Core calculation ====== */
+    // ========= Core calc =========
     function calculate(){
       const getVal=id=>uncomma(document.getElementById(id).value);
       const getInt=id=>parseInt(uncomma(document.getElementById(id).value))||0;
@@ -566,13 +574,16 @@
       const pctSel=document.getElementById('balloonPercentSelect');
       const amtInp=document.getElementById('balloonManualInput');
       if(typeBal==='percent'){
-        pctSel.disabled=false; amtInp.disabled=true;
+        pctSel.disabled=false;  amtInp.disabled=true;
         const raw = parseFloat(pctSel.value)||0;
         balPct = Math.min(Math.max(raw,0),35);
-        if(raw!==balPct){ pctSel.value = String(balPct); alert('เปอร์เซ็นต์บอลลูนสูงสุดคือ 35%'); }
+        if(raw!==balPct){
+          pctSel.value = String(balPct);
+          alert('เปอร์เซ็นต์บอลลูนสูงสุดคือ 35%');
+        }
         balloon = total*(balPct/100);
       }else{
-        pctSel.disabled=true; amtInp.disabled=false;
+        pctSel.disabled=true;   amtInp.disabled=false;
         let manual = uncomma(amtInp.value);
         if (manual<0) manual=0;
         if (manual>cap) manual=cap;
@@ -612,7 +623,6 @@
         document.getElementById('trRate').value='ไม่สามารถคำนวณ';
         document.getElementById('customerTr').value='ไม่สามารถคำนวณ';
         updateOWS(carInfo, car, discount, option, down, balloon, years, NaN, 0, 0, 0);
-        refreshFieldTags(); // update tags/colors
         return;
       }
 
@@ -660,7 +670,6 @@
       document.getElementById('customerTr').value = isNaN(cus)?'ไม่สามารถคำนวณ':format4(cus);
 
       updateOWS(carInfo, car, discount, option, down, balloon, years, irr, owsEx, owsVat, owsIn);
-      refreshFieldTags(); // update tags/colors
     }
 
     function updateOWS(carInfo, car, discount, option, down, balloon, years, irr, ex, vat, inv){
@@ -750,10 +759,10 @@
       }
     }
 
-    function generateQuotation(){ calculate(); /* เก็บ/เปิดหน้าถัดไปตาม workflow เดิม */ }
-    function sendToQsData(){ calculate(); /* เก็บ/เปิดหน้าถัดไปตาม workflow เดิม */ }
+    function generateQuotation(){ calculate(); /* เก็บ/เปิดหน้าถัดไปตาม workflow เดิม (ถ้ามี) */ }
+    function sendToQsData(){ calculate(); /* เก็บ/เปิดหน้าถัดไปตาม workflow เดิม (ถ้ามี) */ }
 
-    /* ===== Input wiring & Tag refresh ===== */
+    // ========= UI wiring =========
     function addNumericListeners(id){
       const el=document.getElementById(id); if(!el) return;
       el.addEventListener('focus', ()=>{ let v=uncomma(el.value); el.value=(Math.abs(v)<0.001)?'':String(v); });
@@ -770,61 +779,25 @@
         calculate();
       });
     }
-
     function toggleBalloonUI(){
       const type=document.getElementById('balloonType').value;
       const pctSel=document.getElementById('balloonPercentSelect');
       const amtInp=document.getElementById('balloonManualInput');
-      if(type==='percent'){
-        pctSel.disabled=false;  amtInp.disabled=true;
-      }else{
-        pctSel.disabled=true;   amtInp.disabled=false;
-      }
-      refreshFieldTags();
+      if(type==='percent'){ pctSel.disabled=false;  amtInp.disabled=true; }
+      else{                pctSel.disabled=true;   amtInp.disabled=false; }
     }
-
     function toggleInterestMode(){
       const mode=document.getElementById('interestMode').value;
       const flat=document.getElementById('interestRate');
       const irr=document.getElementById('targetIrr');
       if(mode==='flat'){ flat.disabled=false; irr.disabled=true; }
-      else{ flat.disabled=true; irr.disabled=false; }
-      refreshFieldTags();
-    }
-
-    // สร้าง/ปรับแท็กบน label อัตโนมัติ (แก้ไขได้/คำนวณ)
-    function refreshFieldTags(){
-      document.querySelectorAll('.field').forEach(field=>{
-        const label = field.querySelector('.label [data-tag]') || field.querySelector('.label .tag[data-tag]');
-        const ctrl  = field.querySelector('.control input, .control select');
-        if(!label || !ctrl) return;
-
-        const isEditable = (
-          (ctrl.tagName==='INPUT' && !ctrl.readOnly && !ctrl.disabled) ||
-          (ctrl.tagName==='SELECT' && !ctrl.disabled)
-        );
-
-        // สร้างแท็กหากยังไม่มี
-        if(!label.classList.contains('tag')){
-          label.classList.add('tag');
-        }
-
-        if(isEditable){
-          label.classList.remove('tag-ro'); label.classList.add('tag-edit');
-          label.textContent = 'แก้ไขได้';
-        }else{
-          label.classList.remove('tag-edit'); label.classList.add('tag-ro');
-          label.textContent = 'คำนวณ';
-        }
-      });
+      else{             flat.disabled=true;  irr.disabled=false; }
     }
 
     window.onload = ()=>{
-      // Numeric inputs
       ['carPrice','discount','option','downInput','interestRate','extra','termYears','comPercent','balloonManualInput','targetIrr']
         .forEach(addNumericListeners);
 
-      // Selects
       document.getElementById('downType').addEventListener('change', calculate);
       document.getElementById('comBase').addEventListener('change', calculate);
       document.getElementById('balloonType').addEventListener('change', ()=>{ toggleBalloonUI(); calculate(); });
@@ -838,7 +811,6 @@
       toggleBalloonUI();
       toggleInterestMode();
       calculate();
-      refreshFieldTags();
     };
   </script>
 </body>
