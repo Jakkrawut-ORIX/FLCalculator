@@ -119,6 +119,13 @@
       padding-left: 8px;
     }
 
+    /* Inline small helper text style */
+    .hint {
+      color: #5a6b7d;
+      font-size: 0.85em;
+      margin-top: 2px;
+    }
+
     /* Buttons */
     .button-group {
       display: grid;
@@ -171,7 +178,7 @@
     @media screen and (min-width: 601px) {
       body { padding: 10px; font-size: 1.05em; }
       .container {
-        max-width: 900px;
+        max-width: 960px;
         padding: 20px;
         border-radius: 12px;
         margin: 20px auto;
@@ -185,7 +192,7 @@
       .data-value select,
       .data-value input[readonly] { padding: 10px 12px; border-radius: 8px; font-size: 1.0em; }
       #downPercentDisplay, #balloonPercentDisplay { font-size: 1.05em; padding-left: 10px; }
-      .button-group { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 30px; }
+      .button-group { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 30px; }
       .button-group button { padding: 15px 20px; font-size: 1.1em; border-radius: 8px; }
     }
   </style>
@@ -206,7 +213,7 @@
   <div class="data-section">
     <div class="data-label">รูปแบบ</div>
     <div class="data-value">
-      <select id="downType" onchange="calculate()">
+      <select id="downType">
         <option value="percent">เป็น %</option>
         <option value="amount">เป็นจำนวนเงิน</option>
       </select>
@@ -222,7 +229,7 @@
   <div class="data-section">
     <div class="data-label">รูปแบบบอลลูน</div>
     <div class="data-value">
-      <select id="balloonType" onchange="toggleBalloonInputs(); calculate()">
+      <select id="balloonType">
         <option value="percent" selected>เป็น % ของราคาสุทธิ</option>
         <option value="amount">ระบุเป็นจำนวนเงิน</option>
       </select>
@@ -232,7 +239,7 @@
   <div class="data-section">
     <div class="data-label">เปอร์เซ็นต์บอลลูน</div>
     <div class="data-value">
-      <select id="balloonPercentSelect" onchange="calculate()">
+      <select id="balloonPercentSelect">
         <option value="5">5%</option>
         <option value="10" selected>10%</option>
         <option value="15">15%</option>
@@ -261,15 +268,42 @@
   </div>
   <!-- /Balloon Section -->
 
+  <!-- Interest Mode -->
   <h2>ดอกเบี้ยและระยะเวลา</h2>
-  <div class="data-section"><div class="data-label">อัตราดอกเบี้ย (%)</div><div class="data-value"><input id="interestRate" type="text" value="0.00"></div></div>
-  <div class="data-section"><div class="data-label">จำนวนปี</div><div class="data-value"><input id="termYears" type="number" step="1" value="0"></div></div>
+  <div class="data-section">
+    <div class="data-label">โหมดกำหนดดอกเบี้ย</div>
+    <div class="data-value">
+      <select id="interestMode">
+        <option value="flat" selected>กำหนด Flat Rate (%)</option>
+        <option value="target_irr">กำหนด IRR เป้าหมาย (Effective % ต่อปี)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="data-section">
+    <div class="data-label">อัตราดอกเบี้ย Flat Rate (%)</div>
+    <div class="data-value">
+      <input id="interestRate" type="text" value="0.00">
+    </div>
+  </div>
+
+  <div class="data-section">
+    <div class="data-label">IRR เป้าหมาย (Effective % ต่อปี)</div>
+    <div class="data-value">
+      <input id="targetIrr" type="text" value="0.00" disabled>
+    </div>
+  </div>
+  <div class="data-section">
+    <div class="data-label">จำนวนปี</div>
+    <div class="data-value"><input id="termYears" type="number" step="1" value="0"></div>
+  </div>
+  <!-- /Interest Mode -->
 
   <h2>ค่าคอมมิชชั่น</h2>
   <div class="data-section">
     <div class="data-label">คิดค่าคอมจาก</div>
     <div class="data-value">
-      <select id="comBase" onchange="calculate()">
+      <select id="comBase">
         <option value="interest">ดอกเบี้ยรวม</option>
         <option value="finance">ยอดจัด</option>
       </select>
@@ -380,12 +414,89 @@ function showBalloonPercent() {
 }
 
 // =====================
+// SOLVER: Find Flat Rate from Target IRR (Effective p.a.)
+// =====================
+function computeEffIrrFromFlat(flatRatePct, inputs, smooth = true) {
+  // inputs: { total, down, balloon, years, months, comBase, comPercent, extra }
+  const { total, down, balloon, years, months, comBase, comPercent, extra } = inputs;
+  const finance = total - down;
+  const baseForInstall = Math.max(finance - balloon, 0);
+  const intPA = baseForInstall * (flatRatePct / 100);
+  const intTotal = intPA * years;
+
+  // Commission base
+  const comBaseVal = (comBase === 'finance') ? finance : intTotal;
+  // Smooth mode: don't ceil commission during solving to keep function continuous
+  const commission = smooth ? (comBaseVal * (comPercent / 100)) : Math.ceil(comBaseVal * (comPercent / 100));
+
+  // VAT on commission & extra
+  const feesVat = (commission + extra) * 1.07;
+
+  // Payment build
+  let leaseInVat = (baseForInstall + intTotal) / (months || 1);
+  if (!smooth) leaseInVat = Math.ceil(leaseInVat);
+
+  // IRR computation
+  const pv = -(finance + feesVat);
+  const fv = balloon;
+  const rMonthly = calculateIRR(months, leaseInVat, pv, fv, 0);
+  if (isNaN(rMonthly)) return NaN;
+  return rMonthly * 12 * 100; // Effective per annum (%)
+}
+
+function solveFlatForTargetIRR(targetEffPct, inputs) {
+  // Bisection method on flat rate (% p.a.)
+  // Start bounds
+  let lo = 0.0;
+  let hi = 50.0; // 50% p.a. flat to start
+  const maxHi = 200.0; // safeguard
+  const tol = 1e-4; // % p.a. tolerance on effective
+  const maxIter = 80;
+
+  // Expand hi until eff(hi) >= target or hit max
+  let effLo = computeEffIrrFromFlat(lo, inputs, true);
+  let effHi = computeEffIrrFromFlat(hi, inputs, true);
+
+  // If effLo already >= target (target too low), return 0 flat
+  if (!isNaN(effLo) && effLo >= targetEffPct) return 0.0;
+
+  while ((isNaN(effHi) || effHi < targetEffPct) && hi < maxHi) {
+    hi *= 2;
+    effHi = computeEffIrrFromFlat(hi, inputs, true);
+  }
+  if (isNaN(effHi)) return NaN;
+  if (hi >= maxHi && effHi < targetEffPct) {
+    // target unreachable even at very high flat -> return NaN
+    return NaN;
+  }
+
+  let bestRate = hi, bestDiff = Math.abs(effHi - targetEffPct);
+
+  for (let i = 0; i < maxIter; i++) {
+    const mid = (lo + hi) / 2;
+    const effMid = computeEffIrrFromFlat(mid, inputs, true);
+    if (isNaN(effMid)) break;
+
+    const diff = effMid - targetEffPct;
+    if (Math.abs(diff) < tol) {
+      bestRate = mid; bestDiff = Math.abs(diff); break;
+    }
+    // Track best
+    if (Math.abs(diff) < bestDiff) {
+      bestRate = mid; bestDiff = Math.abs(diff);
+    }
+    if (diff < 0) lo = mid; else hi = mid;
+    if (Math.abs(hi - lo) < 1e-6) break;
+  }
+  return bestRate;
+}
+
+// =====================
 // Core calculation
 // =====================
 function calculate() {
   const getVal = id => uncomma(document.getElementById(id).value);
   const getIntVal = id => parseInt(uncomma(document.getElementById(id).value)) || 0;
-  const getComPercent = id => uncomma(document.getElementById(id).value);
 
   const carInfo = document.getElementById('carInfo').value;
   const car = getVal('carPrice');
@@ -418,9 +529,7 @@ function calculate() {
   } else {
     let manual = uncomma(document.getElementById('balloonManualInput').value);
     if (manual < 0) manual = 0;
-    if (manual > capAmount) {
-      manual = capAmount; // clamp here quietly
-    }
+    if (manual > capAmount) { manual = capAmount; } // clamp silently
     balloon = manual;
     balloonPercent = total > 0 ? (balloon / total * 100) : 0;
     if (balloonPercent > 35) balloonPercent = 35;
@@ -431,9 +540,33 @@ function calculate() {
   document.getElementById('balloonPercentDisplay').innerText = `(${format4(balloonPercent)}%)`;
 
   const finance = total - down; // เงินที่ต้องจัด
-  const rate = getVal('interestRate');
   const years = getIntVal('termYears');
   const months = years * 12;
+
+  // Commission / Extra inputs
+  const comBase = document.getElementById('comBase').value;
+  const comPercent = getVal('comPercent');
+  const extra = getVal('extra');
+
+  // Interest mode handling
+  const mode = document.getElementById('interestMode').value;
+  let rate = getVal('interestRate'); // Flat rate % p.a. (default input)
+  if (mode === 'target_irr') {
+    const targetEff = getVal('targetIrr'); // desired Effective % p.a.
+    if (months > 0 && total > 0) {
+      const inputs = { total, down, balloon, years, months, comBase, comPercent, extra };
+      const solvedFlat = solveFlatForTargetIRR(targetEff, inputs);
+      if (!isNaN(solvedFlat)) {
+        rate = solvedFlat;
+        // Reflect solved rate back to input (without re-triggering calculate)
+        document.getElementById('interestRate').value = (Math.abs(rate) < 0.005) ? "0.00" : format(rate, 2);
+      } else {
+        // keep previous rate if cannot solve
+        // (Optional) alert user
+        // alert('ไม่สามารถหา Flat Rate ที่ทำให้ IRR ถึงเป้าหมายได้ในช่วงที่กำหนด');
+      }
+    }
+  }
 
   if (months === 0) {
     document.getElementById('financeAmt').value = format(finance);
@@ -452,27 +585,22 @@ function calculate() {
     return;
   }
 
-  // Commission / Extra
-  const comBase = document.getElementById('comBase').value;
-  const comPercent = getComPercent('comPercent');
-  const extra = getVal('extra');
-
   // ฐานผ่อน = ยอดจัด - บอลลูน
   const baseForInstall = Math.max(finance - balloon, 0);
 
-  // Flat rate interest
+  // Flat rate (ตามโครงเดิม)
   const intPA = baseForInstall * (rate / 100);
   const intTotal = intPA * years;
   const financeTotalWithInterest = baseForInstall + intTotal;
   document.getElementById('financeTotalWithInterest').value = format(financeTotalWithInterest);
 
-  // Commission base: from intTotal or finance
-  const comBaseVal = comBase === "finance" ? finance : intTotal;
+  // Commission (ใช้สูตรเดิม: มี ceil)
+  const comBaseVal = (comBase === "finance") ? finance : intTotal;
   const commission = Math.ceil(comBaseVal * (comPercent / 100));
   const qsExtraCost = commission + extra;
 
-  // Installment
-  const leaseInVat = months > 0 ? Math.ceil(financeTotalWithInterest / months) : 0;
+  // Installment (ค่างวดรวม VAT ปัดขึ้น)
+  const leaseInVat = Math.ceil(financeTotalWithInterest / months);
   const leaseExVat = leaseInVat / 1.07;
 
   // TR (Effective %) via IRR, FV = Balloon
@@ -525,7 +653,7 @@ function updateQsInfo(carInfo, car, discount, option, down, balloon, years, tr, 
 }
 
 // =====================
-// Calculate down for target lease
+// Calculate down for target lease (respects interest mode & balloon)
 // =====================
 function calculateDownForTargetLease(targetLease) {
   const getVal = id => uncomma(document.getElementById(id).value);
@@ -537,9 +665,14 @@ function calculateDownForTargetLease(targetLease) {
   const total = car - discount + option;
   document.getElementById('totalAmount').value = format(total);
 
-  const rate = getVal('interestRate');
   const years = getIntVal('termYears');
   const months = years * 12;
+  const mode = document.getElementById('interestMode').value;
+
+  // Commission & extra (needed if mode uses IRR solver)
+  const comBase = document.getElementById('comBase').value;
+  const comPercent = getVal('comPercent');
+  const extra = getVal('extra');
 
   // Balloon fixed by current UI selection
   const balloonType2 = document.getElementById('balloonType').value;
@@ -556,13 +689,34 @@ function calculateDownForTargetLease(targetLease) {
     balloon2 = manual;
   }
 
-  if (months === 0 || rate === 0) {
-    alert("กรุณาระบุจำนวนปีและอัตราดอกเบี้ยก่อนคำนวณเงินดาวน์สำหรับค่างวดเป้าหมาย.");
+  if (months === 0) {
+    alert("กรุณาระบุจำนวนปีให้ถูกต้องก่อนคำนวณค่างวดเป้าหมาย");
     return;
   }
-  if (total <= 0) {
-    alert("กรุณาระบุราคารถให้ถูกต้อง (มากกว่า 0) เพื่อคำนวณเงินดาวน์.");
-    return;
+
+  // Determine flat rate according to mode
+  let rate;
+  if (mode === 'target_irr') {
+    const targetEff = getVal('targetIrr');
+    if (total <= 0 || targetEff < 0) {
+      alert("กรุณาระบุ ราคาสุทธิ และ IRR เป้าหมาย ให้ถูกต้อง");
+      return;
+    }
+    const inputs = { total, down: 0, balloon: balloon2, years, months, comBase, comPercent, extra };
+    const solvedFlat = solveFlatForTargetIRR(targetEff, inputs);
+    if (isNaN(solvedFlat)) {
+      alert("ไม่สามารถหา Flat Rate ที่ทำให้ IRR ถึงเป้าหมายได้");
+      return;
+    }
+    rate = solvedFlat;
+    // Update UI rate for transparency
+    document.getElementById('interestRate').value = format(rate, 2);
+  } else {
+    rate = getVal('interestRate');
+    if (rate === 0) {
+      alert("กรุณาระบุอัตราดอกเบี้ยก่อนคำนวณค่างวดเป้าหมาย");
+      return;
+    }
   }
 
   // ลองดาวน์ = 0
@@ -633,7 +787,10 @@ function generateQuotation() {
     balloonAmount: uncomma(document.getElementById('balloonAmount').value),
     balloonPercent: parseFloat(document.getElementById('balloonPercentDisplay').innerText.replace(/[()%]/g, '')),
 
+    // Interest
+    interestMode: document.getElementById('interestMode').value,
     interestRate: uncomma(document.getElementById('interestRate').value),
+    targetIrr: uncomma(document.getElementById('targetIrr').value),
     termYears: parseInt(document.getElementById('termYears').value) || 0,
 
     comBase: document.getElementById('comBase').value,
@@ -738,7 +895,7 @@ function addInputListeners(id) {
       let val = uncomma(el.value);
       if (id === 'termYears') {
         el.value = formatNoDecimal(val);
-      } else if (id === 'interestRate' || id === 'comPercent') {
+      } else if (id === 'interestRate' || id === 'comPercent' || id === 'targetIrr') {
         el.value = format(val, 2);
       } else {
         el.value = format(val);
@@ -803,10 +960,30 @@ function wireBalloonManualInput() {
   });
 }
 
+// Toggle interest mode (enable/disable inputs)
+function toggleInterestMode() {
+  const mode = document.getElementById('interestMode').value;
+  const flatEl = document.getElementById('interestRate');
+  const irrEl = document.getElementById('targetIrr');
+
+  if (mode === 'flat') {
+    flatEl.disabled = false;
+    irrEl.disabled = true;
+    flatEl.style.backgroundColor = 'var(--input-bg-editable)';
+    irrEl.style.backgroundColor = 'var(--input-bg-readonly)';
+  } else {
+    flatEl.disabled = true;
+    irrEl.disabled = false;
+    flatEl.style.backgroundColor = 'var(--input-bg-readonly)';
+    irrEl.style.backgroundColor = 'var(--input-bg-editable)';
+  }
+}
+
 window.onload = () => {
   [
     'carPrice', 'discount', 'option',
-    'downInput', 'interestRate', 'extra', 'termYears', 'comPercent', 'carInfo'
+    'downInput', 'interestRate', 'extra', 'termYears', 'comPercent', 'carInfo',
+    'targetIrr'
   ].forEach(addInputListeners);
 
   // Balloon controls
@@ -814,10 +991,15 @@ window.onload = () => {
   document.getElementById('balloonPercentSelect').addEventListener('change', calculate);
   wireBalloonManualInput();
 
+  // Down & commission base
   document.getElementById('downType').addEventListener('change', calculate);
   document.getElementById('comBase').addEventListener('change', calculate);
 
+  // Interest mode
+  document.getElementById('interestMode').addEventListener('change', () => { toggleInterestMode(); calculate(); });
+
   toggleBalloonInputs();
+  toggleInterestMode();
   calculate(); // Initial calculation
 };
 </script>
