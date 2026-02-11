@@ -601,3 +601,433 @@ function calculate() {
     document.getElementById('leaseInVat').value = format(0);
     document.getElementById('owsExtraEx').value = format(0);
     document.getElementById('owsExtraVat').value = format(0);
+    document.getElementById('owsExtraIn').value = format(0);
+    document.getElementById('trRate').value = 'ไม่สามารถคำนวณ';
+    document.getElementById('customerTr').value = 'ไม่สามารถคำนวณ';
+    updateQsInfo(carInfo, car, discount, option, down, balloon, years, NaN, 0, 0, 0);
+    return;
+  }
+
+  // Base for installment
+  const baseForInstall = Math.max(finance - balloon, 0);
+
+  // Flat rate
+  const intPA = baseForInstall * (rate / 100);
+  const intTotal = intPA * years;
+  const financeTotalWithInterest = baseForInstall + intTotal;
+  document.getElementById('financeTotalWithInterest').value = format(financeTotalWithInterest);
+
+  // Commission (Ex VAT)
+  const comBaseVal = (comBase === "finance") ? finance : intTotal;
+  const commission = Math.ceil(comBaseVal * (comPercent / 100));
+
+  // OWS Extra breakdown (Ex / VAT / In)
+  const owsExtraEx = commission + extra;
+  const owsExtraVat = owsExtraEx * 0.07;
+  const owsExtraIn = owsExtraEx + owsExtraVat;
+  document.getElementById('calculatedCommission').value = format(commission);
+  document.getElementById('owsExtraEx').value = format(owsExtraEx);
+  document.getElementById('owsExtraVat').value = format(owsExtraVat);
+  document.getElementById('owsExtraIn').value = format(owsExtraIn);
+
+  // Installment per month (Ex VAT / VAT / In VAT)
+  const leaseInVat = Math.ceil(financeTotalWithInterest / months);
+  const leaseExVat = leaseInVat / 1.07;
+  const leaseVat = leaseInVat - leaseExVat;
+  document.getElementById('leaseInVat').value = format(leaseInVat);
+  document.getElementById('leaseExVat').value = format(leaseExVat);
+  document.getElementById('leaseVat').value = format(leaseVat);
+
+  // ===== IRR ตามสูตรใหม่ =====
+  // IRR % : pv = -(finance + commission + extra) (ไม่รวม VAT)
+  const pvForIRR = -(finance + commission + extra);
+  const irr = calculateIRR(months, leaseInVat, pvForIRR, balloon, 0) * 12 * 100;
+
+  // Customer TR : pv = -(finance)
+  const pvForCustomer = -(finance);
+  const customerTR = calculateIRR(months, leaseInVat, pvForCustomer, balloon, 0) * 12 * 100;
+
+  // Render
+  document.getElementById('financeAmt').value = format(finance);
+  document.getElementById('intPA').value = format(intPA);
+  document.getElementById('intTotal').value = format(intTotal);
+  document.getElementById('trRate').value = isNaN(irr) ? 'ไม่สามารถคำนวณ' : format4(irr);
+  document.getElementById('customerTr').value = isNaN(customerTR) ? 'ไม่สามารถคำนวณ' : format4(customerTR);
+
+  updateQsInfo(carInfo, car, discount, option, down, balloon, years, irr, owsExtraEx, owsExtraVat, owsExtraIn);
+}
+
+function updateQsInfo(carInfo, car, discount, option, down, balloon, years, irr, extraEx, extraVat, extraIn) {
+  document.getElementById('qsCarInfo').value = carInfo;
+  document.getElementById('qsCarPrice').value = format(car);
+  document.getElementById('qsDiscount').value = format(discount);
+  document.getElementById('qsOption').value = format(option);
+  document.getElementById('qsDownAmount').value = format(down);
+  document.getElementById('qsTrRate').value = isNaN(irr) ? 'ไม่สามารถคำนวณ' : format4(irr);
+  document.getElementById('qsTermYears').value = years;
+  document.getElementById('qsDeposit').value = format(down / 1.07, 4);
+
+  // %s
+  const totalAmount = uncomma(document.getElementById('totalAmount').value);
+  const downPct = totalAmount > 0 ? (down / totalAmount * 100) : 0;
+  const balloonPct = totalAmount > 0 ? (balloon / totalAmount * 100) : 0;
+  document.getElementById('qsDownPercent').value = format4(downPct) + '%';
+  document.getElementById('qsBalloonPercent').value = format4(balloonPct) + '%';
+  document.getElementById('qsBalloonAmount').value = format(balloon);
+
+  // OWS Extra breakdown
+  document.getElementById('qsExtraEx').value = format(extraEx);
+  document.getElementById('qsExtraVat').value = format(extraVat);
+  document.getElementById('qsExtraIn').value = format(extraIn);
+}
+
+// =====================
+// Target lease helper
+// =====================
+function calculateDownForTargetLease(targetLease) {
+  const getVal = id => uncomma(document.getElementById(id).value);
+  const getIntVal = id => parseInt(uncomma(document.getElementById(id).value)) || 0;
+
+  const car = getVal('carPrice');
+  const discount = getVal('discount');
+  const option = getVal('option');
+  const total = car - discount + option;
+  document.getElementById('totalAmount').value = format(total);
+
+  const years = getIntVal('termYears');
+  const months = years * 12;
+
+  // Balloon from UI (cap 35% total)
+  const balloonType2 = document.getElementById('balloonType').value;
+  let balloon2 = 0;
+  const capAmount2 = Math.max(total * 0.35, 0);
+  if (balloonType2 === 'percent') {
+    const pct = Math.min(Math.max(parseFloat(document.getElementById('balloonPercentSelect').value) || 0, 0), 35);
+    balloon2 = total * (pct / 100);
+  } else {
+    let manual = uncomma(document.getElementById('balloonManualInput').value);
+    if (manual < 0) manual = 0;
+    if (manual > capAmount2) manual = capAmount2;
+    balloon2 = manual;
+  }
+
+  if (months === 0) { alert("กรุณาระบุจำนวนปีให้ถูกต้องก่อนคำนวณค่างวดเป้าหมาย"); return; }
+
+  // Interest according to mode
+  const mode = document.getElementById('interestMode').value;
+  const comBase = document.getElementById('comBase').value;
+  const comPercent = getVal('comPercent');
+  const extra = getVal('extra');
+
+  let rate;
+  if (mode === 'target_irr') {
+    const targetEff = getVal('targetIrr');
+    if (total <= 0 || targetEff < 0) { alert("กรุณาระบุ ราคาสุทธิ และ IRR เป้าหมาย ให้ถูกต้อง"); return; }
+    const inputs = { total, down: 0, balloon: balloon2, years, months, comBase, comPercent, extra };
+    const solvedFlat = solveFlatForTargetIRR(targetEff, inputs);
+    if (isNaN(solvedFlat)) { alert("ไม่สามารถหา Flat Rate ที่ทำให้ IRR ถึงเป้าหมายได้"); return; }
+    rate = solvedFlat;
+    document.getElementById('interestRate').value = format(rate, 2);
+  } else {
+    rate = getVal('interestRate');
+    if (rate === 0) { alert("กรุณาระบุอัตราดอกเบี้ยก่อนคำนวณค่างวดเป้าหมาย"); return; }
+  }
+
+  // Try down = 0
+  const financeZeroDown = total;
+  const baseForInstallZeroDown = Math.max(financeZeroDown - balloon2, 0);
+  const intTotalZeroDown = baseForInstallZeroDown * (rate / 100) * years;
+  const leaseInVatZeroDown = months > 0 ? Math.ceil((baseForInstallZeroDown + intTotalZeroDown) / months) : 0;
+
+  if (leaseInVatZeroDown < targetLease) {
+    document.getElementById('downType').value = 'amount';
+    document.getElementById('downInput').value = formatNoDecimal(0);
+    calculate();
+    alert(`ไม่สามารถคำนวณให้ค่างวดถึง ${formatNoDecimal(targetLease)} บาทได้ แม้จะดาวน์ 0 บาท ค่างวดที่ได้คือ ${formatNoDecimal(leaseInVatZeroDown)} บาท จึงกำหนดให้เงินดาวน์เป็น 0`);
+  } else {
+    // Binary search for down
+    let low = 0, high = total, bestDown = 0, minDiff = Infinity;
+    const maxIter = 500;
+
+    for (let i = 0; i < maxIter; i++) {
+      let currentDown = Math.ceil((low + high) / 2);
+      if (currentDown < 0) currentDown = 0;
+      if (currentDown > total) currentDown = total;
+
+      const finance = total - currentDown;
+      const baseForInstall = Math.max(finance - balloon2, 0);
+      const intTotal = baseForInstall * (rate / 100) * years;
+      const currentLease = months > 0 ? Math.ceil((baseForInstall + intTotal) / months) : 0;
+
+      const diff = Math.abs(currentLease - targetLease);
+      if (diff < minDiff) { minDiff = diff; bestDown = currentDown; }
+
+      if (Math.abs(high - low) < 1 || diff < 0.1) break;
+
+      if (currentLease > targetLease) {
+        low = currentDown;
+      } else {
+        high = currentDown;
+      }
+    }
+
+    document.getElementById('downType').value = 'amount';
+    document.getElementById('downInput').value = formatNoDecimal(bestDown);
+    calculate();
+  }
+}
+
+// =====================
+// Quotation & OWS data
+// =====================
+function generateQuotation() {
+  calculate();
+
+  const data = {
+    carInfo: document.getElementById('carInfo').value,
+    carPrice: uncomma(document.getElementById('carPrice').value),
+    discount: uncomma(document.getElementById('discount').value),
+    option: uncomma(document.getElementById('option').value),
+    totalAmount: uncomma(document.getElementById('totalAmount').value),
+
+    downAmount: uncomma(document.getElementById('downAmount').value),
+    downPercent: parseFloat(document.getElementById('downPercentInline').innerText.replace('%','')),
+
+    balloonAmount: uncomma(document.getElementById('balloonAmount').value),
+    balloonPercent: parseFloat(document.getElementById('balloonPercentInline').innerText.replace('%','')),
+
+    interestMode: document.getElementById('interestMode').value,
+    interestRate: uncomma(document.getElementById('interestRate').value),
+    targetIrr: uncomma(document.getElementById('targetIrr').value),
+    termYears: parseInt(document.getElementById('termYears').value) || 0,
+
+    comBase: document.getElementById('comBase').value,
+    comPercent: uncomma(document.getElementById('comPercent').value),
+    calculatedCommission: uncomma(document.getElementById('calculatedCommission').value),
+    extra: uncomma(document.getElementById('extra').value),
+
+    financeAmt: uncomma(document.getElementById('financeAmt').value),
+    intPA: uncomma(document.getElementById('intPA').value),
+    intTotal: uncomma(document.getElementById('intTotal').value),
+    financeTotalWithInterest: uncomma(document.getElementById('financeTotalWithInterest').value),
+
+    leaseExVat: uncomma(document.getElementById('leaseExVat').value),
+    leaseVat: uncomma(document.getElementById('leaseVat').value),
+    leaseInVat: uncomma(document.getElementById('leaseInVat').value),
+
+    owsExtraEx: uncomma(document.getElementById('owsExtraEx').value),
+    owsExtraVat: uncomma(document.getElementById('owsExtraVat').value),
+    owsExtraIn: uncomma(document.getElementById('owsExtraIn').value),
+
+    irrRate: parseFloat(document.getElementById('trRate').value.replace('ไม่สามารถคำนวณ', 'NaN')),
+    customerTr: parseFloat(document.getElementById('customerTr').value.replace('ไม่สามารถคำนวณ', 'NaN')),
+
+    // OWS mirrors
+    qsCarInfo: document.getElementById('qsCarInfo').value,
+    qsCarPrice: uncomma(document.getElementById('qsCarPrice').value),
+    qsDiscount: uncomma(document.getElementById('qsDiscount').value),
+    qsOption: uncomma(document.getElementById('qsOption').value),
+    qsDownAmount: uncomma(document.getElementById('qsDownAmount').value),
+    qsDownPercent: parseFloat(document.getElementById('qsDownPercent').value.replace('%','')) || 0,
+    qsBalloonAmount: uncomma(document.getElementById('qsBalloonAmount').value),
+    qsBalloonPercent: parseFloat((document.getElementById('qsBalloonPercent').value || '').replace('%', '')) || 0,
+    qsTrRate: parseFloat(document.getElementById('qsTrRate').value.replace('ไม่สามารถคำนวณ', 'NaN')),
+    qsTermYears: parseInt(document.getElementById('qsTermYears').value) || 0,
+    qsDeposit: uncomma(document.getElementById('qsDeposit').value),
+    qsExtraEx: uncomma(document.getElementById('qsExtraEx').value),
+    qsExtraVat: uncomma(document.getElementById('qsExtraVat').value),
+    qsExtraIn: uncomma(document.getElementById('qsExtraIn').value)
+  };
+
+  localStorage.setItem('quotationData', JSON.stringify(data));
+  window.open('quotation.html', '_blank');
+}
+
+function sendToQsData() {
+  calculate();
+
+  const totalAmount = uncomma(document.getElementById('totalAmount').value);
+  const irrRate = parseFloat(document.getElementById('trRate').value.replace('ไม่สามารถคำนวณ', 'NaN'));
+  const customerTR = parseFloat(document.getElementById('customerTr').value.replace('ไม่สามารถคำนวณ', 'NaN'));
+  const termYears = parseInt(document.getElementById('termYears').value) || 0;
+  const deposit = uncomma(document.getElementById('qsDeposit').value);
+
+  const downAmount = uncomma(document.getElementById('downAmount').value);
+  const downPercent = parseFloat(document.getElementById('downPercentInline').innerText.replace('%',''));
+
+  const balloonAmount = uncomma(document.getElementById('balloonAmount').value);
+  const balloonPercent = parseFloat(document.getElementById('balloonPercentInline').innerText.replace('%',''));
+
+  const leaseExVat = uncomma(document.getElementById('leaseExVat').value);
+  const leaseVat = uncomma(document.getElementById('leaseVat').value);
+  const leaseInVat = uncomma(document.getElementById('leaseInVat').value);
+
+  const owsExtraEx = uncomma(document.getElementById('owsExtraEx').value);
+  const owsExtraVat = uncomma(document.getElementById('owsExtraVat').value);
+  const owsExtraIn = uncomma(document.getElementById('owsExtraIn').value);
+
+  const dataForQs = {
+    carInfo: document.getElementById('carInfo').value,
+    carPrice: uncomma(document.getElementById('carPrice').value),
+    discount: uncomma(document.getElementById('discount').value),
+    option: uncomma(document.getElementById('option').value),
+    totalAmount: totalAmount,
+
+    downAmount: downAmount,
+    qsDownPercent: downPercent,
+    termYears: termYears,
+    deposit: deposit,
+
+    balloonAmount: balloonAmount,
+    balloonPercent: balloonPercent,
+
+    leaseExVat: leaseExVat,
+    leaseVat: leaseVat,
+    leaseInVat: leaseInVat,
+
+    irrRate: irrRate,
+    customerTR: customerTR,
+
+    owsExtraEx: owsExtraEx,
+    owsExtraVat: owsExtraVat,
+    owsExtraIn: owsExtraIn
+  };
+
+  localStorage.setItem('qsData', JSON.stringify(dataForQs));
+  window.open('qs_data.html', '_blank');
+}
+
+// =====================
+// UI helpers & wiring
+// =====================
+function addInputListeners(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  if (id === 'carInfo') {
+    el.addEventListener('blur', calculate);
+  } else {
+    el.addEventListener('focus', () => {
+      let currentVal = uncomma(el.value);
+      if (Math.abs(currentVal) < 0.001) el.value = '';
+      else el.value = String(currentVal);
+    });
+    el.addEventListener('input', () => {
+      let sanitizedValue = el.value.replace(/[^0-9.]/g, '');
+      const parts = sanitizedValue.split('.');
+      if (parts.length > 2) sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
+      el.value = sanitizedValue;
+    });
+    el.addEventListener('blur', () => {
+      let val = uncomma(el.value);
+      if (id === 'termYears') {
+        el.value = formatNoDecimal(val);
+      } else if (id === 'interestRate' || id === 'comPercent' || id === 'targetIrr') {
+        el.value = format(val, 2);
+      } else {
+        el.value = format(val);
+      }
+      calculate();
+    });
+  }
+}
+
+function toggleBalloonInputs() {
+  const type = document.getElementById('balloonType').value;
+  const pctSel = document.getElementById('balloonPercentSelect');
+  const amtInp = document.getElementById('balloonManualInput');
+
+  if (type === 'percent') {
+    pctSel.disabled = false;
+    amtInp.disabled = true;
+    pctSel.style.backgroundColor = 'var(--input-bg-editable)';
+    amtInp.style.backgroundColor = 'var(--input-bg-readonly)';
+  } else {
+    pctSel.disabled = true;
+    amtInp.disabled = false;
+    pctSel.style.backgroundColor = 'var(--input-bg-readonly)';
+    amtInp.style.backgroundColor = 'var(--input-bg-editable)';
+  }
+}
+
+function wireBalloonManualInput() {
+  const el = document.getElementById('balloonManualInput');
+  if (!el) return;
+
+  el.addEventListener('focus', () => {
+    let currentVal = uncomma(el.value);
+    if (Math.abs(currentVal) < 0.001) el.value = '';
+    else el.value = String(currentVal);
+  });
+
+  el.addEventListener('input', () => {
+    let sanitizedValue = el.value.replace(/[^0-9.]/g, '');
+    const parts = sanitizedValue.split('.');
+    if (parts.length > 2) sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
+    el.value = sanitizedValue;
+  });
+
+  el.addEventListener('blur', () => {
+    let val = uncomma(el.value);
+    if (isNaN(val)) val = 0;
+
+    const totalNow = uncomma(document.getElementById('totalAmount').value);
+    const cap = Math.max(totalNow * 0.35, 0);
+
+    if (val > cap) {
+      val = cap;
+      alert(`ยอดบอลลูนแบบระบุจำนวนเงินต้องไม่เกิน ${format(cap)} บาท (35% ของราคาสุทธิ)`);
+    }
+    if (val < 0) val = 0;
+
+    el.value = format(val);
+    calculate();
+  });
+}
+
+function toggleInterestMode() {
+  const mode = document.getElementById('interestMode').value;
+  const flatEl = document.getElementById('interestRate');
+  const irrEl = document.getElementById('targetIrr');
+
+  if (mode === 'flat') {
+    flatEl.disabled = false;
+    irrEl.disabled = true;
+    flatEl.style.backgroundColor = 'var(--input-bg-editable)';
+    irrEl.style.backgroundColor = 'var(--input-bg-readonly)';
+  } else {
+    flatEl.disabled = true;
+    irrEl.disabled = false;
+    flatEl.style.backgroundColor = 'var(--input-bg-readonly)';
+    irrEl.style.backgroundColor = 'var(--input-bg-editable)';
+  }
+}
+
+window.onload = () => {
+  [
+    'carPrice', 'discount', 'option',
+    'downInput', 'interestRate', 'extra', 'termYears', 'comPercent', 'carInfo',
+    'targetIrr'
+  ].forEach(addInputListeners);
+
+  // Balloon
+  document.getElementById('balloonType').addEventListener('change', () => { toggleBalloonInputs(); calculate(); });
+  document.getElementById('balloonPercentSelect').addEventListener('change', calculate);
+  wireBalloonManualInput();
+
+  // Down & commission base
+  document.getElementById('downType').addEventListener('change', calculate);
+  document.getElementById('comBase').addEventListener('change', calculate);
+
+  // Interest mode
+  document.getElementById('interestMode').addEventListener('change', () => { toggleInterestMode(); calculate(); });
+
+  toggleBalloonInputs();
+  toggleInterestMode();
+  calculate();
+};
+</script>
+
+</body>
+</html>
+``
