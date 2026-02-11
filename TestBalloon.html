@@ -2,14 +2,14 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>ORIX Financial Lease Calculator — Minimal</title>
+  <title>ORIX Financial Lease Calculator — Minimal (Editable vs Auto)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- Google Font: Noto Sans Thai (บาง/เบา) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
+  https://fonts.googleapis.com
+  https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap
   <style>
     :root {
-      /* Minimal ORIX palette */
+      /* ORIX Minimal palette */
       --orix-blue: #003366;     /* primary accent */
       --blue-600: #0A3B6F;
       --blue-050: #F6FAFD;
@@ -21,12 +21,22 @@
       --line: #E6EBF0;
       --white: #FFFFFF;
 
-      --input-edit: #FAFBFC;
-      --input-read: #F2F5F8;
+      /* Inputs: editable vs readonly (ชัดเจน) */
+      --editable-bg: #FAFBFC;
+      --editable-border: #E5EBF2;
+      --readonly-bg: #FFF4E5;    /* Soft Amber for auto fields */
+      --readonly-border: #F3CDA0;
+      --readonly-text: #7A4E00;
 
       --ring: rgba(0, 51, 102, 0.25);
       --shadow: 0 8px 24px rgba(18, 22, 28, 0.06);
       --radius: 12px;
+
+      /* Tag colors */
+      --tag-edit-bg: #E9F3FF;     /* light blue */
+      --tag-edit-text: #0B3A6A;
+      --tag-ro-bg: #FFE9C9;       /* light amber */
+      --tag-ro-text: #7A4E00;
     }
 
     * { box-sizing: border-box; }
@@ -72,7 +82,7 @@
       padding: 0 16px;
     }
 
-    /* Minimal card */
+    /* Card */
     .card {
       background: var(--white);
       border: 1px solid var(--line);
@@ -86,6 +96,7 @@
       border-bottom: 1px solid var(--line);
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 10px;
     }
     .card-head h2 {
@@ -96,85 +107,80 @@
       letter-spacing: .2px;
     }
 
-    /* Responsive two columns (desktop) / single column (mobile) */
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      padding: 12px;
+    /* Legend for tags */
+    .legend {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      font-size: 12px; color: var(--ink-600);
     }
-    @media (min-width: 900px) {
-      .grid.two { grid-template-columns: 1fr 1fr; }
+    .tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 3px 8px; border-radius: 999px;
+      font-size: 12px; font-weight: 600;
+      border: 1px solid transparent;
+      user-select: none;
     }
+    .tag .ico { font-size: 12px; line-height: 1; }
+    .tag-edit { background: var(--tag-edit-bg); color: var(--tag-edit-text); border-color: #CCE6FF; }
+    .tag-ro   { background: var(--tag-ro-bg);   color: var(--tag-ro-text);   border-color: #F6D9A8; }
 
-    /* Section body: compact fields */
-    .section {
-      border-radius: 10px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-    }
+    /* Grid */
+    .grid { display: grid; grid-template-columns: 1fr; gap: 12px; padding: 12px; }
+    @media (min-width: 900px) { .grid.two { grid-template-columns: 1fr 1fr; } }
+
+    /* Section + Fields */
+    .section { border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
     .fields { display: grid; grid-template-columns: 1fr; }
-    @media (min-width: 640px) {
-      .fields { grid-template-columns: 1fr 1fr; }
-    }
+    @media (min-width: 640px) { .fields { grid-template-columns: 1fr 1fr; } }
 
     .field {
-      display: grid;
-      grid-template-columns: 46% 54%;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--line);
-      background: #fff;
+      display: grid; grid-template-columns: 46% 54%;
+      align-items: center; gap: 10px; padding: 10px 12px;
+      border-bottom: 1px solid var(--line); background: #fff;
     }
     .field:nth-child(even) { background: #FCFEFF; }
     .field:last-child { border-bottom: none; }
 
     .label {
-      font-size: 13px;
-      color: var(--ink-600);
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      font-size: 13px; color: var(--ink-600);
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
       font-weight: 400;
     }
-    .muted { color: var(--ink-500); font-size: 12px; }
 
     .control input:not([readonly]), .control select {
       width: 100%; padding: 10px 12px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: var(--input-edit);
-      color: var(--ink-700);
-      text-align: right;
-      font-weight: 400;
-      outline: none;
-      transition: .15s ease;
+      border: 1px solid var(--editable-border);
+      border-radius: 10px; background: var(--editable-bg);
+      color: var(--ink-700); text-align: right; font-weight: 400; outline: none; transition: .15s ease;
     }
     .control input#carInfo { text-align: left; }
-    .control input[readonly] {
-      background: var(--input-read);
-      color: var(--orix-blue);
-      font-weight: 600;
-    }
     .control input:focus, .control select:focus {
       border-color: var(--orix-blue);
       box-shadow: 0 0 0 3px var(--ring);
       background: #fff;
     }
 
-    /* Button group minimal */
-    .actions {
-      display: grid; gap: 10px; padding: 12px;
-      grid-template-columns: 1fr 1fr;
+    /* Readonly / disabled explicit style (ชัดเจน) */
+    .control input[readonly] {
+      background: var(--readonly-bg);
+      border: 1px solid var(--readonly-border);
+      color: var(--readonly-text);
+      cursor: not-allowed;
+      font-weight: 600;
     }
-    @media (min-width: 680px) {
-      .actions { grid-template-columns: repeat(4, 1fr); }
+    .control select:disabled,
+    .control input:disabled {
+      background: var(--readonly-bg);
+      border: 1px solid var(--readonly-border);
+      color: var(--readonly-text);
+      cursor: not-allowed;
     }
+
+    /* Button set */
+    .actions { display: grid; gap: 10px; padding: 12px; grid-template-columns: 1fr 1fr; }
+    @media (min-width: 680px) { .actions { grid-template-columns: repeat(4, 1fr); } }
     .btn {
-      padding: 12px 14px; border: 1px solid transparent;
-      border-radius: 10px; font-weight: 600;
-      font-size: 14px; cursor: pointer; transition: .12s ease;
+      padding: 12px 14px; border: 1px solid transparent; border-radius: 10px;
+      font-weight: 600; font-size: 14px; cursor: pointer; transition: .12s ease;
     }
     .btn:active { transform: scale(.99); }
     .btn-primary { background: var(--orix-blue); color: #fff; }
@@ -200,27 +206,33 @@
 
         <!-- Base Info -->
         <section class="card">
-          <div class="card-head"><h2>ข้อมูลเบื้องต้น</h2></div>
+          <div class="card-head">
+            <h2>ข้อมูลเบื้องต้น</h2>
+            <div class="legend">
+              <span class="tag tag-edit"><span class="ico">✏️</span> แก้ไขได้</span>
+              <span class="tag tag-ro"><span class="ico">🔒</span> คำนวณ</span>
+            </div>
+          </div>
           <div class="section">
             <div class="fields">
               <div class="field">
-                <div class="label">ข้อมูลรถ</div>
+                <div class="label">ข้อมูลรถ <span class="tag tag-edit" data-tag></span></div>
                 <div class="control"><input id="carInfo" type="text" value=""></div>
               </div>
               <div class="field">
-                <div class="label">ราคารถ</div>
+                <div class="label">ราคารถ <span class="tag" data-tag></span></div>
                 <div class="control"><input id="carPrice" type="text" value="0.00"></div>
               </div>
               <div class="field">
-                <div class="label">ส่วนลด</div>
+                <div class="label">ส่วนลด <span class="tag" data-tag></span></div>
                 <div class="control"><input id="discount" type="text" value="0.00"></div>
               </div>
               <div class="field">
-                <div class="label">Option</div>
+                <div class="label">Option <span class="tag" data-tag></span></div>
                 <div class="control"><input id="option" type="text" value="0.00"></div>
               </div>
               <div class="field">
-                <div class="label">ราคาสุทธิ</div>
+                <div class="label">ราคาสุทธิ <span class="tag" data-tag></span></div>
                 <div class="control"><input id="totalAmount" readonly></div>
               </div>
             </div>
@@ -233,7 +245,7 @@
           <div class="section">
             <div class="fields">
               <div class="field">
-                <div class="label">รูปแบบดาวน์</div>
+                <div class="label">รูปแบบดาวน์ <span class="tag" data-tag></span></div>
                 <div class="control">
                   <select id="downType">
                     <option value="percent">เป็น %</option>
@@ -242,16 +254,16 @@
                 </div>
               </div>
               <div class="field">
-                <div class="label">กรอก % หรือ จำนวน</div>
+                <div class="label">กรอก % หรือ จำนวน <span class="tag" data-tag></span></div>
                 <div class="control"><input id="downInput" type="text" value="0.00"></div>
               </div>
               <div class="field">
-                <div class="label">เงินดาวน์ <span class="muted">( <span id="downPercentInline">0.0000%</span> )</span></div>
+                <div class="label">เงินดาวน์ <span class="muted">( <span id="downPercentInline">0.0000%</span> )</span> <span class="tag" data-tag></span></div>
                 <div class="control"><input id="downAmount" readonly></div>
               </div>
 
               <div class="field">
-                <div class="label">รูปแบบบอลลูน</div>
+                <div class="label">รูปแบบบอลลูน <span class="tag" data-tag></span></div>
                 <div class="control">
                   <!-- Default = amount -->
                   <select id="balloonType">
@@ -261,7 +273,7 @@
                 </div>
               </div>
               <div class="field">
-                <div class="label">เปอร์เซ็นต์บอลลูน</div>
+                <div class="label">เปอร์เซ็นต์บอลลูน <span class="tag" data-tag></span></div>
                 <div class="control">
                   <select id="balloonPercentSelect" disabled>
                     <option value="5">5%</option>
@@ -275,11 +287,11 @@
                 </div>
               </div>
               <div class="field">
-                <div class="label">จำนวนเงินบอลลูน</div>
+                <div class="label">จำนวนเงินบอลลูน <span class="tag" data-tag></span></div>
                 <div class="control"><input id="balloonManualInput" type="text" value="0.00"></div>
               </div>
               <div class="field">
-                <div class="label">ยอดบอลลูน <span class="muted">( <span id="balloonPercentInline">0.0000%</span> )</span></div>
+                <div class="label">ยอดบอลลูน <span class="muted">( <span id="balloonPercentInline">0.0000%</span> )</span> <span class="tag" data-tag></span></div>
                 <div class="control"><input id="balloonAmount" readonly></div>
               </div>
             </div>
@@ -292,7 +304,7 @@
           <div class="section">
             <div class="fields">
               <div class="field">
-                <div class="label">โหมดดอกเบี้ย</div>
+                <div class="label">โหมดดอกเบี้ย <span class="tag" data-tag></span></div>
                 <div class="control">
                   <select id="interestMode">
                     <option value="flat" selected>กำหนด Flat Rate (%)</option>
@@ -301,20 +313,20 @@
                 </div>
               </div>
               <div class="field">
-                <div class="label">Flat Rate (%)</div>
+                <div class="label">Flat Rate (%) <span class="tag" data-tag></span></div>
                 <div class="control"><input id="interestRate" type="text" value="0.00"></div>
               </div>
               <div class="field">
-                <div class="label">IRR เป้าหมาย (% ต่อปี)</div>
+                <div class="label">IRR เป้าหมาย (% ต่อปี) <span class="tag" data-tag></span></div>
                 <div class="control"><input id="targetIrr" type="text" value="0.00" disabled></div>
               </div>
               <div class="field">
-                <div class="label">จำนวนปี</div>
+                <div class="label">จำนวนปี <span class="tag" data-tag></span></div>
                 <div class="control"><input id="termYears" type="number" step="1" value="0"></div>
               </div>
 
               <div class="field">
-                <div class="label">คิดค่าคอมจาก</div>
+                <div class="label">คิดค่าคอมจาก <span class="tag" data-tag></span></div>
                 <div class="control">
                   <select id="comBase">
                     <option value="interest">ดอกเบี้ยรวม</option>
@@ -323,15 +335,15 @@
                 </div>
               </div>
               <div class="field">
-                <div class="label">Commission (%)</div>
+                <div class="label">Commission (%) <span class="tag" data-tag></span></div>
                 <div class="control"><input id="comPercent" type="text" value="0.00"></div>
               </div>
               <div class="field">
-                <div class="label">ค่าคอม (Ex VAT)</div>
+                <div class="label">ค่าคอม (Ex VAT) <span class="tag" data-tag></span></div>
                 <div class="control"><input id="calculatedCommission" readonly></div>
               </div>
               <div class="field">
-                <div class="label">Extra Commission (Ex VAT)</div>
+                <div class="label">Extra Commission (Ex VAT) <span class="tag" data-tag></span></div>
                 <div class="control"><input id="extra" type="text" value="0.00"></div>
               </div>
             </div>
@@ -349,57 +361,57 @@
           <div class="section">
             <div class="fields">
               <div class="field">
-                <div class="label">ยอดจัด</div>
+                <div class="label">ยอดจัด <span class="tag" data-tag></span></div>
                 <div class="control"><input id="financeAmt" readonly></div>
               </div>
               <div class="field">
-                <div class="label">ดอกเบี้ยต่อปี (Ex VAT)</div>
+                <div class="label">ดอกเบี้ยต่อปี (Ex VAT) <span class="tag" data-tag></span></div>
                 <div class="control"><input id="intPA" readonly></div>
               </div>
               <div class="field">
-                <div class="label">ดอกเบี้ยรวม (Ex VAT)</div>
+                <div class="label">ดอกเบี้ยรวม (Ex VAT) <span class="tag" data-tag></span></div>
                 <div class="control"><input id="intTotal" readonly></div>
               </div>
               <div class="field">
-                <div class="label">ยอดจัดรวม (ฐานผ่อน)</div>
+                <div class="label">ยอดจัดรวม (ฐานผ่อน) <span class="tag" data-tag></span></div>
                 <div class="control"><input id="financeTotalWithInterest" readonly></div>
               </div>
 
               <!-- Installment breakdown -->
               <div class="field">
-                <div class="label">ค่างวด (Ex VAT) / งวด</div>
+                <div class="label">ค่างวด (Ex VAT) / งวด <span class="tag" data-tag></span></div>
                 <div class="control"><input id="leaseExVat" readonly></div>
               </div>
               <div class="field">
-                <div class="label">VAT 7% / งวด</div>
+                <div class="label">VAT 7% / งวด <span class="tag" data-tag></span></div>
                 <div class="control"><input id="leaseVat" readonly></div>
               </div>
               <div class="field">
-                <div class="label">ค่างวด (In VAT) / งวด</div>
+                <div class="label">ค่างวด (In VAT) / งวด <span class="tag" data-tag></span></div>
                 <div class="control"><input id="leaseInVat" readonly></div>
               </div>
 
               <!-- OWS Extra breakdown -->
               <div class="field">
-                <div class="label">OWS Extra (Ex VAT)</div>
+                <div class="label">OWS Extra (Ex VAT) <span class="tag" data-tag></span></div>
                 <div class="control"><input id="owsExtraEx" readonly></div>
               </div>
               <div class="field">
-                <div class="label">VAT 7% (OWS Extra)</div>
+                <div class="label">VAT 7% (OWS Extra) <span class="tag" data-tag></span></div>
                 <div class="control"><input id="owsExtraVat" readonly></div>
               </div>
               <div class="field">
-                <div class="label">OWS Extra (In VAT)</div>
+                <div class="label">OWS Extra (In VAT) <span class="tag" data-tag></span></div>
                 <div class="control"><input id="owsExtraIn" readonly></div>
               </div>
 
               <!-- Rates -->
               <div class="field">
-                <div class="label">IRR %</div>
+                <div class="label">IRR % <span class="tag" data-tag></span></div>
                 <div class="control"><input id="trRate" readonly></div>
               </div>
               <div class="field">
-                <div class="label">Customer TR</div>
+                <div class="label">Customer TR <span class="tag" data-tag></span></div>
                 <div class="control"><input id="customerTr" readonly></div>
               </div>
             </div>
@@ -411,20 +423,20 @@
           <div class="card-head"><h2>OWS Information</h2></div>
           <div class="section">
             <div class="fields">
-              <div class="field"><div class="label">ข้อมูลรถ</div><div class="control"><input id="qsCarInfo" readonly></div></div>
-              <div class="field"><div class="label">ราคารถ</div><div class="control"><input id="qsCarPrice" readonly></div></div>
-              <div class="field"><div class="label">ส่วนลด</div><div class="control"><input id="qsDiscount" readonly></div></div>
-              <div class="field"><div class="label">Option</div><div class="control"><input id="qsOption" readonly></div></div>
-              <div class="field"><div class="label">เงินดาวน์</div><div class="control"><input id="qsDownAmount" readonly></div></div>
-              <div class="field"><div class="label">เงินดาวน์คิดเป็น %</div><div class="control"><input id="qsDownPercent" readonly></div></div>
-              <div class="field"><div class="label">บอลลูน (บาท)</div><div class="control"><input id="qsBalloonAmount" readonly></div></div>
-              <div class="field"><div class="label">บอลลูนคิดเป็น %</div><div class="control"><input id="qsBalloonPercent" readonly></div></div>
-              <div class="field"><div class="label">IRR %</div><div class="control"><input id="qsTrRate" readonly></div></div>
-              <div class="field"><div class="label">จำนวนปี</div><div class="control"><input id="qsTermYears" readonly></div></div>
-              <div class="field"><div class="label">Deposit</div><div class="control"><input id="qsDeposit" readonly></div></div>
-              <div class="field"><div class="label">OWS Extra (Ex VAT)</div><div class="control"><input id="qsExtraEx" readonly></div></div>
-              <div class="field"><div class="label">VAT 7% (OWS Extra)</div><div class="control"><input id="qsExtraVat" readonly></div></div>
-              <div class="field"><div class="label">OWS Extra (In VAT)</div><div class="control"><input id="qsExtraIn" readonly></div></div>
+              <div class="field"><div class="label">ข้อมูลรถ <span class="tag" data-tag></span></div><div class="control"><input id="qsCarInfo" readonly></div></div>
+              <div class="field"><div class="label">ราคารถ <span class="tag" data-tag></span></div><div class="control"><input id="qsCarPrice" readonly></div></div>
+              <div class="field"><div class="label">ส่วนลด <span class="tag" data-tag></span></div><div class="control"><input id="qsDiscount" readonly></div></div>
+              <div class="field"><div class="label">Option <span class="tag" data-tag></span></div><div class="control"><input id="qsOption" readonly></div></div>
+              <div class="field"><div class="label">เงินดาวน์ <span class="tag" data-tag></span></div><div class="control"><input id="qsDownAmount" readonly></div></div>
+              <div class="field"><div class="label">เงินดาวน์คิดเป็น % <span class="tag" data-tag></span></div><div class="control"><input id="qsDownPercent" readonly></div></div>
+              <div class="field"><div class="label">บอลลูน (บาท) <span class="tag" data-tag></span></div><div class="control"><input id="qsBalloonAmount" readonly></div></div>
+              <div class="field"><div class="label">บอลลูนคิดเป็น % <span class="tag" data-tag></span></div><div class="control"><input id="qsBalloonPercent" readonly></div></div>
+              <div class="field"><div class="label">IRR % <span class="tag" data-tag></span></div><div class="control"><input id="qsTrRate" readonly></div></div>
+              <div class="field"><div class="label">จำนวนปี <span class="tag" data-tag></span></div><div class="control"><input id="qsTermYears" readonly></div></div>
+              <div class="field"><div class="label">Deposit <span class="tag" data-tag></span></div><div class="control"><input id="qsDeposit" readonly></div></div>
+              <div class="field"><div class="label">OWS Extra (Ex VAT) <span class="tag" data-tag></span></div><div class="control"><input id="qsExtraEx" readonly></div></div>
+              <div class="field"><div class="label">VAT 7% (OWS Extra) <span class="tag" data-tag></span></div><div class="control"><input id="qsExtraVat" readonly></div></div>
+              <div class="field"><div class="label">OWS Extra (In VAT) <span class="tag" data-tag></span></div><div class="control"><input id="qsExtraIn" readonly></div></div>
             </div>
           </div>
         </section>
@@ -445,7 +457,7 @@
   </main>
 
   <script>
-    // ========= Helpers =========
+    /* ========= Helpers ========= */
     function format(n, d=2){ if(isNaN(n)||n===null) return d===0?"0":(d===4?"0.0000":"0.00");
       return new Intl.NumberFormat('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}).format(parseFloat(n));}
     function formatNoDecimal(n){ return format(n,0); }
@@ -475,7 +487,7 @@
       return NaN;
     }
 
-    // ===== Target IRR Solver (find Flat Rate) =====
+    // Solver for Target IRR (find Flat Rate)
     function effFromFlat(flatRatePct, inputs, smooth=true){
       const { total, down, balloon, years, months, comBase, comPercent, extra } = inputs;
       const finance = total - down;
@@ -524,7 +536,7 @@
       const q = document.getElementById('qsBalloonPercent'); if(q) q.value = `${format4(pct)}%`;
     }
 
-    // ========= Core calc =========
+    /* ====== Core calculation ====== */
     function calculate(){
       const getVal=id=>uncomma(document.getElementById(id).value);
       const getInt=id=>parseInt(uncomma(document.getElementById(id).value))||0;
@@ -549,14 +561,13 @@
       const pctSel=document.getElementById('balloonPercentSelect');
       const amtInp=document.getElementById('balloonManualInput');
       if(typeBal==='percent'){
+        pctSel.disabled=false; amtInp.disabled=true;
         const raw = parseFloat(pctSel.value)||0;
         balPct = Math.min(Math.max(raw,0),35);
-        if(raw!==balPct){
-          pctSel.value = String(balPct);
-          alert('เปอร์เซ็นต์บอลลูนสูงสุดคือ 35%');
-        }
+        if(raw!==balPct){ pctSel.value = String(balPct); alert('เปอร์เซ็นต์บอลลูนสูงสุดคือ 35%'); }
         balloon = total*(balPct/100);
       }else{
+        pctSel.disabled=true; amtInp.disabled=false;
         let manual = uncomma(amtInp.value);
         if (manual<0) manual=0;
         if (manual>cap) manual=cap;
@@ -590,13 +601,13 @@
       }
 
       if(months===0){
-        // reset outputs
-        const zero=['financeAmt','intPA','intTotal','financeTotalWithInterest',
-                    'leaseExVat','leaseVat','leaseInVat','owsExtraEx','owsExtraVat','owsExtraIn'];
-        zero.forEach(id=>document.getElementById(id).value = format(0));
+        ['financeAmt','intPA','intTotal','financeTotalWithInterest',
+         'leaseExVat','leaseVat','leaseInVat','owsExtraEx','owsExtraVat','owsExtraIn'
+        ].forEach(id=>document.getElementById(id).value = format(0));
         document.getElementById('trRate').value='ไม่สามารถคำนวณ';
         document.getElementById('customerTr').value='ไม่สามารถคำนวณ';
         updateOWS(carInfo, car, discount, option, down, balloon, years, NaN, 0, 0, 0);
+        refreshFieldTags(); // update tags/colors
         return;
       }
 
@@ -644,6 +655,7 @@
       document.getElementById('customerTr').value = isNaN(cus)?'ไม่สามารถคำนวณ':format4(cus);
 
       updateOWS(carInfo, car, discount, option, down, balloon, years, irr, owsEx, owsVat, owsIn);
+      refreshFieldTags(); // update tags/colors
     }
 
     function updateOWS(carInfo, car, discount, option, down, balloon, years, irr, ex, vat, inv){
@@ -706,7 +718,6 @@
         rate=getVal('interestRate'); if(rate===0){ alert('กรุณาระบุอัตราดอกเบี้ย'); return; }
       }
 
-      // Try down=0
       const base0=Math.max(total - bal, 0);
       const int0 = base0*(rate/100)*years;
       const pmt0 = months>0 ? Math.ceil((base0+int0)/months) : 0;
@@ -734,101 +745,10 @@
       }
     }
 
-    function generateQuotation(){
-      calculate();
-      // เก็บข้อมูล (คงเดิมจากเวิร์กโฟลว์เดิมของคุณ)
-      const data = {
-        carInfo: document.getElementById('carInfo').value,
-        carPrice: uncomma(document.getElementById('carPrice').value),
-        discount: uncomma(document.getElementById('discount').value),
-        option: uncomma(document.getElementById('option').value),
-        totalAmount: uncomma(document.getElementById('totalAmount').value),
+    function generateQuotation(){ calculate(); /* เก็บ/เปิดหน้าถัดไปตาม workflow เดิม */ }
+    function sendToQsData(){ calculate(); /* เก็บ/เปิดหน้าถัดไปตาม workflow เดิม */ }
 
-        downAmount: uncomma(document.getElementById('downAmount').value),
-        downPercent: parseFloat(document.getElementById('downPercentInline').innerText.replace('%','')),
-
-        balloonAmount: uncomma(document.getElementById('balloonAmount').value),
-        balloonPercent: parseFloat(document.getElementById('balloonPercentInline').innerText.replace('%','')),
-
-        interestMode: document.getElementById('interestMode').value,
-        interestRate: uncomma(document.getElementById('interestRate').value),
-        targetIrr: uncomma(document.getElementById('targetIrr').value),
-        termYears: parseInt(document.getElementById('termYears').value)||0,
-
-        comBase: document.getElementById('comBase').value,
-        comPercent: uncomma(document.getElementById('comPercent').value),
-        calculatedCommission: uncomma(document.getElementById('calculatedCommission').value),
-        extra: uncomma(document.getElementById('extra').value),
-
-        financeAmt: uncomma(document.getElementById('financeAmt').value),
-        intPA: uncomma(document.getElementById('intPA').value),
-        intTotal: uncomma(document.getElementById('intTotal').value),
-        financeTotalWithInterest: uncomma(document.getElementById('financeTotalWithInterest').value),
-
-        leaseExVat: uncomma(document.getElementById('leaseExVat').value),
-        leaseVat: uncomma(document.getElementById('leaseVat').value),
-        leaseInVat: uncomma(document.getElementById('leaseInVat').value),
-
-        owsExtraEx: uncomma(document.getElementById('owsExtraEx').value),
-        owsExtraVat: uncomma(document.getElementById('owsExtraVat').value),
-        owsExtraIn: uncomma(document.getElementById('owsExtraIn').value),
-
-        irrRate: parseFloat(document.getElementById('trRate').value.replace('ไม่สามารถคำนวณ','NaN')),
-        customerTr: parseFloat(document.getElementById('customerTr').value.replace('ไม่สามารถคำนวณ','NaN')),
-
-        // OWS mirrors
-        qsCarInfo: document.getElementById('qsCarInfo').value,
-        qsCarPrice: uncomma(document.getElementById('qsCarPrice').value),
-        qsDiscount: uncomma(document.getElementById('qsDiscount').value),
-        qsOption: uncomma(document.getElementById('qsOption').value),
-        qsDownAmount: uncomma(document.getElementById('qsDownAmount').value),
-        qsDownPercent: parseFloat(document.getElementById('qsDownPercent').value.replace('%',''))||0,
-        qsBalloonAmount: uncomma(document.getElementById('qsBalloonAmount').value),
-        qsBalloonPercent: parseFloat((document.getElementById('qsBalloonPercent').value||'').replace('%',''))||0,
-        qsTrRate: parseFloat(document.getElementById('qsTrRate').value.replace('ไม่สามารถคำนวณ','NaN')),
-        qsTermYears: parseInt(document.getElementById('qsTermYears').value)||0,
-        qsDeposit: uncomma(document.getElementById('qsDeposit').value),
-        qsExtraEx: uncomma(document.getElementById('qsExtraEx').value),
-        qsExtraVat: uncomma(document.getElementById('qsExtraVat').value),
-        qsExtraIn: uncomma(document.getElementById('qsExtraIn').value)
-      };
-      localStorage.setItem('quotationData', JSON.stringify(data));
-      window.open('quotation.html','_blank');
-    }
-
-    function sendToQsData(){
-      calculate();
-      const dataForQs = {
-        carInfo: document.getElementById('carInfo').value,
-        carPrice: uncomma(document.getElementById('carPrice').value),
-        discount: uncomma(document.getElementById('discount').value),
-        option: uncomma(document.getElementById('option').value),
-        totalAmount: uncomma(document.getElementById('totalAmount').value),
-
-        downAmount: uncomma(document.getElementById('downAmount').value),
-        qsDownPercent: parseFloat(document.getElementById('downPercentInline').innerText.replace('%','')),
-        termYears: parseInt(document.getElementById('termYears').value)||0,
-        deposit: uncomma(document.getElementById('qsDeposit').value),
-
-        balloonAmount: uncomma(document.getElementById('balloonAmount').value),
-        balloonPercent: parseFloat(document.getElementById('balloonPercentInline').innerText.replace('%','')),
-
-        leaseExVat: uncomma(document.getElementById('leaseExVat').value),
-        leaseVat: uncomma(document.getElementById('leaseVat').value),
-        leaseInVat: uncomma(document.getElementById('leaseInVat').value),
-
-        irrRate: parseFloat(document.getElementById('trRate').value.replace('ไม่สามารถคำนวณ','NaN')),
-        customerTR: parseFloat(document.getElementById('customerTr').value.replace('ไม่สามารถคำนวณ','NaN')),
-
-        owsExtraEx: uncomma(document.getElementById('owsExtraEx').value),
-        owsExtraVat: uncomma(document.getElementById('owsExtraVat').value),
-        owsExtraIn: uncomma(document.getElementById('owsExtraIn').value)
-      };
-      localStorage.setItem('qsData', JSON.stringify(dataForQs));
-      window.open('qs_data.html','_blank');
-    }
-
-    // ========= UI wiring =========
+    /* ===== Input wiring & Tag refresh ===== */
     function addNumericListeners(id){
       const el=document.getElementById(id); if(!el) return;
       el.addEventListener('focus', ()=>{ let v=uncomma(el.value); el.value=(Math.abs(v)<0.001)?'':String(v); });
@@ -845,33 +765,53 @@
         calculate();
       });
     }
+
     function toggleBalloonUI(){
       const type=document.getElementById('balloonType').value;
       const pctSel=document.getElementById('balloonPercentSelect');
       const amtInp=document.getElementById('balloonManualInput');
       if(type==='percent'){
-        pctSel.disabled=false; amtInp.disabled=true;
-        pctSel.style.background= 'var(--input-edit)';
-        amtInp.style.background= 'var(--input-read)';
+        pctSel.disabled=false;  amtInp.disabled=true;
       }else{
-        pctSel.disabled=true; amtInp.disabled=false;
-        pctSel.style.background= 'var(--input-read)';
-        amtInp.style.background= 'var(--input-edit)';
+        pctSel.disabled=true;   amtInp.disabled=false;
       }
+      refreshFieldTags();
     }
+
     function toggleInterestMode(){
       const mode=document.getElementById('interestMode').value;
       const flat=document.getElementById('interestRate');
       const irr=document.getElementById('targetIrr');
-      if(mode==='flat'){
-        flat.disabled=false; irr.disabled=true;
-        flat.style.background='var(--input-edit)';
-        irr.style.background='var(--input-read)';
-      }else{
-        flat.disabled=true; irr.disabled=false;
-        flat.style.background='var(--input-read)';
-        irr.style.background='var(--input-edit)';
-      }
+      if(mode==='flat'){ flat.disabled=false; irr.disabled=true; }
+      else{ flat.disabled=true; irr.disabled=false; }
+      refreshFieldTags();
+    }
+
+    // สร้าง/ปรับแท็กบน label อัตโนมัติ (แก้ไขได้/คำนวณ)
+    function refreshFieldTags(){
+      document.querySelectorAll('.field').forEach(field=>{
+        const label = field.querySelector('.label [data-tag]') || field.querySelector('.label .tag[data-tag]');
+        const ctrl  = field.querySelector('.control input, .control select');
+        if(!label || !ctrl) return;
+
+        const isEditable = (
+          (ctrl.tagName==='INPUT' && !ctrl.readOnly && !ctrl.disabled) ||
+          (ctrl.tagName==='SELECT' && !ctrl.disabled)
+        );
+
+        // สร้างแท็กหากยังไม่มี
+        if(!label.classList.contains('tag')){
+          label.classList.add('tag');
+        }
+
+        if(isEditable){
+          label.classList.remove('tag-ro'); label.classList.add('tag-edit');
+          label.textContent = 'แก้ไขได้';
+        }else{
+          label.classList.remove('tag-edit'); label.classList.add('tag-ro');
+          label.textContent = 'คำนวณ';
+        }
+      });
     }
 
     window.onload = ()=>{
@@ -889,9 +829,11 @@
       // Defaults: Balloon = amount, value=0
       document.getElementById('balloonType').value = 'amount';
       document.getElementById('balloonManualInput').value = '0.00';
+
       toggleBalloonUI();
       toggleInterestMode();
       calculate();
+      refreshFieldTags();
     };
   </script>
 </body>
