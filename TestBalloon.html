@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>ORIX Financial Lease Calculator — Balloon Dual Mode</title>
+  <title>ORIX Financial Lease Calculator — Fixed IRR Mode</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- Google Font: Noto Sans Thai -->
   https://fonts.googleapis.com
@@ -22,7 +22,7 @@
       --line: #E6EBF0;
       --white: #FFFFFF;
 
-      /* Inputs (แยกชัดเจน) */
+      /* Inputs */
       --editable-bg: #FFFDF0;       /* very light yellow */
       --editable-border: #F3E6BA;
       --readonly-bg: #EAF4FF;       /* light blue */
@@ -71,16 +71,12 @@
 
     /* Global Legend */
     .legend-global {
-      max-width: 1100px;
-      margin: 8px auto 0;
-      padding: 8px 16px;
+      max-width: 1100px; margin: 8px auto 0; padding: 8px 16px;
       display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
       font-size: 12px; color: var(--ink-600);
     }
     .legend-item { display: inline-flex; align-items: center; gap: 8px; }
-    .legend-box {
-      width: 14px; height: 14px; border-radius: 4px; display: inline-block; border: 1px solid var(--line);
-    }
+    .legend-box { width: 14px; height: 14px; border-radius: 4px; display: inline-block; border: 1px solid var(--line); }
 
     /* Card */
     .card {
@@ -94,14 +90,11 @@
     }
     .card + .card { margin-top: 14px; }
     .card-head {
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--line);
+      padding: 12px 14px; border-bottom: 1px solid var(--line);
       display: flex; align-items: center; gap: 10px; justify-content: space-between;
       min-height: var(--head-min-h);
     }
-    .card-head h2 {
-      margin: 0; font-size: 14px; font-weight: 600; color: var(--orix-blue); letter-spacing: .2px;
-    }
+    .card-head h2 { margin: 0; font-size: 14px; font-weight: 600; color: var(--orix-blue); letter-spacing: .2px; }
 
     /* Rows */
     .row { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
@@ -114,25 +107,20 @@
     /* Section + Fields */
     .section { border-radius: 10px; overflow: hidden; border-top: 0; border-bottom: 0; }
     .fields {
-      display: grid; grid-template-columns: 1fr;
-      grid-auto-rows: minmax(var(--field-min-h), auto);
+      display: grid; grid-template-columns: 1fr; grid-auto-rows: minmax(var(--field-min-h), auto);
     }
     @media (min-width: 640px) { .fields { grid-template-columns: 1fr 1fr; } }
 
     .field {
-      display: grid; grid-template-columns: 46% 54%;
-      align-items: center; gap: 10px; padding: 10px 12px;
+      display: grid; grid-template-columns: 46% 54%; align-items: center;
+      gap: 10px; padding: 10px 12px;
       border-bottom: 1px solid var(--line); background: #fff;
       min-height: var(--field-min-h);
     }
     .field:nth-child(even) { background: #FCFEFF; }
     .field:last-child { border-bottom: none; }
 
-    .label {
-      font-size: 13px; color: var(--ink-600);
-      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-      font-weight: 400;
-    }
+    .label { font-size: 13px; color: var(--ink-600); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-weight: 400; }
     .muted { color: var(--ink-500); font-size: 12px; }
 
     /* Inputs */
@@ -184,7 +172,7 @@
     </div>
   </header>
 
-  <!-- Legend บนสุด -->
+  <!-- Legend -->
   <div class="legend-global">
     <span class="legend-item">
       <span class="legend-box" style="background:#FFFDF0;border-color:#F3E6BA;"></span>
@@ -198,162 +186,87 @@
 
   <main>
 
-    <!-- Row 1: ข้อมูลเบื้องต้น -->
+    <!-- ข้อมูลเบื้องต้น -->
     <div class="row">
       <section class="card">
         <div class="card-head"><h2>ข้อมูลเบื้องต้น</h2></div>
         <div class="section">
           <div class="fields">
-            <div class="field">
-              <div class="label">ข้อมูลรถ</div>
-              <div class="control"><input id="carInfo" type="text" value=""></div>
-            </div>
-            <div class="field">
-              <div class="label">ราคารถ</div>
-              <div class="control"><input id="carPrice" type="text" value="0.00"></div>
-            </div>
-            <div class="field">
-              <div class="label">ส่วนลด</div>
-              <div class="control"><input id="discount" type="text" value="0.00"></div>
-            </div>
-            <div class="field">
-              <div class="label">Option</div>
-              <div class="control"><input id="option" type="text" value="0.00"></div>
-            </div>
-            <div class="field">
-              <div class="label">ราคาสุทธิ</div>
-              <div class="control"><input id="totalAmount" readonly></div>
-            </div>
+            <div class="field"><div class="label">ข้อมูลรถ</div><div class="control"><input id="carInfo" type="text" value=""></div></div>
+            <div class="field"><div class="label">ราคารถ</div><div class="control"><input id="carPrice" type="text" value="0.00"></div></div>
+            <div class="field"><div class="label">ส่วนลด</div><div class="control"><input id="discount" type="text" value="0.00"></div></div>
+            <div class="field"><div class="label">Option</div><div class="control"><input id="option" type="text" value="0.00"></div></div>
+            <div class="field"><div class="label">ราคาสุทธิ</div><div class="control"><input id="totalAmount" readonly></div></div>
           </div>
         </div>
       </section>
     </div>
 
-    <!-- Row 2 -->
+    <!-- ซ้าย = เงินดาวน์ | บอลลูน , ขวา = ดอกเบี้ย | ค่าคอม -->
     <div class="row two">
 
-      <!-- ซ้าย: เงินดาวน์ | บอลลูน -->
+      <!-- เงินดาวน์ | บอลลูน -->
       <section class="card">
         <div class="card-head"><h2>เงินดาวน์ | บอลลูน</h2></div>
         <div class="section">
           <div class="fields">
             <!-- Down -->
-            <div class="field">
-              <div class="label">รูปแบบดาวน์</div>
-              <div class="control">
-                <select id="downType">
-                  <option value="percent">เป็น %</option>
-                  <option value="amount">เป็นจำนวนเงิน</option>
-                </select>
-              </div>
-            </div>
-            <div class="field">
-              <div class="label">กรอก % หรือ จำนวน</div>
-              <div class="control"><input id="downInput" type="text" value="0.00"></div>
-            </div>
-            <div class="field">
-              <div class="label">เงินดาวน์ <span class="muted">( <span id="downPercentInline">0.0000%</span> )</span></div>
-              <div class="control"><input id="downAmount" readonly></div>
-            </div>
+            <div class="field"><div class="label">รูปแบบดาวน์</div><div class="control">
+              <select id="downType">
+                <option value="percent">เป็น %</option>
+                <option value="amount">เป็นจำนวนเงิน</option>
+              </select>
+            </div></div>
+            <div class="field"><div class="label">กรอก % หรือ จำนวน</div><div class="control"><input id="downInput" type="text" value="0.00"></div></div>
+            <div class="field"><div class="label">เงินดาวน์ <span class="muted">( <span id="downPercentInline">0.0000%</span> )</span></div><div class="control"><input id="downAmount" readonly></div></div>
 
             <!-- Balloon Toggle + Dual mode -->
-            <div class="field">
-              <div class="label">ใช้บอลลูน (เปิด/ปิด)</div>
-              <div class="control" style="text-align:left;">
-                <input id="balloonEnabled" type="checkbox" />
-              </div>
-            </div>
-
-            <div class="field">
-              <div class="label">รูปแบบการกรอกบอลลูน</div>
-              <div class="control">
-                <select id="balloonMode" disabled>
-                  <option value="percent" selected>เปอร์เซ็นต์ (%)</option>
-                  <option value="amount">จำนวนเงิน (บาท)</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="field">
-              <div class="label">% บอลลูน (0-35%)</div>
-              <div class="control">
-                <input id="balloonPercentInput" type="number" min="0" max="35" step="0.1" value="0.0" disabled />
-              </div>
-            </div>
-
-            <div class="field">
-              <div class="label">จำนวนเงินบอลลูน</div>
-              <div class="control">
-                <input id="balloonAmountInput" type="text" value="0.00" disabled />
-              </div>
-            </div>
-
-            <div class="field">
-              <div class="label">ยอดบอลลูน <span class="muted">( <span id="balloonPercentInline">0.0000%</span> )</span></div>
-              <div class="control"><input id="balloonAmount" readonly></div>
-            </div>
+            <div class="field"><div class="label">ใช้บอลลูน (เปิด/ปิด)</div><div class="control" style="text-align:left;"><input id="balloonEnabled" type="checkbox" /></div></div>
+            <div class="field"><div class="label">รูปแบบการกรอกบอลลูน</div><div class="control">
+              <select id="balloonMode" disabled>
+                <option value="percent" selected>เปอร์เซ็นต์ (%)</option>
+                <option value="amount">จำนวนเงิน (บาท)</option>
+              </select>
+            </div></div>
+            <div class="field"><div class="label">% บอลลูน (0-35%)</div><div class="control"><input id="balloonPercentInput" type="number" min="0" max="35" step="0.1" value="0.0" disabled /></div></div>
+            <div class="field"><div class="label">จำนวนเงินบอลลูน</div><div class="control"><input id="balloonAmountInput" type="text" value="0.00" disabled /></div></div>
+            <div class="field"><div class="label">ยอดบอลลูน <span class="muted">( <span id="balloonPercentInline">0.0000%</span> )</span></div><div class="control"><input id="balloonAmount" readonly></div></div>
           </div>
         </div>
       </section>
 
-      <!-- ขวา: ดอกเบี้ย | ค่าคอม -->
+      <!-- ดอกเบี้ย | ค่าคอม -->
       <section class="card">
         <div class="card-head"><h2>ดอกเบี้ย | ค่าคอม</h2></div>
         <div class="section">
           <div class="fields">
-            <div class="field">
-              <div class="label">โหมดดอกเบี้ย</div>
-              <div class="control">
-                <select id="interestMode">
-                  <option value="flat" selected>กำหนด Flat Rate (%)</option>
-                  <option value="target_irr">กำหนด IRR เป้าหมาย (% ต่อปี)</option>
-                </select>
-              </div>
-            </div>
-            <div class="field">
-              <div class="label">Flat Rate (%)</div>
-              <div class="control"><input id="interestRate" type="text" value="0.00"></div>
-            </div>
-            <div class="field">
-              <div class="label">IRR เป้าหมาย (% ต่อปี)</div>
-              <div class="control"><input id="targetIrr" type="text" value="0.00" disabled></div>
-            </div>
-            <div class="field">
-              <div class="label">จำนวนปี</div>
-              <div class="control"><input id="termYears" type="number" step="1" value="0"></div>
-            </div>
+            <div class="field"><div class="label">โหมดดอกเบี้ย</div><div class="control">
+              <select id="interestMode">
+                <option value="flat" selected>กำหนด Flat Rate (%)</option>
+                <option value="target_irr">กำหนด IRR เป้าหมาย (% ต่อปี)</option>
+              </select>
+            </div></div>
+            <div class="field"><div class="label">Flat Rate (%)</div><div class="control"><input id="interestRate" type="text" value="0.00"></div></div>
+            <div class="field"><div class="label">IRR เป้าหมาย (% ต่อปี)</div><div class="control"><input id="targetIrr" type="text" value="0.00" disabled></div></div>
+            <div class="field"><div class="label">จำนวนปี</div><div class="control"><input id="termYears" type="number" step="1" value="0"></div></div>
 
-            <div class="field">
-              <div class="label">คิดค่าคอมจาก</div>
-              <div class="control">
-                <select id="comBase">
-                  <option value="interest">ดอกเบี้ยรวม</option>
-                  <option value="finance">ยอดจัด</option>
-                </select>
-              </div>
-            </div>
-            <div class="field">
-              <div class="label">Commission (%)</div>
-              <div class="control"><input id="comPercent" type="text" value="0.00"></div>
-            </div>
-            <div class="field">
-              <div class="label">ค่าคอม (Ex VAT)</div>
-              <div class="control"><input id="calculatedCommission" readonly></div>
-            </div>
-            <div class="field">
-              <div class="label">Extra Commission (Ex VAT)</div>
-              <div class="control"><input id="extra" type="text" value="0.00"></div>
-            </div>
+            <div class="field"><div class="label">คิดค่าคอมจาก</div><div class="control">
+              <select id="comBase">
+                <option value="interest">ดอกเบี้ยรวม</option>
+                <option value="finance">ยอดจัด</option>
+              </select>
+            </div></div>
+            <div class="field"><div class="label">Commission (%)</div><div class="control"><input id="comPercent" type="text" value="0.00"></div></div>
+            <div class="field"><div class="label">ค่าคอม (Ex VAT)</div><div class="control"><input id="calculatedCommission" readonly></div></div>
+            <div class="field"><div class="label">Extra Commission (Ex VAT)</div><div class="control"><input id="extra" type="text" value="0.00"></div></div>
           </div>
         </div>
       </section>
 
     </div>
 
-    <!-- Row 3 -->
+    <!-- ผลลัพธ์ + OWS -->
     <div class="row two">
-
-      <!-- ผลลัพธ์ -->
       <section class="card">
         <div class="card-head"><h2>ผลลัพธ์</h2></div>
         <div class="section">
@@ -377,7 +290,6 @@
         </div>
       </section>
 
-      <!-- OWS Information -->
       <section class="card">
         <div class="card-head"><h2>OWS Information</h2></div>
         <div class="section">
@@ -399,10 +311,9 @@
           </div>
         </div>
       </section>
-
     </div>
 
-    <!-- Row 4: Actions -->
+    <!-- Actions -->
     <div class="row">
       <section class="card">
         <div class="card-head"><h2>คำสั่ง</h2></div>
@@ -425,7 +336,7 @@
     function format4(n){ return format(n,4); }
     function uncomma(s){ const c=String(s).replace(/,/g,''); const v=parseFloat(c); return isNaN(v)?0:v; }
 
-    // IRR per period (Newton)
+    // IRR (per period) Newton
     function calculateIRR(nper, pmt, pv, fv=0, type=0){
       if (pmt===0 && pv===0) return NaN; if (nper<=0) return NaN;
       let rate=0.05/12, tol=1e-7, maxIter=500;
@@ -448,61 +359,100 @@
       return NaN;
     }
 
-    // Target IRR Solver (Flat Rate)
-    function effFromFlat(flatRatePct, inputs, smooth=true){
-      const { total, down, balloon, years, months, comBase, comPercent, extra } = inputs;
-      const finance = total - down;
+    /* ===== Core deal builder (Exact rounding) ===== */
+    function buildDealExact(params) {
+      const {
+        total, down, balloon, years, months,
+        comBase, comPercent, extra, flatRatePct
+      } = params;
+
+      const finance = Math.max(total - down, 0);
       const base = Math.max(finance - balloon, 0);
       const intPA = base * (flatRatePct/100);
       const intTotal = intPA * years;
-      const comBaseVal = (comBase === 'finance')? finance : intTotal;
-      const commission = smooth ? (comBaseVal * (comPercent/100)) : Math.ceil(comBaseVal * (comPercent/100));
-      let pmt = (base + intTotal) / (months || 1);
-      if (!smooth) pmt = Math.ceil(pmt);
-      const pv = -(finance + commission + extra); // no VAT
-      const fv = balloon;
-      const r = calculateIRR(months, pmt, pv, fv, 0);
-      return isNaN(r)?NaN:(r*12*100);
+      const financeTotalWithInterest = base + intTotal;
+
+      // commission base
+      const comBaseVal = (comBase === 'finance') ? finance : intTotal;
+      const commission = Math.ceil(comBaseVal * (comPercent/100)); // exact rule
+
+      // monthly payment (In VAT) exact rule
+      const leaseInVat = months > 0 ? Math.ceil(financeTotalWithInterest / months) : 0;
+      const leaseExVat = leaseInVat / 1.07;
+
+      // Rates (Effective p.a.) – pv excludes VAT
+      const pvIRR = -(finance + commission + extra);
+      const irrMonthly = calculateIRR(months, leaseInVat, pvIRR, balloon, 0);
+      const irrEff = (isNaN(irrMonthly) ? NaN : irrMonthly * 12 * 100);
+
+      const pvCus = -(finance);
+      const cusMonthly = calculateIRR(months, leaseInVat, pvCus, balloon, 0);
+      const cusEff = (isNaN(cusMonthly) ? NaN : cusMonthly * 12 * 100);
+
+      return {
+        finance, base, intPA, intTotal, financeTotalWithInterest,
+        commission, leaseInVat, leaseExVat, irrEff, cusEff
+      };
     }
-    function solveFlatForTargetIRR(target, inputs){
-      let lo=0, hi=50, maxHi=200, tol=1e-4, maxIter=80;
-      let elo=effFromFlat(lo,inputs,true), ehi=effFromFlat(hi,inputs,true);
-      if(!isNaN(elo) && elo>=target) return 0;
-      while((isNaN(ehi)||ehi<target) && hi<maxHi){ hi*=2; ehi=effFromFlat(hi,inputs,true); }
-      if(isNaN(ehi)) return NaN; if(hi>=maxHi && ehi<target) return NaN;
-      let best=hi, bestDiff=Math.abs(ehi-target);
-      for(let i=0;i<maxIter;i++){
-        const mid=(lo+hi)/2; const em=effFromFlat(mid,inputs,true); if(isNaN(em)) break;
-        const diff=em-target;
-        if(Math.abs(diff)<tol){ best=mid; break; }
-        if(Math.abs(diff)<bestDiff){ best=mid; bestDiff=Math.abs(diff); }
-        if(diff<0) lo=mid; else hi=mid;
-        if(Math.abs(hi-lo)<1e-6) break;
+
+    /* ===== Solver: Flat Rate for target IRR (Exact model) ===== */
+    function solveFlatForTargetIRRExact(targetEff, inputs) {
+      const { total, down, balloon, years, months, comBase, comPercent, extra } = inputs;
+
+      // If months or total invalid
+      if (months <= 0 || total <= 0) return NaN;
+
+      // Helper to evaluate IRR at given flat
+      function effAt(flat) {
+        const d = buildDealExact({
+          total, down, balloon, years, months, comBase, comPercent, extra, flatRatePct: flat
+        });
+        return d.irrEff;
+      }
+
+      // Bracket solution: try increasing hi until eff>=target
+      let lo = 0.0;
+      let hi = 30.0;    // start
+      let effLo = effAt(lo);
+      let effHi = effAt(hi);
+
+      if (!isNaN(effLo) && effLo >= targetEff) return 0.0;
+
+      const MAX_HI = 200.0;
+      let guard = 0;
+      while ((isNaN(effHi) || effHi < targetEff) && hi < MAX_HI && guard < 20) {
+        hi *= 2;
+        effHi = effAt(hi);
+        guard++;
+      }
+      if (isNaN(effHi)) return NaN;
+      if (hi >= MAX_HI && effHi < targetEff) return NaN; // target too high
+
+      // Bisection with exact rounding
+      let best = hi;
+      let bestDiff = Math.abs(effHi - targetEff);
+      const TOL = 1e-3;     // tolerance in % p.a.
+      const MAX_ITER = 80;
+
+      for (let i = 0; i < MAX_ITER; i++) {
+        const mid = (lo + hi) / 2;
+        const effMid = effAt(mid);
+        if (isNaN(effMid)) break;
+
+        const diff = effMid - targetEff;
+        if (Math.abs(diff) < TOL) { best = mid; break; }
+
+        if (Math.abs(diff) < bestDiff) {
+          best = mid; bestDiff = Math.abs(diff);
+        }
+
+        if (diff < 0) lo = mid; else hi = mid;
+        if (Math.abs(hi - lo) < 1e-6) break;
       }
       return best;
     }
 
-    function updateDownPctInline(){
-      const total=uncomma(document.getElementById('totalAmount').value);
-      const down=uncomma(document.getElementById('downAmount').value);
-      const pct = total>0?(down/total*100):0;
-      document.getElementById('downPercentInline').innerText = `${format4(pct)}%`;
-      const q = document.getElementById('qsDownPercent'); if(q) q.value = `${format4(pct)}%`;
-    }
-    function updateBalloonPctInline(pctValue){
-      if (typeof pctValue === 'number') {
-        document.getElementById('balloonPercentInline').innerText = `${format4(pctValue)}%`;
-        const qs = document.getElementById('qsBalloonPercent'); if(qs) qs.value = `${format4(pctValue)}%`;
-        return;
-      }
-      const total=uncomma(document.getElementById('totalAmount').value);
-      const bal=uncomma(document.getElementById('balloonAmount').value);
-      const pct = total>0?(bal/total*100):0;
-      document.getElementById('balloonPercentInline').innerText = `${format4(pct)}%`;
-      const qs = document.getElementById('qsBalloonPercent'); if(qs) qs.value = `${format4(pct)}%`;
-    }
-
-    // แปลง-ซิงก์ค่า บอลลูน ระหว่าง % และ จำนวนเงิน
+    /* ===== Balloon helpers (sync) ===== */
     function syncBalloonInputsFromPercent() {
       const total = uncomma(document.getElementById('totalAmount').value);
       const cap = Math.max(total * 0.35, 0);
@@ -526,7 +476,27 @@
       document.getElementById('balloonPercentInput').value = pct.toFixed(1);
     }
 
-    // ========= Core calc =========
+    function updateDownPctInline(){
+      const total=uncomma(document.getElementById('totalAmount').value);
+      const down=uncomma(document.getElementById('downAmount').value);
+      const pct = total>0?(down/total*100):0;
+      document.getElementById('downPercentInline').innerText = `${format4(pct)}%`;
+      const q = document.getElementById('qsDownPercent'); if(q) q.value = `${format4(pct)}%`;
+    }
+    function updateBalloonPctInline(pctValue){
+      if (typeof pctValue === 'number') {
+        document.getElementById('balloonPercentInline').innerText = `${format4(pctValue)}%`;
+        const qs = document.getElementById('qsBalloonPercent'); if(qs) qs.value = `${format4(pctValue)}%`;
+        return;
+      }
+      const total=uncomma(document.getElementById('totalAmount').value);
+      const bal=uncomma(document.getElementById('balloonAmount').value);
+      const pct = total>0?(bal/total*100):0;
+      document.getElementById('balloonPercentInline').innerText = `${format4(pct)}%`;
+      const qs = document.getElementById('qsBalloonPercent'); if(qs) qs.value = `${format4(pct)}%`;
+    }
+
+    /* ===== Main calculate() ===== */
     function calculate(){
       const getVal=id=>uncomma(document.getElementById(id).value);
       const getInt=id=>parseInt(uncomma(document.getElementById(id).value))||0;
@@ -543,129 +513,123 @@
       down = Math.min(Math.max(down,0), total);
       document.getElementById('downAmount').value = format(down);
 
-      // Balloon Toggle + Dual mode
+      // Balloon (toggle + dual mode)
       const enabled = document.getElementById('balloonEnabled').checked;
-      const mode = document.getElementById('balloonMode').value;
+      const bMode = document.getElementById('balloonMode').value;
       const pctInput = document.getElementById('balloonPercentInput');
       const amtInput = document.getElementById('balloonAmountInput');
 
-      // Enable/disable controls
       document.getElementById('balloonMode').disabled = !enabled;
-      pctInput.disabled = !enabled || mode !== 'percent';
-      amtInput.disabled = !enabled || mode !== 'amount';
+      pctInput.disabled = !enabled || bMode!=='percent';
+      amtInput.disabled = !enabled || bMode!=='amount';
 
-      // When enabled: clamp/sync; when disabled: balloon=0
+      const cap = Math.max(total*0.35, 0);
       let balloon = 0;
       let balloonPct = 0;
 
-      const cap = Math.max(total * 0.35, 0);
-
       if (enabled) {
-        if (mode === 'percent') {
-          // ensure amount input shows converted value (for clarity)
+        if (bMode === 'percent') {
           syncBalloonInputsFromPercent();
-          let p = parseFloat(pctInput.value);
-          if (isNaN(p)) p = 0;
-          if (p < 0) p = 0;
-          if (p > 35) p = 35;
-          balloon = Math.min(cap, Math.max(0, total * (p/100)));
+          let p = parseFloat(pctInput.value); if (isNaN(p)) p=0; if (p<0) p=0; if (p>35) p=35;
+          balloon = Math.min(cap, Math.max(0, total*(p/100)));
           balloonPct = p;
         } else {
-          // mode=amount
-          // sanitize amount input and sync percent field
           syncBalloonInputsFromAmount();
-          let a = uncomma(amtInput.value);
-          if (isNaN(a)) a = 0;
-          if (a < 0) a = 0;
-          if (a > cap) a = cap;
+          let a = uncomma(amtInput.value); if (isNaN(a)) a=0; if (a<0) a=0; if (a>cap) a=cap;
           balloon = a;
-          balloonPct = total > 0 ? (balloon/total*100) : 0;
+          balloonPct = total>0 ? (balloon/total*100) : 0;
           if (balloonPct > 35) balloonPct = 35;
         }
       } else {
-        balloon = 0;
-        balloonPct = 0;
+        balloon = 0; balloonPct = 0;
       }
 
-      // set computed balloon output
       document.getElementById('balloonAmount').value = format(balloon);
       updateDownPctInline();
       updateBalloonPctInline(balloonPct);
 
-      const finance = total - down;
-      const years=getInt('termYears'), months=years*12;
+      const finance = Math.max(total - down, 0);
+      const years = getInt('termYears');
+      const months = years * 12;
 
-      const comBase=document.getElementById('comBase').value;
-      const comPercent=getVal('comPercent');
-      const extra=getVal('extra');
+      const comBase = document.getElementById('comBase').value;
+      const comPercent = getVal('comPercent');
+      const extra = getVal('extra');
 
-      // Interest mode
-      const iMode=document.getElementById('interestMode').value;
-      let rate=getVal('interestRate');
-      if(iMode==='target_irr' && months>0 && total>0){
-        const target= getVal('targetIrr');
-        const inputs = { total, down, balloon, years, months, comBase, comPercent, extra };
-        const solved = solveFlatForTargetIRR(target, inputs);
-        if(!isNaN(solved)){
-          rate = solved;
-          document.getElementById('interestRate').value = (Math.abs(rate)<0.005) ? '0.00' : format(rate,2);
-        }
+      const mode=document.getElementById('interestMode').value;
+      const flatInputEl = document.getElementById('interestRate');
+      const irrTargetEl = document.getElementById('targetIrr');
+
+      // Toggle enable of inputs based on mode (no recursion)
+      if (mode === 'flat') {
+        flatInputEl.disabled = false; irrTargetEl.disabled = true;
+      } else {
+        flatInputEl.disabled = true; irrTargetEl.disabled = false;
       }
 
-      if(months===0){
-        ['financeAmt','intPA','intTotal','financeTotalWithInterest',
-         'leaseExVat','leaseVat','leaseInVat','owsExtraEx','owsExtraVat','owsExtraIn'
+      // Early exit: no term
+      if (months === 0) {
+        [
+          'financeAmt','intPA','intTotal','financeTotalWithInterest',
+          'leaseExVat','leaseVat','leaseInVat','owsExtraEx','owsExtraVat','owsExtraIn'
         ].forEach(id=>document.getElementById(id).value = format(0));
         document.getElementById('trRate').value='ไม่สามารถคำนวณ';
         document.getElementById('customerTr').value='ไม่สามารถคำนวณ';
+        // mirror to OWS
         updateOWS(carInfo, car, discount, option, down, balloon, years, NaN, 0, 0, 0);
         return;
       }
 
-      // Base & interest (flat)
-      const base=Math.max(finance - balloon, 0);
-      const intPA = base*(rate/100);
-      const intTotal = intPA*years;
-      const basePlus = base + intTotal;
-      document.getElementById('financeTotalWithInterest').value = format(basePlus);
+      // Determine flat rate to use
+      let rate = getVal('interestRate');
+      if (mode === 'target_irr') {
+        const target = getVal('targetIrr');
+        const solved = solveFlatForTargetIRRExact(target, { total, down, balloon, years, months, comBase, comPercent, extra });
+        if (!isNaN(solved)) {
+          rate = solved;
+          // reflect to Flat Rate box forความโปร่งใส (ไม่เรียก calculate ใหม่)
+          document.getElementById('interestRate').value = (Math.abs(rate) < 0.005) ? '0.00' : format(rate, 2);
+        } else {
+          // หากหา rate ไม่ได้ ให้รีเซ็ต output แต่ยังไม่ error hard
+          // (อาจเกิดจาก target สูงเกินช่วงที่เป็นไปได้)
+          // ใช้ rate เดิมในกล่อง (ถ้ามี) เพื่อคำนวณต่อ
+        }
+      }
 
-      // Commission (Ex VAT)
-      const comBaseVal=(comBase==='finance')? finance : intTotal;
-      const commission = Math.ceil(comBaseVal*(comPercent/100));
-      document.getElementById('calculatedCommission').value = format(commission);
+      // Build with exact rounding
+      const deal = buildDealExact({
+        total, down, balloon, years, months, comBase, comPercent, extra, flatRatePct: rate
+      });
 
+      // Render main
+      document.getElementById('financeAmt').value = format(deal.finance);
+      document.getElementById('intPA').value = format(deal.intPA);
+      document.getElementById('intTotal').value = format(deal.intTotal);
+      document.getElementById('financeTotalWithInterest').value = format(deal.financeTotalWithInterest);
+
+      document.getElementById('calculatedCommission').value = format(deal.commission);
       // OWS Extra breakdown
-      const owsEx = commission + extra;
-      const owsVat = owsEx*0.07;
+      const owsEx = deal.commission + extra;
+      const owsVat = owsEx * 0.07;
       const owsIn = owsEx + owsVat;
       document.getElementById('owsExtraEx').value = format(owsEx);
       document.getElementById('owsExtraVat').value = format(owsVat);
       document.getElementById('owsExtraIn').value = format(owsIn);
 
       // Installment
-      const pmtIn = Math.ceil(basePlus / months);
-      const pmtEx = pmtIn/1.07;
+      const pmtIn = deal.leaseInVat;
+      const pmtEx = deal.leaseExVat;
       const pmtVat = pmtIn - pmtEx;
       document.getElementById('leaseInVat').value = format(pmtIn);
       document.getElementById('leaseExVat').value = format(pmtEx);
       document.getElementById('leaseVat').value = format(pmtVat);
 
-      // IRR % (pv = -(finance + commission + extra))
-      const pvIRR = -(finance + commission + extra);
-      const irr = calculateIRR(months, pmtIn, pvIRR, balloon, 0) * 12 * 100;
+      // Rates
+      document.getElementById('trRate').value = isNaN(deal.irrEff) ? 'ไม่สามารถคำนวณ' : format4(deal.irrEff);
+      document.getElementById('customerTr').value = isNaN(deal.cusEff) ? 'ไม่สามารถคำนวณ' : format4(deal.cusEff);
 
-      // Customer TR (pv = -(finance))
-      const pvCus = -(finance);
-      const cus = calculateIRR(months, pmtIn, pvCus, balloon, 0) * 12 * 100;
-
-      // Outputs
-      document.getElementById('financeAmt').value = format(finance);
-      document.getElementById('intPA').value = format(intPA);
-      document.getElementById('intTotal').value = format(intTotal);
-      document.getElementById('trRate').value = isNaN(irr)?'ไม่สามารถคำนวณ':format4(irr);
-      document.getElementById('customerTr').value = isNaN(cus)?'ไม่สามารถคำนวณ':format4(cus);
-
-      updateOWS(carInfo, car, discount, option, down, balloon, years, irr, owsEx, owsVat, owsIn);
+      // Mirror to OWS
+      updateOWS(carInfo, car, discount, option, down, balloon, years, deal.irrEff, owsEx, owsVat, owsIn);
     }
 
     function updateOWS(carInfo, car, discount, option, down, balloon, years, irr, ex, vat, inv){
@@ -697,54 +661,57 @@
       const car=getVal('carPrice'), discount=getVal('discount'), option=getVal('option');
       const total=car - discount + option;
       document.getElementById('totalAmount').value = format(total);
-      const years=getInt('termYears'), months=years*12;
 
-      // Balloon from toggle+mode
+      const years=getInt('termYears');
+      const months=years*12;
+
+      // Balloon current
       const enabled = document.getElementById('balloonEnabled').checked;
-      const mode = document.getElementById('balloonMode').value;
+      const bMode = document.getElementById('balloonMode').value;
       let bal=0;
+      const cap = Math.max(total*0.35, 0);
       if (enabled) {
-        if (mode === 'percent') {
+        if (bMode === 'percent') {
           let p = parseFloat(document.getElementById('balloonPercentInput').value);
-          if (isNaN(p)) p = 0; if (p<0) p=0; if (p>35) p=35;
+          if (isNaN(p)) p=0; if (p<0) p=0; if (p>35) p=35;
           bal = total*(p/100);
         } else {
-          const cap = Math.max(total*0.35, 0);
           let a = uncomma(document.getElementById('balloonAmountInput').value);
-          if (isNaN(a)) a = 0; if (a<0) a=0; if (a>cap) a=cap;
+          if (isNaN(a)) a=0; if (a<0) a=0; if (a>cap) a=cap;
           bal = a;
         }
-      } else {
-        bal = 0;
       }
 
-      if(months===0){ alert('กรุณาระบุจำนวนปีให้ถูกต้อง'); return; }
+      if (months === 0) { alert('กรุณาระบุจำนวนปีให้ถูกต้อง'); return; }
 
-      const iMode=document.getElementById('interestMode').value;
       const comBase=document.getElementById('comBase').value;
       const comPercent=getVal('comPercent'), extra=getVal('extra');
-      let rate;
-      if(iMode==='target_irr'){
-        const targetEff=getVal('targetIrr');
-        if(total<=0||targetEff<0){ alert('กรุณาระบุ ราคาสุทธิ และ IRR เป้าหมาย ให้ถูกต้อง'); return; }
-        const inputs={ total, down:0, balloon:bal, years, months, comBase, comPercent, extra };
-        const solved=solveFlatForTargetIRR(targetEff, inputs);
-        if(isNaN(solved)){ alert('ไม่สามารถหา Flat Rate ให้ถึง IRR เป้าหมาย'); return; }
-        rate=solved; document.getElementById('interestRate').value = format(rate,2);
-      }else{
-        rate=getVal('interestRate'); if(rate===0){ alert('กรุณาระบุอัตราดอกเบี้ย'); return; }
+
+      // Determine flat based on mode
+      let rate = getVal('interestRate');
+      const mode=document.getElementById('interestMode').value;
+      if (mode === 'target_irr') {
+        const targetEff = getVal('targetIrr');
+        if (total<=0 || targetEff<0) { alert('กรุณาระบุ ราคาสุทธิ และ IRR เป้าหมาย ให้ถูกต้อง'); return; }
+        const solved = solveFlatForTargetIRRExact(targetEff, { total, down:0, balloon:bal, years, months, comBase, comPercent, extra });
+        if (isNaN(solved)) { alert('ไม่สามารถหา Flat Rate ให้ถึง IRR เป้าหมาย'); return; }
+        rate = solved;
+        document.getElementById('interestRate').value = format(rate,2);
+      } else {
+        if (rate === 0) { alert('กรุณาระบุอัตราดอกเบี้ย'); return; }
       }
 
-      const base0=Math.max(total - bal, 0);
-      const int0 = base0*(rate/100)*years;
-      const pmt0 = months>0 ? Math.ceil((base0+int0)/months) : 0;
+      // Try down=0
+      const base0 = Math.max(total - bal, 0);
+      const int0  = base0*(rate/100)*years;
+      const pmt0  = months>0 ? Math.ceil((base0+int0)/months) : 0;
 
-      if(pmt0<target){
+      if (pmt0 < target) {
         document.getElementById('downType').value='amount';
         document.getElementById('downInput').value=formatNoDecimal(0);
         calculate();
         alert(`ไม่สามารถดันค่างวดถึง ${formatNoDecimal(target)} ได้ แม้ดาวน์ 0 บาท (ค่างวดได้ ${formatNoDecimal(pmt0)})`);
-      }else{
+      } else {
         let lo=0, hi=total, best=0, min=Infinity;
         for(let i=0;i<500;i++){
           let d=Math.ceil((lo+hi)/2); if(d<0)d=0; if(d>total)d=total;
@@ -762,10 +729,10 @@
       }
     }
 
-    function generateQuotation(){ calculate(); }
-    function sendToQsData(){ calculate(); }
+    function generateQuotation(){ calculate(); /* ต่อยอดตาม workflow */ }
+    function sendToQsData(){ calculate(); /* ต่อยอดตาม workflow */ }
 
-    // ========= UI wiring =========
+    /* ========= UI wiring ========= */
     function addNumericListeners(id){
       const el=document.getElementById(id); if(!el) return;
       el.addEventListener('focus', ()=>{ let v=uncomma(el.value); el.value=(Math.abs(v)<0.001)?'':String(v); });
@@ -777,80 +744,56 @@
       el.addEventListener('blur', ()=>{
         let v=uncomma(el.value);
         if(id==='termYears') el.value=formatNoDecimal(v);
-        else if(['interestRate','comPercent','targetIrr'].includes(id)) {
-          if (isNaN(v)) v = 0;
-          el.value = format(v,2);
-        } else if (id==='balloonAmountInput') {
-          el.value = format(v);
-        } else if (id==='balloonPercentInput') {
-          if (isNaN(v)) v=0;
-          if (v<0) v=0;
-          if (v>35) v=35;
-          el.value = parseFloat(v).toFixed(1);
-        } else {
-          el.value = format(v);
-        }
-        // เมื่อเลิกกรอก ให้ sync ช่องคู่กันเพื่อความต่อเนื่อง
-        if (id==='balloonPercentInput') syncBalloonInputsFromPercent();
+        else if(['interestRate','comPercent','targetIrr'].includes(id)) { if (isNaN(v)) v=0; el.value = format(v,2); }
+        else if (id==='balloonAmountInput') { el.value = format(v); }
+        else if (id==='downInput') { el.value = format(v); }
+        else el.value = format(v);
         if (id==='balloonAmountInput') syncBalloonInputsFromAmount();
         calculate();
       });
     }
 
     window.onload = ()=>{
-      // Numeric inputs
       ['carPrice','discount','option','downInput','interestRate','extra','termYears','comPercent','balloonPercentInput','balloonAmountInput','targetIrr']
         .forEach(addNumericListeners);
 
-      // Down & commission base
+      // Down & commission
       document.getElementById('downType').addEventListener('change', calculate);
       document.getElementById('comBase').addEventListener('change', calculate);
 
-      // Balloon toggle
+      // Balloon toggle + mode
       document.getElementById('balloonEnabled').addEventListener('change', ()=>{
         const enabled = document.getElementById('balloonEnabled').checked;
-        document.getElementById('balloonMode').disabled = !enabled;
         const mode = document.getElementById('balloonMode').value;
+        document.getElementById('balloonMode').disabled = !enabled;
         document.getElementById('balloonPercentInput').disabled = !enabled || mode!=='percent';
         document.getElementById('balloonAmountInput').disabled  = !enabled || mode!=='amount';
         calculate();
       });
-
-      // Balloon mode switch (percent <-> amount)
       document.getElementById('balloonMode').addEventListener('change', (e)=>{
-        const total = uncomma(document.getElementById('totalAmount').value);
         const enabled = document.getElementById('balloonEnabled').checked;
         const mode = e.target.value;
-        // enable/disable inputs
         document.getElementById('balloonPercentInput').disabled = !enabled || mode!=='percent';
         document.getElementById('balloonAmountInput').disabled  = !enabled || mode!=='amount';
-        // convert the current value to the new mode (preserve numerical meaning)
         if (enabled) {
-          if (mode==='percent') {
-            // we currently have amount → convert to percent
-            syncBalloonInputsFromAmount();
-          } else {
-            // percent → convert to amount
-            syncBalloonInputsFromPercent();
-          }
+          if (mode==='percent') syncBalloonInputsFromAmount();
+          else syncBalloonInputsFromPercent();
         }
         calculate();
       });
+      document.getElementById('balloonPercentInput').addEventListener('input', ()=>{ syncBalloonInputsFromPercent(); calculate(); });
 
-      // Live input for quick feedback
-      document.getElementById('balloonPercentInput').addEventListener('input', ()=>{
-        syncBalloonInputsFromPercent();
+      // Interest mode toggle
+      document.getElementById('interestMode').addEventListener('change', ()=>{
+        const mode=document.getElementById('interestMode').value;
+        const flatEl=document.getElementById('interestRate');
+        const irrEl=document.getElementById('targetIrr');
+        if (mode==='flat'){ flatEl.disabled=false; irrEl.disabled=true; }
+        else{ flatEl.disabled=true; irrEl.disabled=false; }
         calculate();
       });
-      document.getElementById('balloonAmountInput').addEventListener('input', ()=>{
-        // show raw while typing then calc
-        calculate();
-      });
 
-      // Interest mode
-      document.getElementById('interestMode').addEventListener('change', calculate);
-
-      // Defaults: Balloon OFF, mode=percent, pct=0.0, amount=0.00
+      // Defaults
       document.getElementById('balloonEnabled').checked = false;
       document.getElementById('balloonMode').value = 'percent';
       document.getElementById('balloonPercentInput').value = '0.0';
