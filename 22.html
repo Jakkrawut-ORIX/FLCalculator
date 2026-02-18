@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<title>ORIX Financial Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --orix-blue: #003F87;
+  --orix-red: #E30613;
+  --bg-body: #F4F7F9;
+  --border: #B0C4D4;
+  --input-edit: #FFFFF0;
+  --input-read: #EAEFF3;
+}
+* { box-sizing: border-box; font-family: 'Kanit', sans-serif; }
+body { background: var(--bg-body); margin: 0; }
+
+header {
+  background: var(--orix-blue);
+  color: #fff;
+  padding: 1.2rem;
+  text-align: center;
+  border-bottom: 4px solid var(--orix-red);
+}
+
+.container { max-width: 1000px; margin: 15px auto; padding: 10px; }
+
+.grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+@media (min-width:768px){ .grid { grid-template-columns:1fr 1fr; } }
+
+.card {
+  background:#fff;
+  border-radius:8px;
+  padding:15px;
+  border:1px solid var(--border);
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card-title {
+  font-weight:700;
+  color:var(--orix-blue);
+  border-left:5px solid var(--orix-red);
+  padding-left:10px;
+  margin-bottom:15px;
+}
+
+input,select{
+  padding:10px;
+  border:1px solid var(--border);
+  border-radius:5px;
+  width:100%;
+  text-align:right;
+  background:var(--input-edit);
+}
+input[readonly]{ background:var(--input-read); font-weight:700; color:var(--orix-blue); }
+
+.input-combo{ display:flex; gap:8px; }
+
+.result-area{
+  background:linear-gradient(135deg,var(--orix-blue),#00264d);
+  color:#fff;
+  padding:20px;
+  border-radius:8px;
+  text-align:center;
+  margin-top:15px;
+}
+.res-val{ font-size:2.5rem; font-weight:800; }
+
+.btn{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:6px;
+  font-weight:700;
+  margin-top:10px;
+  cursor:pointer;
+}
+.btn-target{
+  background:#fff;
+  color:var(--orix-red);
+  border:2px solid var(--orix-red);
+}
+
+.ows-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:0.85rem;
+}
+.ows-table th,.ows-table td{
+  padding:10px;
+  border-bottom:1px solid #E2E8F0;
+  text-align:right;
+}
+.ows-table td:first-child{ text-align:left; font-weight:600; }
+.highlight{ color:var(--orix-blue); font-weight:700; }
+</style>
+</head>
+
+<body>
+
+<header><h1>ORIX Financial Calculator</h1></header>
+
+<div class="container">
+<div class="grid">
+
+<div class="card">
+<div class="card-title">ข้อมูลตัวรถ</div>
+
+<input id="carPrice" placeholder="ราคารถ">
+<input id="discount" placeholder="ส่วนลด">
+<input id="option" placeholder="Option">
+
+<hr>
+
+<div class="input-combo">
+<select id="downType">
+<option value="amount">บาท</option>
+<option value="percent">%</option>
+</select>
+<input id="downIn" placeholder="เงินดาวน์">
+</div>
+
+<input id="resFinDisplay" readonly placeholder="ยอดจัด">
+
+<input id="termYears" type="number" placeholder="จำนวนปี">
+
+<button class="btn btn-target" onclick="solveDown(36000)">FIX 36,000</button>
+</div>
+
+<div class="card">
+<div class="card-title">ดอกเบี้ย</div>
+
+<select id="calcMode">
+<option value="flat">Flat</option>
+<option value="yield">IRR</option>
+</select>
+
+<input id="flatRate" placeholder="Flat Rate %">
+<input id="irrTarget" placeholder="IRR %">
+
+<input id="comPct" placeholder="ค่าคอม %">
+<input id="comExtra" placeholder="Extra">
+
+<div class="result-area">
+<div>ค่างวด</div>
+<span id="resLease" class="res-val">0</span>
+<div>TR: <span id="resTr">0.0000%</span></div>
+<div>ค่าคอม: <span id="resCommTotal">0</span></div>
+</div>
+</div>
+
+</div>
+
+<div class="card" style="margin-top:20px;">
+<table class="ows-table">
+<thead>
+<tr><th>รายการ</th><th>Ex.VAT</th><th>Inc.VAT</th></tr>
+</thead>
+<tbody id="owsBody"></tbody>
+</table>
+</div>
+
+</div>
+
+<script>
+
+/* ========= Financial Utilities ========= */
+
+function roundMoney(n,d=2){
+  const f=Math.pow(10,d);
+  return Math.round((n+Number.EPSILON)*f)/f;
+}
+function roundBaht(n){ return Math.round(n); }
+function roundRate(n){ return roundMoney(n,4); }
+function toNum(v){ return parseFloat(String(v).replace(/,/g,''))||0; }
+function fmt(n,d=2){ return new Intl.NumberFormat('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}).format(n);}
+function fmtInt(n){ return new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(n); }
+
+/* ========= IRR ========= */
+
+function calculateIRR(nper,pmt,pv,fv=0){
+  let rate=0.05/12;
+  for(let i=0;i<100;i++){
+    let f=pv;
+    for(let t=1;t<=nper;t++) f+=pmt/Math.pow(1+rate,t);
+    f+=fv/Math.pow(1+rate,nper);
+    let df=0;
+    for(let t=1;t<=nper;t++) df-=(t*pmt)/Math.pow(1+rate,t+1);
+    df-=(nper*fv)/Math.pow(1+rate,nper+1);
+    rate=rate-f/df;
+  }
+  return rate;
+}
+
+/* ========= Engine ========= */
+
+function financeEngine(input){
+
+  const net=roundMoney(input.price-input.discount+input.option);
+  const down=input.downAmt;
+  const finance=roundMoney(net-down);
+  const months=input.years*12;
+
+  if(!months) return {finance};
+
+  let flat=input.flatRate;
+  let lease=0;
+
+  if(input.mode==='flat'){
+    const int=roundMoney(finance*(flat/100)*input.years);
+    lease=roundMoney((finance+int)/months);
+  }else{
+    let low=0,high=20;
+    for(let i=0;i<30;i++){
+      const mid=(low+high)/2;
+      const int=finance*(mid/100)*input.years;
+      const pmt=(finance+int)/months;
+      const irr=calculateIRR(months,pmt,-finance)*12;
+      if(irr<input.irrTarget) low=mid; else high=mid;
+    }
+    flat=high;
+    const int=roundMoney(finance*(flat/100)*input.years);
+    lease=roundMoney((finance+int)/months);
+  }
+
+  const comm=roundBaht(finance*(input.comPct)+input.comExtra);
+
+  const tr=roundRate(calculateIRR(months,lease,-finance)*12*100);
+
+  return{net,finance,lease,flat,comm,tr};
+}
+
+/* ========= Controller ========= */
+
+function calculate(){
+
+  const input={
+    price:toNum(carPrice.value),
+    discount:toNum(discount.value),
+    option:toNum(option.value),
+    downAmt:downType.value==='percent'?toNum(carPrice.value)*(toNum(downIn.value)/100):toNum(downIn.value),
+    years:parseInt(termYears.value)||0,
+    mode:calcMode.value,
+    flatRate:toNum(flatRate.value),
+    irrTarget:toNum(irrTarget.value)/100,
+    comPct:toNum(comPct.value)/100,
+    comExtra:toNum(comExtra.value)
+  };
+
+  const r=financeEngine(input);
+  if(!r.finance) return 0;
+
+  resFinDisplay.value=fmt(r.finance);
+  resLease.innerText=fmtInt(r.lease);
+  resCommTotal.innerText=fmtInt(r.comm);
+  resTr.innerText=fmt(r.tr,4)+"%";
+
+  if(calcMode.value==='flat')
+    irrTarget.value=fmt(r.tr,4);
+  else
+    flatRate.value=fmt(r.flat,2);
+
+  return r.lease;
+}
+
+/* ========= FIX 36,000 ========= */
+
+function solveDown(target){
+  downType.value='amount';
+  let low=0,high=toNum(carPrice.value);
+  for(let i=0;i<40;i++){
+    const mid=roundBaht((low+high)/2);
+    downIn.value=mid;
+    const lease=calculate();
+    if(lease>target) low=mid; else high=mid;
+  }
+  downIn.value=fmtInt(high);
+  calculate();
+}
+
+/* ========= Events ========= */
+
+['carPrice','discount','option','downIn','flatRate','irrTarget','comPct','comExtra']
+.forEach(id=>document.getElementById(id).addEventListener('input',calculate));
+
+termYears.addEventListener('input',calculate);
+calcMode.addEventListener('change',calculate);
+downType.addEventListener('change',calculate);
+
+</script>
+
+</body>
+</html>
