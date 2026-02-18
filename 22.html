@@ -3,102 +3,68 @@
 <head>
 <meta charset="UTF-8" />
 <title>ORIX Financial Calculator</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-:root {
-  --orix-blue: #003F87;
-  --orix-red: #E30613;
-  --bg-body: #F4F7F9;
-  --border: #B0C4D4;
-  --input-edit: #FFFFF0;
-  --input-read: #EAEFF3;
+:root{
+  --orix-blue:#003F87;
+  --orix-red:#E30613;
+  --bg:#F4F7F9;
+  --border:#B0C4D4;
 }
-* { box-sizing: border-box; font-family: 'Kanit', sans-serif; }
-body { background: var(--bg-body); margin: 0; }
-
-header {
-  background: var(--orix-blue);
-  color: #fff;
-  padding: 1.2rem;
-  text-align: center;
-  border-bottom: 4px solid var(--orix-red);
+*{box-sizing:border-box;font-family:'Kanit',sans-serif;}
+body{margin:0;background:var(--bg);}
+header{
+  background:var(--orix-blue);
+  color:#fff;
+  text-align:center;
+  padding:1.2rem;
+  border-bottom:4px solid var(--orix-red);
 }
+.container{max-width:1000px;margin:15px auto;padding:10px;}
+.grid{display:grid;grid-template-columns:1fr;gap:15px;}
+@media(min-width:768px){.grid{grid-template-columns:1fr 1fr;}}
 
-.container { max-width: 1000px; margin: 15px auto; padding: 10px; }
-
-.grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
-@media (min-width:768px){ .grid { grid-template-columns:1fr 1fr; } }
-
-.card {
+.card{
   background:#fff;
   border-radius:8px;
   padding:15px;
   border:1px solid var(--border);
-  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
 }
-
-.card-title {
+.card-title{
   font-weight:700;
   color:var(--orix-blue);
   border-left:5px solid var(--orix-red);
   padding-left:10px;
   margin-bottom:15px;
 }
-
-.form-group{ margin-bottom:12px; }
-
-.segmented-control{
-  display:flex;
-  background:#EEE;
-  padding:2px;
-  border-radius:6px;
-}
-.seg-btn{
-  flex:1;
-  border:none;
-  padding:8px;
-  border-radius:4px;
-  cursor:pointer;
-  font-weight:600;
-  background:transparent;
-}
-.seg-btn.active{
-  background:#fff;
-  color:var(--orix-blue);
-  box-shadow:0 1px 3px rgba(0,0,0,0.1);
-}
-
 input,select{
+  width:100%;
   padding:10px;
+  margin-bottom:10px;
   border:1px solid var(--border);
   border-radius:5px;
-  width:100%;
   text-align:right;
-  background:var(--input-edit);
 }
-input[readonly]{ background:var(--input-read); font-weight:700; color:var(--orix-blue); }
-
-.input-combo{ display:flex; gap:8px; }
-
+input[readonly]{background:#EAEFF3;}
+.input-combo{display:flex;gap:8px;}
 .result-area{
   background:linear-gradient(135deg,var(--orix-blue),#00264d);
   color:#fff;
   padding:20px;
   border-radius:8px;
   text-align:center;
-  margin-top:15px;
 }
-.res-val{ font-size:2.5rem; font-weight:800; }
-
+.res-val{font-size:2.5rem;font-weight:800;}
 .btn{
   width:100%;
   padding:12px;
   border:none;
   border-radius:6px;
   font-weight:700;
-  margin-top:10px;
   cursor:pointer;
 }
 .btn-target{
@@ -106,22 +72,42 @@ input[readonly]{ background:var(--input-read); font-weight:700; color:var(--orix
   color:var(--orix-red);
   border:2px solid var(--orix-red);
 }
-
+.segmented{
+  display:flex;
+  gap:5px;
+  margin-bottom:10px;
+}
+.seg-btn{
+  flex:1;
+  padding:10px;
+  border:1px solid var(--border);
+  background:#fff;
+  cursor:pointer;
+  font-weight:700;
+}
+.seg-btn.active{
+  background:var(--orix-blue);
+  color:#fff;
+}
 .ows-table{
   width:100%;
   border-collapse:collapse;
-  font-size:0.85rem;
+  font-size:.85rem;
 }
 .ows-table th,.ows-table td{
-  padding:10px;
-  border-bottom:1px solid #E2E8F0;
+  padding:8px;
+  border-bottom:1px solid #eee;
   text-align:right;
 }
-.ows-table td:first-child{ text-align:left; font-weight:600; }
-.highlight{ color:var(--orix-blue); font-weight:700; }
+.ows-table td:first-child{text-align:left;font-weight:600;}
+.highlight{color:var(--orix-blue);font-weight:700;}
+.warning{
+  color:var(--orix-red);
+  font-size:.85rem;
+  font-weight:600;
+}
 </style>
 </head>
-
 <body>
 
 <header><h1>ORIX Financial Calculator</h1></header>
@@ -129,74 +115,63 @@ input[readonly]{ background:var(--input-read); font-weight:700; color:var(--orix
 <div class="container">
 <div class="grid">
 
-<!-- LEFT -->
 <div class="card">
-<div class="card-title">ข้อมูลตัวรถ & เงื่อนไข</div>
+<div class="card-title">ข้อมูลตัวรถ</div>
 
-<div class="form-group">
 <input id="carPrice" placeholder="ราคารถ">
-</div>
-
-<div class="form-group input-combo">
 <input id="discount" placeholder="ส่วนลด">
 <input id="option" placeholder="Option">
-</div>
 
 <hr>
 
-<div class="form-group input-combo">
+<div class="input-combo">
 <select id="downType">
-<option value="percent">%</option>
 <option value="amount">บาท</option>
+<option value="percent">%</option>
 </select>
 <input id="downIn" placeholder="เงินดาวน์">
 </div>
 
-<input id="resFinDisplay" readonly placeholder="ยอดจัด">
-
-<div class="form-group">
+<div>
 <label><input type="checkbox" id="hasBalloon"> Balloon</label>
-<div id="balRow" class="input-combo" style="display:none;margin-top:8px;">
+</div>
+
+<div class="input-combo" id="balRow" style="display:none;">
 <select id="balType">
-<option value="percent">%</option>
 <option value="amount">บาท</option>
+<option value="percent">%</option>
 </select>
 <input id="balIn" placeholder="Balloon">
 </div>
-</div>
+
+<div id="balloonWarn" class="warning"></div>
+
+<input id="resFinDisplay" readonly placeholder="ยอดจัด">
 
 <input id="termYears" type="number" placeholder="จำนวนปี">
 
 <button class="btn btn-target" onclick="solveDown(36000)">FIX 36,000</button>
+
 </div>
 
-<!-- RIGHT -->
 <div class="card">
-<div class="card-title">ดอกเบี้ย & ค่าการตลาด</div>
+<div class="card-title">ดอกเบี้ย</div>
 
-<select id="calcMode">
-<option value="flat">Flat</option>
-<option value="yield">IRR</option>
-</select>
+<div class="segmented">
+<button class="seg-btn active" id="modeFlat" onclick="setMode('flat')">Flat</button>
+<button class="seg-btn" id="modeIrr" onclick="setMode('yield')">IRR</button>
+</div>
+<input type="hidden" id="calcMode" value="flat">
 
 <input id="flatRate" placeholder="Flat Rate %">
 <input id="irrTarget" placeholder="IRR %">
 
-<div class="segmented-control">
-<button class="seg-btn active" id="btnInt" onclick="setComBase('interest')">จากดอกเบี้ย</button>
-<button class="seg-btn" id="btnFin" onclick="setComBase('finance')">จากยอดจัด</button>
-</div>
-
-<input type="hidden" id="comBase" value="interest">
-
-<div class="input-combo">
-<input id="comPct" placeholder="%">
+<input id="comPct" placeholder="ค่าคอม %">
 <input id="comExtra" placeholder="Extra">
-</div>
 
 <div class="result-area">
 <div>ค่างวด</div>
-<span id="resLease" class="res-val">0</span>
+<div id="resLease" class="res-val">0</div>
 <div>TR: <span id="resTr">0.0000%</span></div>
 <div>ค่าคอม: <span id="resCommTotal">0</span></div>
 </div>
@@ -204,7 +179,6 @@ input[readonly]{ background:var(--input-read); font-weight:700; color:var(--orix
 
 </div>
 
-<!-- OWS -->
 <div class="card" style="margin-top:20px;">
 <table class="ows-table">
 <thead>
@@ -218,116 +192,153 @@ input[readonly]{ background:var(--input-read); font-weight:700; color:var(--orix
 
 <script>
 
-/* ================= FINANCIAL CORE ================= */
+/* ========= UTIL ========= */
 
 function roundMoney(n,d=2){
   const f=Math.pow(10,d);
   return Math.round((n+Number.EPSILON)*f)/f;
 }
-function roundBaht(n){ return Math.round(n); }
-function roundRate(n){ return roundMoney(n,4); }
-function toNum(v){ return parseFloat(String(v).replace(/,/g,''))||0; }
-function fmt(n,d=2){ return new Intl.NumberFormat('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}).format(n);}
-function fmtInt(n){ return new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(n); }
+function roundBaht(n){return Math.round(n);}
+function roundRate(n){return roundMoney(n,4);}
+function toNum(v){return parseFloat(String(v).replace(/,/g,''))||0;}
+function fmt(n,d=2){return new Intl.NumberFormat('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}).format(n);}
+function fmtInt(n){return new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(n);}
 
-/* IRR */
+/* ========= IRR ========= */
+
 function calculateIRR(nper,pmt,pv,fv=0){
   let rate=0.05/12;
   for(let i=0;i<100;i++){
     let f=pv;
-    for(let t=1;t<=nper;t++) f+=pmt/Math.pow(1+rate,t);
+    for(let t=1;t<=nper;t++)f+=pmt/Math.pow(1+rate,t);
     f+=fv/Math.pow(1+rate,nper);
     let df=0;
-    for(let t=1;t<=nper;t++) df-=(t*pmt)/Math.pow(1+rate,t+1);
+    for(let t=1;t<=nper;t++)df-=(t*pmt)/Math.pow(1+rate,t+1);
     df-=(nper*fv)/Math.pow(1+rate,nper+1);
     rate=rate-f/df;
   }
   return rate;
 }
 
-/* Commission Base Toggle */
-function setComBase(val){
-  comBase.value=val;
-  btnInt.classList.toggle('active',val==='interest');
-  btnFin.classList.toggle('active',val==='finance');
+/* ========= MODE ========= */
+
+function setMode(mode){
+  calcMode.value=mode;
+  modeFlat.classList.toggle('active',mode==='flat');
+  modeIrr.classList.toggle('active',mode==='yield');
+  flatRate.readOnly=mode!=='flat';
+  irrTarget.readOnly=mode!=='yield';
   calculate();
 }
 
-/* ENGINE */
+/* ========= BALLOON LIMIT 35% ========= */
+
+function validateBalloon(){
+
+  if(!hasBalloon.checked){
+    balloonWarn.innerText='';
+    return 0;
+  }
+
+  const price=toNum(carPrice.value);
+  const maxBalloon=price*0.35;
+
+  let bal=0;
+
+  if(balType.value==='percent'){
+    let pct=toNum(balIn.value);
+    if(pct>35){
+      pct=35;
+      balIn.value=35;
+      balloonWarn.innerText="Balloon จำกัดไม่เกิน 35%";
+    }else{
+      balloonWarn.innerText="";
+    }
+    bal=price*(pct/100);
+  }else{
+    bal=toNum(balIn.value);
+    if(bal>maxBalloon){
+      bal=maxBalloon;
+      balIn.value=roundBaht(maxBalloon);
+      balloonWarn.innerText="Balloon จำกัดไม่เกิน 35% ของราคารถ";
+    }else{
+      balloonWarn.innerText="";
+    }
+  }
+
+  return bal;
+}
+
+/* ========= ENGINE ========= */
+
 function financeEngine(input){
 
   const net=roundMoney(input.price-input.discount+input.option);
   const finance=roundMoney(net-input.downAmt);
   const months=input.years*12;
-
-  if(!months) return {finance};
+  if(!months)return{finance};
 
   let flat=input.flatRate;
   let lease=0;
 
   if(input.mode==='flat'){
-    const totalInt=roundMoney((finance-input.balAmt)*(flat/100)*input.years);
-    lease=roundMoney((finance-input.balAmt+totalInt)/months);
+    const int=roundMoney((finance-input.balAmt)*(flat/100)*input.years);
+    lease=roundBaht((finance-input.balAmt+int)/months);
   }else{
     let low=0,high=20;
     for(let i=0;i<30;i++){
       const mid=(low+high)/2;
-      const totalInt=(finance-input.balAmt)*(mid/100)*input.years;
-      const pmt=(finance-input.balAmt+totalInt)/months;
-      const irr=calculateIRR(months,pmt/1.07,-finance/1.07,input.balAmt/1.07)*12;
-      if(irr<input.irrTarget) low=mid; else high=mid;
+      const int=(finance-input.balAmt)*(mid/100)*input.years;
+      const pmt=(finance-input.balAmt+int)/months;
+      const irr=calculateIRR(months,pmt,-finance,input.balAmt)*12;
+      if(irr<input.irrTarget)low=mid;else high=mid;
     }
     flat=high;
-    const totalInt=roundMoney((finance-input.balAmt)*(flat/100)*input.years);
-    lease=roundMoney((finance-input.balAmt+totalInt)/months);
+    const int=roundMoney((finance-input.balAmt)*(flat/100)*input.years);
+    lease=roundBaht((finance-input.balAmt+int)/months);
   }
 
-  const commBaseVal=input.comBase==='interest'
-    ? roundMoney((finance-input.balAmt)*(flat/100)*input.years)
-    : finance;
-
-  const comm=roundBaht(commBaseVal*input.comPct+input.comExtra);
-
-  const tr=roundRate(
-    calculateIRR(months,lease/1.07,-finance/1.07,input.balAmt/1.07)*12*100
-  );
+  const comm=roundBaht(finance*(input.comPct)+input.comExtra);
+  const tr=roundRate(calculateIRR(months,lease,-finance,input.balAmt)*12*100);
 
   return{net,finance,lease,flat,comm,tr};
 }
 
-/* CONTROLLER */
+/* ========= CONTROLLER ========= */
+
 function calculate(){
+
+  const balloonAmt=validateBalloon();
 
   const input={
     price:toNum(carPrice.value),
     discount:toNum(discount.value),
     option:toNum(option.value),
-    downAmt:downType.value==='percent'?toNum(carPrice.value)*(toNum(downIn.value)/100):toNum(downIn.value),
-    balAmt:hasBalloon.checked?(balType.value==='percent'?toNum(carPrice.value)*(toNum(balIn.value)/100):toNum(balIn.value)):0,
+    downAmt:downType.value==='percent'
+      ?toNum(carPrice.value)*(toNum(downIn.value)/100)
+      :toNum(downIn.value),
+    balAmt:balloonAmt,
     years:parseInt(termYears.value)||0,
     mode:calcMode.value,
     flatRate:toNum(flatRate.value),
     irrTarget:toNum(irrTarget.value)/100,
-    comBase:comBase.value,
     comPct:toNum(comPct.value)/100,
     comExtra:toNum(comExtra.value)
   };
 
   const r=financeEngine(input);
-  if(!r.finance) return 0;
+  if(!r.finance)return 0;
 
   resFinDisplay.value=fmt(r.finance);
   resLease.innerText=fmtInt(r.lease);
   resCommTotal.innerText=fmtInt(r.comm);
   resTr.innerText=fmt(r.tr,4)+"%";
 
-  if(calcMode.value==='flat') irrTarget.value=fmt(r.tr,4);
-  else flatRate.value=fmt(r.flat,2);
-
   return r.lease;
 }
 
-/* FIX 36000 */
+/* ========= FIX 36,000 ========= */
+
 function solveDown(target){
   downType.value='amount';
   let low=0,high=toNum(carPrice.value);
@@ -335,18 +346,29 @@ function solveDown(target){
     const mid=roundBaht((low+high)/2);
     downIn.value=mid;
     const lease=calculate();
-    if(lease>target) low=mid; else high=mid;
+    if(lease>target)low=mid;else high=mid;
   }
-  downIn.value=fmtInt(high);
+  downIn.value=roundBaht(high);
   calculate();
 }
 
-/* EVENTS */
-['carPrice','discount','option','downIn','balIn','flatRate','irrTarget','comPct','comExtra']
-.forEach(id=>document.getElementById(id).addEventListener('input',calculate));
+/* ========= INPUT GUARD ========= */
+
+function allowNumeric(e){
+  if(!/[0-9.]|Backspace|Delete|Arrow/.test(e.key))
+    e.preventDefault();
+}
+
+[
+'carPrice','discount','option','downIn','balIn',
+'flatRate','irrTarget','comPct','comExtra'
+].forEach(id=>{
+  const el=document.getElementById(id);
+  el.addEventListener('keydown',allowNumeric);
+  el.addEventListener('input',calculate);
+});
 
 termYears.addEventListener('input',calculate);
-calcMode.addEventListener('change',calculate);
 downType.addEventListener('change',calculate);
 balType.addEventListener('change',calculate);
 hasBalloon.addEventListener('change',()=>{
@@ -355,6 +377,5 @@ hasBalloon.addEventListener('change',()=>{
 });
 
 </script>
-
 </body>
 </html>
