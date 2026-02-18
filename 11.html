@@ -229,7 +229,7 @@
       const totalInt = (finance - balAmt) * (flatVal / 100) * years;
       leaseInVat = months > 0 ? (finance - balAmt + totalInt) / months : 0;
     } else {
-      const targetIrr = uncomma(document.getElementById('irrTarget').value) / 100;
+      const targetIrr = uncomma(document.getElementById('irrTarget').value);
       let low = 0, high = 20;
       for (let i = 0; i < 25; i++) {
         let mid = (low + high) / 2;
