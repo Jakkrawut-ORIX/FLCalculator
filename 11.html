@@ -293,38 +293,113 @@
     calculate();
   }
 
-  // Real-time Formatting & Input Listeners
-  const fields = ['carPrice', 'discount', 'option', 'downIn', 'balIn', 'comPct', 'comExtra', 'flatRate', 'irrTarget'];
-  fields.forEach(id => {
-    const el = document.getElementById(id);
-    el.addEventListener('input', function(e) {
-      // ดึงค่าตำแหน่ง Cursor ก่อนจัด Format
-      let cursor = e.target.selectionStart;
-      let prevLen = e.target.value.length;
-      
-      let val = uncomma(e.target.value);
-      if (e.target.value === '') val = '';
-      
-      // จัด format เฉพาะตอนที่มีค่า และไม่ใช่ตัวเลขทศนิยมที่กำลังพิมพ์
-      if (val !== '' && !e.target.value.endsWith('.')) {
-        e.target.value = format(val, id === 'irrTarget' ? 4 : (id === 'comPct' || id === 'flatRate' ? 2 : 0)).replace('.00', '');
-      }
+ /* =====================================================
+   ENTERPRISE NUMERIC ENGINE
+   - Auto comma while typing
+   - Preserve cursor
+   - Support paste with comma
+   - Support negative
+   - Support decimal typing
+===================================================== */
 
-      // คืนค่าตำแหน่ง Cursor
-      let newLen = e.target.value.length;
-      e.target.setSelectionRange(cursor + (newLen - prevLen), cursor + (newLen - prevLen));
-      
-      calculate();
-    });
-  });
+const numericFields = [
+'carPrice','discount','option',
+'downIn','balIn',
+'comPct','comExtra',
+'flatRate','irrTarget'
+];
 
-  document.getElementById('termYears').addEventListener('input', calculate);
-  document.getElementById('hasBalloon').addEventListener('change', () => {
-    document.getElementById('balRow').style.display = document.getElementById('hasBalloon').checked ? 'flex' : 'none';
+function cleanNumber(val){
+  val = val.replace(/,/g,'');                 // remove comma
+  val = val.replace(/[^\d\.\-]/g,'');         // allow digits . -
+  
+  // allow only one minus at start
+  if(val.indexOf('-') > 0){
+    val = val.replace(/\-/g,'');
+  }
+  if((val.match(/\-/g)||[]).length > 1){
+    val = val.replace(/\-/g,'');
+  }
+
+  // allow only one decimal
+  const parts = val.split('.');
+  if(parts.length > 2){
+    val = parts[0] + '.' + parts.slice(1).join('');
+  }
+
+  return val;
+}
+
+function formatWithComma(val){
+
+  if(val === '' || val === '-' || val === '.' || val === '-.') return val;
+
+  let negative = val.startsWith('-');
+  val = val.replace('-','');
+
+  let parts = val.split('.');
+  let intPart = parts[0];
+  let decPart = parts[1] ?? '';
+
+  intPart = intPart.replace(/^0+(?=\d)/,'');
+  intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g,',');
+
+  return (negative?'-':'') + intPart + (parts.length>1?'.'+decPart:'');
+}
+
+numericFields.forEach(id=>{
+  const el = document.getElementById(id);
+
+  el.addEventListener('input',e=>{
+
+    let start = el.selectionStart;
+    let before = el.value;
+
+    let cleaned = cleanNumber(before);
+
+    // count digits before cursor
+    let digitsBeforeCursor = cleanNumber(before.slice(0,start)).length;
+
+    let formatted = formatWithComma(cleaned);
+
+    el.value = formatted;
+
+    // restore cursor
+    let pos = 0;
+    let digitCount = 0;
+
+    while(pos < formatted.length && digitCount < digitsBeforeCursor){
+      if(/[0-9\-\.]/.test(formatted[pos])) digitCount++;
+      pos++;
+    }
+
+    el.setSelectionRange(pos,pos);
+
     calculate();
   });
-  document.getElementById('calcMode').addEventListener('change', calculate);
-  ['downType', 'balType'].forEach(id => document.getElementById(id).addEventListener('change', calculate));
-</script>
+
+  el.addEventListener('blur',()=>{
+    let val = cleanNumber(el.value);
+    if(val === '' || val === '-' || val === '.' || val === '-.') return;
+
+    let num = parseFloat(val);
+    if(isNaN(num)) return;
+
+    let digit = 2;
+
+    if(id === 'irrTarget') digit = 4;
+    if(id === 'comPct' || id === 'flatRate') digit = 2;
+
+    el.value = new Intl.NumberFormat('en-US',{
+      minimumFractionDigits: digit,
+      maximumFractionDigits: digit
+    }).format(num);
+  });
+
+});
+
+document.querySelectorAll('select,#termYears')
+.forEach(el=>el.addEventListener('input',calculate));
+
 </body>
 </html>
