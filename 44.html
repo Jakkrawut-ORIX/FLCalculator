@@ -296,27 +296,40 @@
   // Real-time Formatting & Input Listeners
   const fields = ['carPrice', 'discount', 'option', 'downIn', 'balIn', 'comPct', 'comExtra', 'flatRate', 'irrTarget'];
   fields.forEach(id => {
-    const el = document.getElementById(id);
-    el.addEventListener('input', function(e) {
-      // ดึงค่าตำแหน่ง Cursor ก่อนจัด Format
-      let cursor = e.target.selectionStart;
-      let prevLen = e.target.value.length;
-      
-      let val = uncomma(e.target.value);
-      if (e.target.value === '') val = '';
-      
-      // จัด format เฉพาะตอนที่มีค่า และไม่ใช่ตัวเลขทศนิยมที่กำลังพิมพ์
-      if (val !== '' && !e.target.value.endsWith('.')) {
-        e.target.value = format(val, id === 'irrTarget' ? 4 : (id === 'comPct' || id === 'flatRate' ? 2 : 0)).replace('.00', '');
-      }
+  const el = document.getElementById(id);
 
-      // คืนค่าตำแหน่ง Cursor
-      let newLen = e.target.value.length;
-      e.target.setSelectionRange(cursor + (newLen - prevLen), cursor + (newLen - prevLen));
-      
-      calculate();
-    });
+  el.addEventListener('input', function(e) {
+    let raw = e.target.value.replace(/,/g, '');
+
+    // อนุญาตเฉพาะตัวเลขและจุดทศนิยม
+    raw = raw.replace(/[^0-9.]/g, '');
+
+    // ไม่ให้มีจุดเกิน 1 ตัว
+    const parts = raw.split('.');
+    if (parts.length > 2) {
+      raw = parts[0] + '.' + parts[1];
+    }
+
+    e.target.value = raw;
+    calculate();
   });
+
+  // ค่อย format ตอน blur (ออกจากช่อง)
+  el.addEventListener('blur', function(e) {
+    let val = uncomma(e.target.value);
+    if (!val) return;
+
+    let decimals = 0;
+
+    if (id === 'irrTarget') decimals = 4;
+    else if (id === 'comPct' || id === 'flatRate') decimals = 2;
+    else if (id === 'comExtra') decimals = 2;
+    else decimals = 0;
+
+    e.target.value = format(val, decimals);
+  });
+});
+
 
   document.getElementById('termYears').addEventListener('input', calculate);
   document.getElementById('hasBalloon').addEventListener('change', () => {
