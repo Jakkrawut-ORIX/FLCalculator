@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<title>ORIX Financial Calculator</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --orix-blue:#003F87;
+  --orix-red:#E30613;
+  --bg:#F4F7F9;
+  --border:#D6E0EA;
+  --focus:#1E40AF;
+}
+*{box-sizing:border-box;font-family:'Kanit',sans-serif}
+body{margin:0;background:var(--bg)}
+header{background:var(--orix-blue);color:#fff;padding:18px;text-align:center;border-bottom:4px solid var(--orix-red)}
+.container{max-width:1100px;margin:auto;padding:20px}
+.grid{display:grid;gap:20px}
+@media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+
+.card{
+  background:#fff;
+  border-radius:10px;
+  padding:20px;
+  border:1px solid var(--border);
+  box-shadow:0 4px 16px rgba(0,0,0,0.05)
+}
+.card-title{
+  font-weight:700;
+  color:var(--orix-blue);
+  margin-bottom:15px;
+  border-left:5px solid var(--orix-red);
+  padding-left:10px
+}
+.form-group{margin-bottom:14px}
+.label-row{
+  display:flex;
+  justify-content:space-between;
+  font-size:.9rem;
+  font-weight:600;
+  margin-bottom:4px
+}
+input,select{
+  width:100%;
+  padding:10px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  text-align:right;
+  background:#FFFFF0;
+  font-size:1rem;
+  transition:.2s
+}
+input:focus{
+  outline:none;
+  border-color:var(--focus);
+  box-shadow:0 0 0 2px rgba(30,64,175,.15)
+}
+input[readonly]{background:#EEF2F7;font-weight:700;color:var(--orix-blue)}
+
+.input-combo{display:flex;gap:8px}
+.w-30{width:110px;flex-shrink:0}
+
+.segmented{display:flex;background:#EEF2F7;border-radius:6px;padding:3px}
+.segmented button{
+  flex:1;border:none;padding:8px;
+  background:transparent;cursor:pointer;
+  font-weight:600;border-radius:5px
+}
+.segmented button.active{
+  background:#fff;
+  color:var(--orix-blue);
+  box-shadow:0 1px 4px rgba(0,0,0,.1)
+}
+
+.result{
+  margin-top:20px;
+  background:linear-gradient(135deg,var(--orix-blue),#001E44);
+  color:#fff;
+  padding:25px;
+  border-radius:10px;
+  text-align:center
+}
+.result .val{font-size:2.4rem;font-weight:800;margin:8px 0}
+
+.ows{margin-top:20px;border-collapse:collapse;width:100%;font-size:.85rem}
+.ows th,.ows td{padding:10px;border-bottom:1px solid #E5EAF0;text-align:right}
+.ows th{background:#F1F5F9}
+.ows td:first-child{text-align:left;font-weight:600}
+.highlight{color:var(--orix-blue);font-weight:700}
+</style>
+</head>
+<body>
+
+<header><h1>ORIX Financial Calculator</h1></header>
+
+<div class="container">
+<div class="grid">
+
+<!-- LEFT -->
+<div class="card">
+<div class="card-title">ข้อมูลรถ & เงื่อนไข</div>
+
+<div class="form-group">
+<div class="label-row">ราคารถ</div>
+<input id="carPrice" type="text">
+</div>
+
+<div class="form-group">
+<div class="label-row">ส่วนลด (-) / Option (+)</div>
+<div class="input-combo">
+<input id="discount" type="text" placeholder="ส่วนลด">
+<input id="option" type="text" placeholder="option">
+</div>
+</div>
+
+<hr>
+
+<div class="form-group">
+<div class="label-row">
+<span>เงินดาวน์</span>
+<span id="downMirror"></span>
+</div>
+<div class="input-combo">
+<select id="downType" class="w-30">
+<option value="percent">%</option>
+<option value="amount">บาท</option>
+</select>
+<input id="downIn" type="text">
+</div>
+</div>
+
+<div class="form-group">
+<div class="label-row">ยอดจัด</div>
+<input id="financeDisplay" readonly>
+</div>
+
+<div class="form-group">
+<div class="label-row">
+<label><input type="checkbox" id="hasBalloon"> Balloon</label>
+<span id="balMirror"></span>
+</div>
+<div id="balRow" style="display:none;margin-top:6px">
+<div class="input-combo">
+<select id="balType" class="w-30">
+<option value="percent">%</option>
+<option value="amount">บาท</option>
+</select>
+<input id="balIn" type="text">
+</div>
+</div>
+</div>
+
+<div class="form-group">
+<div class="label-row">จำนวนปี</div>
+<input id="termYears" type="number">
+</div>
+
+</div>
+
+<!-- RIGHT -->
+<div class="card">
+<div class="card-title">ดอกเบี้ย & คอม</div>
+
+<div class="form-group">
+<select id="mode">
+<option value="flat">Flat</option>
+<option value="irr">IRR</option>
+</select>
+</div>
+
+<div class="form-group">
+<div class="input-combo">
+<input id="flatRate" type="text" placeholder="Flat %">
+<input id="irrRate" type="text" placeholder="IRR %">
+</div>
+</div>
+
+<div class="form-group">
+<div class="label-row">ฐานค่าคอม</div>
+<div class="segmented">
+<button id="btnInt" class="active">จากดอกเบี้ย</button>
+<button id="btnFin">จากยอดจัด</button>
+</div>
+<input type="hidden" id="comBase" value="interest">
+</div>
+
+<div class="form-group">
+<div class="input-combo">
+<input id="comPct" type="text" placeholder="%">
+<input id="comExtra" type="text" placeholder="Extra">
+</div>
+</div>
+
+<div class="result">
+<div>ค่างวด</div>
+<div class="val" id="lease">0</div>
+<div>TR: <span id="tr">0%</span></div>
+<div>Commission: <span id="comm">0</span></div>
+</div>
+
+</div>
+</div>
+
+<table class="ows" id="ows"></table>
+
+</div>
+
+<script>
+
+/* ---------- NUMERIC ENGINE ---------- */
+
+function clean(v){
+v=v.replace(/,/g,'').replace(/[^\d\.\-]/g,'');
+if(v.indexOf('-')>0)v=v.replace(/\-/g,'');
+if((v.match(/\./g)||[]).length>1){
+let p=v.split('.');
+v=p[0]+'.'+p.slice(1).join('');
+}
+return v;
+}
+
+function comma(v){
+if(v==''||v=='-'||v=='.'||v=='-.')return v;
+let neg=v.startsWith('-');
+v=v.replace('-','');
+let p=v.split('.');
+let i=p[0].replace(/^0+(?=\d)/,'');
+i=i.replace(/\B(?=(\d{3})+(?!\d))/g,",");
+return (neg?'-':'')+i+(p[1]!==undefined?'.'+p[1]:'');
+}
+
+function numeric(id){
+const el=document.getElementById(id);
+el.addEventListener('input',()=>{
+let pos=el.selectionStart;
+let raw=clean(el.value);
+let digitsBefore=clean(el.value.slice(0,pos)).length;
+let formatted=comma(raw);
+el.value=formatted;
+let newPos=0,d=0;
+while(newPos<formatted.length&&d<digitsBefore){
+if(/[0-9\.\-]/.test(formatted[newPos]))d++;
+newPos++;
+}
+el.setSelectionRange(newPos,newPos);
+calculate();
+});
+}
+
+['carPrice','discount','option','downIn','balIn','flatRate','irrRate','comPct','comExtra']
+.forEach(numeric);
+
+/* ---------- CALC ENGINE ---------- */
+
+function n(id){return parseFloat(clean(document.getElementById(id).value))||0}
+function f(n,d=2){return new Intl.NumberFormat('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}).format(n)}
+
+function calculate(){
+
+let price=n('carPrice');
+if(price<=0)return;
+
+let net=price-n('discount')+n('option');
+
+let down= document.getElementById('downType').value=='percent'
+? net*(n('downIn')/100)
+: n('downIn');
+
+let bal=0;
+if(document.getElementById('hasBalloon').checked){
+bal= document.getElementById('balType').value=='percent'
+? net*(n('balIn')/100)
+: n('balIn');
+}
+
+if(bal>price*0.35){
+bal=price*0.35;
+document.getElementById('balIn').value=f(bal);
+}
+
+let finance=net-down;
+document.getElementById('financeDisplay').value=f(finance);
+
+let years=n('termYears');
+let months=years*12;
+
+let flat=n('flatRate')/100;
+let totalInt=(finance-bal)*flat*years;
+let lease=(months>0)?(finance-bal+totalInt)/months:0;
+
+document.getElementById('lease').innerText=f(Math.round(lease),0);
+
+let comBase=document.getElementById('comBase').value;
+let comPct=n('comPct')/100;
+let extra=n('comExtra');
+
+let base=(comBase=='interest')?totalInt:finance;
+let comm=Math.round(base*comPct+extra);
+
+document.getElementById('comm').innerText=f(comm,0);
+
+document.getElementById('downMirror').innerText=
+down>0?`(${((down/net)*100).toFixed(2)}%)`:'';
+
+document.getElementById('balMirror').innerText=
+bal>0?`(${((bal/net)*100).toFixed(2)}%)`:'';
+
+let tr=(months>0)?(flat*100*2):0;
+document.getElementById('tr').innerText=tr.toFixed(4)+'%';
+
+let rows=[
+['Net',net],
+['Down',down],
+['Finance',finance],
+['Balloon',bal],
+['Monthly',lease],
+['Commission',comm]
+];
+
+let html='<tr><th>Item</th><th>Value</th></tr>';
+rows.forEach(r=>{
+html+=`<tr><td>${r[0]}</td><td class="highlight">${f(r[1])}</td></tr>`;
+});
+document.getElementById('ows').innerHTML=html;
+
+}
+
+document.getElementById('mode').addEventListener('change',()=>{
+let m=document.getElementById('mode').value;
+document.getElementById('flatRate').readOnly=m=='irr';
+document.getElementById('irrRate').readOnly=m=='flat';
+});
+
+document.getElementById('hasBalloon').addEventListener('change',()=>{
+document.getElementById('balRow').style.display=
+document.getElementById('hasBalloon').checked?'block':'none';
+calculate();
+});
+
+document.querySelectorAll('select,input[type=number]')
+.forEach(el=>el.addEventListener('input',calculate));
+
+document.getElementById('btnInt').onclick=()=>{
+document.getElementById('comBase').value='interest';
+btnInt.classList.add('active');
+btnFin.classList.remove('active');
+calculate();
+};
+
+document.getElementById('btnFin').onclick=()=>{
+document.getElementById('comBase').value='finance';
+btnFin.classList.add('active');
+btnInt.classList.remove('active');
+calculate();
+};
+
+</script>
+</body>
+</html>
