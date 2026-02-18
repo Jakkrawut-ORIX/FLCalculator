@@ -1,296 +1,377 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8" />
-<title>ORIX Financial Calculator</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
-<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>ORIX Financial Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orix-blue: #003F87;
+      --orix-red: #E30613;
+      --bg-body: #F4F7F9;
+      --border: #B0C4D4;
+      --input-edit: #FFFFF0;
+      --input-read: #EAEFF3;
+    }
 
-<style>
-:root {
-  --orix-blue: #003F87;
-  --orix-red: #E30613;
-  --bg-body: #F4F7F9;
-  --border: #B0C4D4;
-  --input-edit: #FFFFF0;
-  --input-read: #EAEFF3;
-}
-* { box-sizing: border-box; font-family: 'Kanit', sans-serif; }
-body { background: var(--bg-body); margin: 0; }
+    * { box-sizing: border-box; font-family: 'Kanit', sans-serif; }
+    body { background: var(--bg-body); color: #333; margin: 0; padding: 0; }
 
-header {
-  background: var(--orix-blue);
-  color: #fff;
-  padding: 1.2rem;
-  text-align: center;
-  border-bottom: 4px solid var(--orix-red);
-}
+    header { background: var(--orix-blue); color: #fff; padding: 1.2rem; text-align: center; border-bottom: 4px solid var(--orix-red); }
+    header h1 { margin: 0; font-size: 1.4rem; font-weight: 700; }
 
-.container { max-width: 1000px; margin: 15px auto; padding: 10px; }
+    .container { max-width: 1000px; margin: 15px auto; padding: 10px; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+    @media (min-width: 768px) { .grid { grid-template-columns: 1fr 1fr; } }
 
-.grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
-@media (min-width:768px){ .grid { grid-template-columns:1fr 1fr; } }
+    .card { background: #fff; border-radius: 8px; padding: 15px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .card-title { font-size: 1.1rem; font-weight: 700; color: var(--orix-blue); margin-bottom: 15px; border-left: 5px solid var(--orix-red); padding-left: 10px; }
 
-.card {
-  background:#fff;
-  border-radius:8px;
-  padding:15px;
-  border:1px solid var(--border);
-  box-shadow:0 2px 8px rgba(0,0,0,0.05);
-}
+    .form-group { margin-bottom: 12px; }
+    .label-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.9rem; font-weight: 600; }
+    
+    .segmented-control { display: flex; background: #EEE; padding: 2px; border-radius: 6px; margin-top: 5px; }
+    .seg-btn { flex: 1; border: none; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: #666; transition: 0.2s; background: transparent; }
+    .seg-btn.active { background: #fff; color: var(--orix-blue); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
-.card-title {
-  font-weight:700;
-  color:var(--orix-blue);
-  border-left:5px solid var(--orix-red);
-  padding-left:10px;
-  margin-bottom:15px;
-}
+    input, select { padding: 10px; border: 1px solid var(--border); border-radius: 5px; width: 100%; text-align: right; font-size: 1rem; background: var(--input-edit); }
+    input[readonly] { background: var(--input-read); font-weight: 700; color: var(--orix-blue); }
+    
+    .input-combo { display: flex; gap: 8px; }
+    .w-30 { width: 100px; flex-shrink: 0; }
 
-input,select{
-  padding:10px;
-  border:1px solid var(--border);
-  border-radius:5px;
-  width:100%;
-  text-align:right;
-  background:var(--input-edit);
-}
-input[readonly]{ background:var(--input-read); font-weight:700; color:var(--orix-blue); }
+    .sync-box { background: #E7F0F7; padding: 15px; border-radius: 8px; border: 1px solid #B0C4D4; margin-bottom: 15px; }
+    .sync-grid { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; }
 
-.input-combo{ display:flex; gap:8px; }
+    .comm-box { background: #FFFBEB; border: 1.5px dashed #F59E0B; padding: 12px; border-radius: 8px; margin-top: 10px; }
+    
+    .result-area { background: linear-gradient(135deg, var(--orix-blue), #00264d); color: #fff; padding: 20px; border-radius: 8px; text-align: center; margin-top: 15px; }
+    .res-val { font-size: 2.5rem; font-weight: 800; display: block; margin: 5px 0; }
 
-.result-area{
-  background:linear-gradient(135deg,var(--orix-blue),#00264d);
-  color:#fff;
-  padding:20px;
-  border-radius:8px;
-  text-align:center;
-  margin-top:15px;
-}
-.res-val{ font-size:2.5rem; font-weight:800; }
+    .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; margin-top: 10px; transition: 0.2s; font-size: 1rem; }
+    .btn-target { background: #fff; color: var(--orix-red); border: 2px solid var(--orix-red); }
 
-.btn{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:6px;
-  font-weight:700;
-  margin-top:10px;
-  cursor:pointer;
-}
-.btn-target{
-  background:#fff;
-  color:var(--orix-red);
-  border:2px solid var(--orix-red);
-}
-
-.ows-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:0.85rem;
-}
-.ows-table th,.ows-table td{
-  padding:10px;
-  border-bottom:1px solid #E2E8F0;
-  text-align:right;
-}
-.ows-table td:first-child{ text-align:left; font-weight:600; }
-.highlight{ color:var(--orix-blue); font-weight:700; }
-</style>
+    .ows-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 10px; }
+    .ows-table th { background: #F1F5F9; padding: 10px; border-bottom: 2px solid var(--border); text-align: right; }
+    .ows-table td { padding: 10px; border-bottom: 1px solid #E2E8F0; text-align: right; }
+    .ows-table td:first-child { text-align: left; font-weight: 600; }
+    .highlight { color: var(--orix-blue); font-weight: 700; }
+  </style>
 </head>
-
 <body>
 
 <header><h1>ORIX Financial Calculator</h1></header>
 
 <div class="container">
-<div class="grid">
+  <div class="grid">
+    <div class="card">
+      <div class="card-title">ข้อมูลตัวรถ & เงื่อนไข</div>
+      <div class="form-group">
+        <div class="label-row">ราคารถ (Gross)</div>
+        <input id="carPrice" type="text" placeholder="0">
+      </div>
+      <div class="form-group">
+        <div class="label-row">ส่วนลด (-) / Option (+)</div>
+        <div class="input-combo">
+          <input id="discount" type="text" placeholder="ส่วนลด">
+          <input id="option" type="text" placeholder="option">
+        </div>
+      </div>
+      <hr style="opacity: 0.2;">
+      <div class="form-group">
+        <div class="label-row">เงินดาวน์ (Deposit)</div>
+        <div class="input-combo">
+          <select id="downType" class="w-30"><option value="percent">%</option><option value="amount">บาท</option></select>
+          <input id="downIn" type="text" placeholder="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="label-row">ยอดจัด (Finance Amount)</div>
+        <input id="resFinDisplay" readonly placeholder="0.00">
+      </div>
 
-<div class="card">
-<div class="card-title">ข้อมูลตัวรถ</div>
+      <div class="form-group">
+        <div class="label-row">
+          <label><input type="checkbox" id="hasBalloon"> บอลลูน (Balloon)</label>
+        </div>
+        <div id="balRow" class="input-combo" style="display:none; margin-top:8px;">
+          <select id="balType" class="w-30"><option value="percent">%</option><option value="amount">บาท</option></select>
+          <input id="balIn" type="text" placeholder="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="label-row">จำนวนปี (Terms)</div>
+        <input id="termYears" type="number" placeholder="3 - 5 ปี">
+      </div>
+      <button class="btn btn-target" onclick="solveDown(36000)"> FIX 36,000</button>
+    </div>
 
-<input id="carPrice" placeholder="ราคารถ">
-<input id="discount" placeholder="ส่วนลด">
-<input id="option" placeholder="Option">
+    <div class="card">
+      <div class="card-title">ดอกเบี้ย & ค่าการตลาด</div>
+      
+      <div class="sync-box">
+        <div class="label-row">โหมด: 
+            <select id="calcMode" style="width:100px; border:none; background:none; font-weight:700; color:var(--orix-blue);">
+                <option value="flat">Flat Rate</option>
+                <option value="yield">IRR (%)</option>
+            </select>
+        </div>
+        <div class="sync-grid">
+          <div><small>Flat Rate (%)</small><input id="flatRate" type="text" placeholder="0.00" style="text-align:center;"></div>
+          <div style="padding-top:15px; color: var(--border);">⇄</div>
+          <div><small>IRR (%)</small><input id="irrTarget" type="text" placeholder="0.0000" style="text-align:center;"></div>
+        </div>
+      </div>
 
-<hr>
+      <div class="form-group">
+        <div class="label-row">ค่าคอมมิชชั่น</div>
+        <div class="segmented-control">
+          <button class="seg-btn active" id="btnBaseInt" onclick="setComBase('interest')">จากดอกเบี้ย</button>
+          <button class="seg-btn" id="btnBaseFin" onclick="setComBase('finance')">จากยอดจัด</button>
+        </div>
+        <input type="hidden" id="comBase" value="interest">
+        <div class="input-combo" style="margin-top:10px;">
+          <input id="comPct" type="text" placeholder="%">
+          <input id="comExtra" type="text" placeholder="Extra">
+        </div>
+      </div>
 
-<div class="input-combo">
-<select id="downType">
-<option value="amount">บาท</option>
-<option value="percent">%</option>
-</select>
-<input id="downIn" placeholder="เงินดาวน์">
-</div>
+      <div class="comm-box">
+        <div class="label-row" style="color:#B45309; margin-bottom:0;">
+          <span>รวมค่าคอม :</span>
+          <span id="resCommTotal" style="font-size:1.1rem; font-weight:800;">0</span>
+        </div>
+      </div>
 
-<input id="resFinDisplay" readonly placeholder="ยอดจัด">
+      <div class="result-area">
+        <div style="font-size:0.9rem; opacity:0.8;">ค่างวดรายเดือน (In VAT)</div>
+        <span id="resLease" class="res-val">0</span>
+        <div style="font-size:1rem; font-weight:600; border-top: 1px solid rgba(255,255,255,0.2); padding-top:10px;">
+            Customer TR: <span id="resTr">0.0000%</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<input id="termYears" type="number" placeholder="จำนวนปี">
-
-<button class="btn btn-target" onclick="solveDown(36000)">FIX 36,000</button>
-</div>
-
-<div class="card">
-<div class="card-title">ดอกเบี้ย</div>
-
-<select id="calcMode">
-<option value="flat">Flat</option>
-<option value="yield">IRR</option>
-</select>
-
-<input id="flatRate" placeholder="Flat Rate %">
-<input id="irrTarget" placeholder="IRR %">
-
-<input id="comPct" placeholder="ค่าคอม %">
-<input id="comExtra" placeholder="Extra">
-
-<div class="result-area">
-<div>ค่างวด</div>
-<span id="resLease" class="res-val">0</span>
-<div>TR: <span id="resTr">0.0000%</span></div>
-<div>ค่าคอม: <span id="resCommTotal">0</span></div>
-</div>
-</div>
-
-</div>
-
-<div class="card" style="margin-top:20px;">
-<table class="ows-table">
-<thead>
-<tr><th>รายการ</th><th>Ex.VAT</th><th>Inc.VAT</th></tr>
-</thead>
-<tbody id="owsBody"></tbody>
-</table>
-</div>
-
+  <div class="card" style="margin-top:20px; border-style: dashed;">
+    <div class="card-title">📋 OWS Working Sheet</div>
+    <div style="overflow-x:auto;">
+      <table class="ows-table">
+        <thead>
+          <tr><th>รายการ</th><th>Ex. VAT</th><th>Inc. VAT</th></tr>
+        </thead>
+        <tbody id="owsBody">
+           <tr><td colspan="3" style="text-align:center; color:#999; padding:20px;">กรอกข้อมูลเพื่อแสดงตาราง</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <script>
+  // --------------------------
+  // Helper functions
+  // --------------------------
+  const uncomma = (s) => parseFloat(String(s).replace(/,/g, '')) || 0;
+  const format = (n, d = 2) => isNaN(n) ? "0.00" : new Intl.NumberFormat('en-US', {minimumFractionDigits: d, maximumFractionDigits: d}).format(n);
+  const formatInt = (n) => isNaN(n) ? "0" : new Intl.NumberFormat('en-US', {maximumFractionDigits: 0}).format(n);
 
-/* ========= Financial Utilities ========= */
-
-function roundMoney(n,d=2){
-  const f=Math.pow(10,d);
-  return Math.round((n+Number.EPSILON)*f)/f;
-}
-function roundBaht(n){ return Math.round(n); }
-function roundRate(n){ return roundMoney(n,4); }
-function toNum(v){ return parseFloat(String(v).replace(/,/g,''))||0; }
-function fmt(n,d=2){ return new Intl.NumberFormat('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}).format(n);}
-function fmtInt(n){ return new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(n); }
-
-/* ========= IRR ========= */
-
-function calculateIRR(nper,pmt,pv,fv=0){
-  let rate=0.05/12;
-  for(let i=0;i<100;i++){
-    let f=pv;
-    for(let t=1;t<=nper;t++) f+=pmt/Math.pow(1+rate,t);
-    f+=fv/Math.pow(1+rate,nper);
-    let df=0;
-    for(let t=1;t<=nper;t++) df-=(t*pmt)/Math.pow(1+rate,t+1);
-    df-=(nper*fv)/Math.pow(1+rate,nper+1);
-    rate=rate-f/df;
-  }
-  return rate;
-}
-
-/* ========= Engine ========= */
-
-function financeEngine(input){
-
-  const net=roundMoney(input.price-input.discount+input.option);
-  const down=input.downAmt;
-  const finance=roundMoney(net-down);
-  const months=input.years*12;
-
-  if(!months) return {finance};
-
-  let flat=input.flatRate;
-  let lease=0;
-
-  if(input.mode==='flat'){
-    const int=roundMoney(finance*(flat/100)*input.years);
-    lease=roundMoney((finance+int)/months);
-  }else{
-    let low=0,high=20;
-    for(let i=0;i<30;i++){
-      const mid=(low+high)/2;
-      const int=finance*(mid/100)*input.years;
-      const pmt=(finance+int)/months;
-      const irr=calculateIRR(months,pmt,-finance)*12;
-      if(irr<input.irrTarget) low=mid; else high=mid;
+  function calculateIRR(nper, pmt, pv, fv = 0) {
+    if (pmt === 0 || nper === 0) return 0;
+    let rate = 0.05 / 12; // initial monthly guess
+    for (let i = 0; i < 500; i++) {
+      let f = pv;
+      for (let t = 1; t <= nper; t++) f += pmt / Math.pow(1 + rate, t);
+      f += fv / Math.pow(1 + rate, nper);
+      let df = 0;
+      for (let t = 1; t <= nper; t++) df -= (t * pmt) / Math.pow(1 + rate, t + 1);
+      df -= (nper * fv) / Math.pow(1 + rate, nper + 1);
+      if (Math.abs(f) < 1e-8) return rate;
+      rate = rate - f / df;
     }
-    flat=high;
-    const int=roundMoney(finance*(flat/100)*input.years);
-    lease=roundMoney((finance+int)/months);
+    return rate; // monthly
   }
 
-  const comm=roundBaht(finance*(input.comPct)+input.comExtra);
-
-  const tr=roundRate(calculateIRR(months,lease,-finance)*12*100);
-
-  return{net,finance,lease,flat,comm,tr};
-}
-
-/* ========= Controller ========= */
-
-function calculate(){
-
-  const input={
-    price:toNum(carPrice.value),
-    discount:toNum(discount.value),
-    option:toNum(option.value),
-    downAmt:downType.value==='percent'?toNum(carPrice.value)*(toNum(downIn.value)/100):toNum(downIn.value),
-    years:parseInt(termYears.value)||0,
-    mode:calcMode.value,
-    flatRate:toNum(flatRate.value),
-    irrTarget:toNum(irrTarget.value)/100,
-    comPct:toNum(comPct.value)/100,
-    comExtra:toNum(comExtra.value)
-  };
-
-  const r=financeEngine(input);
-  if(!r.finance) return 0;
-
-  resFinDisplay.value=fmt(r.finance);
-  resLease.innerText=fmtInt(r.lease);
-  resCommTotal.innerText=fmtInt(r.comm);
-  resTr.innerText=fmt(r.tr,4)+"%";
-
-  if(calcMode.value==='flat')
-    irrTarget.value=fmt(r.tr,4);
-  else
-    flatRate.value=fmt(r.flat,2);
-
-  return r.lease;
-}
-
-/* ========= FIX 36,000 ========= */
-
-function solveDown(target){
-  downType.value='amount';
-  let low=0,high=toNum(carPrice.value);
-  for(let i=0;i<40;i++){
-    const mid=roundBaht((low+high)/2);
-    downIn.value=mid;
-    const lease=calculate();
-    if(lease>target) low=mid; else high=mid;
+  function setComBase(val) {
+    document.getElementById('comBase').value = val;
+    document.getElementById('btnBaseInt').classList.toggle('active', val === 'interest');
+    document.getElementById('btnBaseFin').classList.toggle('active', val === 'finance');
+    calculate();
   }
-  downIn.value=fmtInt(high);
-  calculate();
-}
 
-/* ========= Events ========= */
+  function calculate() {
+    const price = uncomma(document.getElementById('carPrice').value);
+    if (price === 0) return 0;
 
-['carPrice','discount','option','downIn','flatRate','irrTarget','comPct','comExtra']
-.forEach(id=>document.getElementById(id).addEventListener('input',calculate));
+    const net = price - uncomma(document.getElementById('discount').value) + uncomma(document.getElementById('option').value);
 
-termYears.addEventListener('input',calculate);
-calcMode.addEventListener('change',calculate);
-downType.addEventListener('change',calculate);
+    // เงินดาวน์
+    const downAmt = document.getElementById('downType').value === 'percent'
+      ? net * (uncomma(document.getElementById('downIn').value) / 100)
+      : uncomma(document.getElementById('downIn').value);
 
+    // บอลลูน
+    let balAmt = 0;
+    if (document.getElementById('hasBalloon').checked) {
+      balAmt = document.getElementById('balType').value === 'percent'
+        ? net * (uncomma(document.getElementById('balIn').value) / 100)
+        : uncomma(document.getElementById('balIn').value);
+    }
+
+    const finance = net - downAmt;
+    document.getElementById('resFinDisplay').value = format(finance);
+
+    const years = parseInt(document.getElementById('termYears').value) || 0;
+    const months = years * 12;
+    const mode = document.getElementById('calcMode').value;
+    
+    let flatVal = 0, leaseInVat = 0;
+    const comPct = uncomma(document.getElementById('comPct').value) / 100;
+    const extra = uncomma(document.getElementById('comExtra').value);
+
+    // toggle readOnly
+    document.getElementById('flatRate').readOnly = (mode === 'yield');
+    document.getElementById('irrTarget').readOnly = (mode === 'flat');
+
+    if (months === 0) {
+      // reset outputs if months invalid
+      document.getElementById('resLease').innerText = "0";
+      document.getElementById('resTr').innerText = "0.0000%";
+      document.getElementById('resCommTotal').innerText = "0";
+      document.getElementById('owsBody').innerHTML = `<tr><td colspan="3" style="text-align:center; color:#999; padding:20px;">กรอกข้อมูลเพื่อแสดงตาราง</td></tr>`;
+      return 0;
+    }
+
+    if (mode === 'flat') {
+      flatVal = uncomma(document.getElementById('flatRate').value);
+      const totalInt = (finance - balAmt) * (flatVal / 100) * years;
+      leaseInVat = (finance - balAmt + totalInt) / months;
+    } else {
+      // ===== IRR Mode: หา Flat Rate ที่ให้ IRR ตามเป้า พร้อมขยายกรอบอัตโนมัติ =====
+      const targetIrr = uncomma(document.getElementById('irrTarget').value) / 100;
+
+      const computeIrrAtFlat = (flat) => {
+        const it = (finance - balAmt) * (flat / 100) * years;
+        const pmt = (finance - balAmt + it) / months;
+        const cBase = document.getElementById('comBase').value === 'interest' ? it : finance;
+        const cAmt = (cBase * comPct) + extra;
+        // คิด IRR จากกระแสเงินสด Ex. VAT
+        return calculateIRR(months, pmt/1.07, -((finance + cAmt)/1.07), balAmt/1.07) * 12; // annualized
+      };
+
+      let low = 0, high = 20;
+      const maxHigh = 200; // เพดานเพื่อความปลอดภัย
+      let irrAtHigh = computeIrrAtFlat(high);
+
+      // ขยายช่วงค้นหา ถ้า IRR ที่ได้ยังต่ำกว่าเป้า
+      while (irrAtHigh < targetIrr && high < maxHigh) {
+        low = high;
+        high = Math.min(high * 2, maxHigh);
+        irrAtHigh = computeIrrAtFlat(high);
+      }
+
+      // Binary search เพื่อหา flat ใกล้ target
+      for (let i = 0; i < 30; i++) {
+        const mid = (low + high) / 2;
+        const irrAtMid = computeIrrAtFlat(mid);
+        if (irrAtMid < targetIrr) low = mid; else high = mid;
+      }
+
+      flatVal = high;
+      document.getElementById('flatRate').value = format(flatVal, 2);
+      const totalInt = (finance - balAmt) * (flatVal / 100) * years;
+      leaseInVat = (finance - balAmt + totalInt) / months;
+    }
+
+    const finalInt = (finance - balAmt) * (flatVal / 100) * years;
+    // ค่าคอม (ปัดเป็นจำนวนเต็มบาท)
+    const comAmt = Math.round(((document.getElementById('comBase').value === 'interest' ? finalInt : finance) * comPct) + extra);
+
+    // แสดงค่างวด (โชว์เป็นจำนวนเต็ม แต่ค่าที่ return เป็นตัวจริง)
+    document.getElementById('resLease').innerText = formatInt(leaseInVat);
+    
+    // IRR แยก 2 แบบ: รวมคอม และไม่รวมคอม (TR)
+    const irrFinal = calculateIRR(months, leaseInVat/1.07, -((finance + comAmt)/1.07), balAmt/1.07) * 12 * 100;
+    const trFinal  = calculateIRR(months, leaseInVat/1.07, -(finance/1.07),          balAmt/1.07) * 12 * 100;
+    
+    document.getElementById('resTr').innerText = format(trFinal, 4) + "%";
+    document.getElementById('resCommTotal').innerText = formatInt(comAmt);
+    if (mode === 'flat') document.getElementById('irrTarget').value = format(irrFinal, 4);
+
+    const rows = [
+      { n: "ราคาสุทธิ (Net Price)", v: net },
+      { n: "เงินดาวน์ (Deposit)", v: downAmt },
+      { n: "ยอดจัด (Finance)", v: finance },
+      { n: "ค่างวด (Monthly)", v: leaseInVat },
+      { n: "ค่าคอมมิชชั่น (Comm.)", v: comAmt },
+      { n: "RV (Deposit + Balloon)", v: downAmt + balAmt }
+    ];
+    let html = "";
+    rows.forEach(r => {
+      html += `<tr><td>${r.n}</td><td>${format(r.v/1.07)}</td><td class="highlight">${format(r.v)}</td></tr>`;
+    });
+    document.getElementById('owsBody').innerHTML = html;
+
+    return leaseInVat; // คืนค่าจริงเพื่อใช้ใน solver
+  }
+
+  function solveDown(target) {
+    document.getElementById('downType').value = 'amount';
+    const net = uncomma(document.getElementById('carPrice').value) - uncomma(document.getElementById('discount').value) + uncomma(document.getElementById('option').value);
+    let low = 0, high = net;
+
+    // ค้นหาเงินดาวน์ด้วยจำนวนเต็มบาทตลอดการคำนวณ
+    for (let i = 0; i < 40; i++) {
+      let mid = Math.round((low + high) / 2);   // ✅ บังคับจำนวนเต็ม
+      document.getElementById('downIn').value = String(mid);
+      let currentPmt = calculate();
+      if (currentPmt > target) low = mid; else high = mid;
+    }
+
+    // แสดงผลเป็นจำนวนเต็มบาท (ไม่มีทศนิยม)
+    document.getElementById('downIn').value = formatInt(Math.round(high));
+    calculate();
+  }
+
+  // --------------------------
+  // Real-time Formatting & Input Listeners
+  // --------------------------
+  const fields = ['carPrice', 'discount', 'option', 'downIn', 'balIn', 'comPct', 'comExtra', 'flatRate', 'irrTarget'];
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', function(e) {
+      // ตำแหน่ง Cursor ก่อนจัด Format
+      let cursor = e.target.selectionStart;
+      let prevLen = e.target.value.length;
+      
+      let val = uncomma(e.target.value);
+      if (e.target.value === '') val = '';
+      
+      // จัด format: irrTarget(4d), comPct/flatRate(2d), ที่เหลือจำนวนเต็ม
+      if (val !== '' && !e.target.value.endsWith('.')) {
+        const decimals =
+          id === 'irrTarget' ? 4 :
+          (id === 'comPct' || id === 'flatRate') ? 2 : 0;
+        e.target.value = decimals === 0 ? formatInt(val) : format(val, decimals);
+      }
+
+      // คืนค่าตำแหน่ง Cursor
+      let newLen = e.target.value.length;
+      let delta = newLen - prevLen;
+      e.target.setSelectionRange(cursor + delta, cursor + delta);
+      
+      calculate();
+    });
+  });
+
+  document.getElementById('termYears').addEventListener('input', calculate);
+  document.getElementById('hasBalloon').addEventListener('change', () => {
+    document.getElementById('balRow').style.display = document.getElementById('hasBalloon').checked ? 'flex' : 'none';
+    calculate();
+  });
+  document.getElementById('calcMode').addEventListener('change', calculate);
+  ['downType', 'balType'].forEach(id => document.getElementById(id).addEventListener('change', calculate));
 </script>
-
 </body>
 </html>
