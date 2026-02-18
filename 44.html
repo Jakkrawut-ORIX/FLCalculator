@@ -117,7 +117,7 @@
         <div class="label-row">จำนวนปี (Terms)</div>
         <input id="termYears" type="number" placeholder="3 - 5">
       </div>
-      <button class="btn btn-target" onclick="solveDown(36000)">ค่างวด 36,000</button>
+     <button onclick="solveDown(36000)">36,000</button>
       <button class="btn" style="background:#003F87; color:#fff;" onclick="goToQuotation()">
   สร้างใบเสนอราคา
 </button>
@@ -326,68 +326,80 @@ if (net > 0) {
     return leaseInVat; // คืนค่าจริงเพื่อใช้ใน solver
   }
 
-  function solveDown(target) {
-    document.getElementById('downType').value = 'amount';
-    const net = uncomma(document.getElementById('carPrice').value) - uncomma(document.getElementById('discount').value) + uncomma(document.getElementById('option').value);
-    let low = 0, high = net;
-    
-    // Binary search เพื่อหาเงินดาวน์ที่ทำให้ค่างวดเป๊ะที่สุด
-    for (let i = 0; i < 40; i++) {
-      let mid = (low + high) / 2;
-      document.getElementById('downIn').value = mid.toFixed(2);
-      let currentPmt = calculate();
-      if (currentPmt > target) low = mid; else high = mid;
-    }
-    
-    document.getElementById('downIn').value = format(high);
-    calculate();
+function solveDown(target) {
+
+  const getVal = id => uncomma(document.getElementById(id).value);
+  const getIntVal = id => parseInt(uncomma(document.getElementById(id).value)) || 0;
+
+  const car = getVal('carPrice');
+  const discount = getVal('discount');
+  const option = getVal('option');
+  const total = car - discount + option;
+
+  document.getElementById('totalAmount').value = format(total);
+
+  const rate = getVal('interestRate');
+  const years = getIntVal('termYears');
+  const months = years * 12;
+
+  if (months === 0 || rate === 0) {
+    alert("กรุณาระบุจำนวนปีและอัตราดอกเบี้ยก่อน");
+    return;
   }
 
-  // Real-time Formatting & Input Listeners
-  const fields = ['carPrice', 'discount', 'option', 'downIn', 'balIn', 'comPct', 'comExtra', 'flatRate', 'irrTarget'];
-  fields.forEach(id => {
-  const el = document.getElementById(id);
+  if (total <= 0) {
+    alert("กรุณาระบุราคารถให้ถูกต้อง");
+    return;
+  }
 
-  el.addEventListener('input', function(e) {
-    let raw = e.target.value.replace(/,/g, '');
+  // กรณีดาวน์ 0
+  const financeZeroDown = total;
+  const intTotalZeroDown = financeZeroDown * (rate / 100) * years;
+  const leaseZeroDown = Math.ceil((financeZeroDown + intTotalZeroDown) / months);
 
-    // อนุญาตเฉพาะตัวเลขและจุดทศนิยม
-    raw = raw.replace(/[^0-9.]/g, '');
+  if (leaseZeroDown < target) {
+    document.getElementById('downType').value = 'amount';
+    document.getElementById('downInput').value = format(0, 0);
+    calculate();
+    alert(`ไม่สามารถทำให้ค่างวดถึง ${format(target,0)} บาทได้ แม้ดาวน์ 0 บาท`);
+    return;
+  }
 
-    // ไม่ให้มีจุดเกิน 1 ตัว
-    const parts = raw.split('.');
-    if (parts.length > 2) {
-      raw = parts[0] + '.' + parts[1];
+  // Binary Search
+  let low = 0;
+  let high = total;
+  let bestDown = 0;
+  let minDiff = Infinity;
+
+  for (let i = 0; i < 500; i++) {
+
+    const mid = Math.ceil((low + high) / 2);
+
+    const finance = total - mid;
+    const intTotal = finance * (rate / 100) * years;
+    const lease = Math.ceil((finance + intTotal) / months);
+
+    const diff = Math.abs(lease - target);
+
+    if (diff < minDiff) {
+      minDiff = diff;
+      bestDown = mid;
     }
 
-    e.target.value = raw;
-    calculate();
-  });
+    if (Math.abs(high - low) < 1) break;
 
-  // ค่อย format ตอน blur (ออกจากช่อง)
-  el.addEventListener('blur', function(e) {
-    let val = uncomma(e.target.value);
-    if (!val) return;
+    if (lease > target) {
+      low = mid;
+    } else {
+      high = mid;
+    }
+  }
 
-    let decimals = 0;
+  document.getElementById('downType').value = 'amount';
+  document.getElementById('downInput').value = format(bestDown, 0);
+  calculate();
+}
 
-    if (id === 'irrTarget') decimals = 4;
-    else if (id === 'comPct' || id === 'flatRate') decimals = 2;
-    else if (id === 'comExtra') decimals = 2;
-    else decimals = 0;
-
-    e.target.value = format(val, decimals);
-  });
-});
-
-
-  document.getElementById('termYears').addEventListener('input', calculate);
-  document.getElementById('hasBalloon').addEventListener('change', () => {
-    document.getElementById('balRow').style.display = document.getElementById('hasBalloon').checked ? 'flex' : 'none';
-    calculate();
-  });
-  document.getElementById('calcMode').addEventListener('change', calculate);
-  ['downType', 'balType'].forEach(id => document.getElementById(id).addEventListener('change', calculate));
 
   function goToQuotation() {
 
