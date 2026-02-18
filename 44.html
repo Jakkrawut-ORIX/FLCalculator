@@ -117,7 +117,10 @@
         <div class="label-row">จำนวนปี (Terms)</div>
         <input id="termYears" type="number" placeholder="3 - 5">
       </div>
-      <button class="btn btn-target" onclick="solveDown(36000)">หาดาวน์ จากค่างวด 36,000</button>
+      <button class="btn btn-target" onclick="solveDown(36000)">ค่างวด 36,000</button>
+      <button class="btn" style="background:#003F87; color:#fff;" onclick="goToQuotation()">
+  สร้างใบเสนอราคา
+</button>
     </div>
 
     <div class="card">
@@ -385,6 +388,44 @@ if (net > 0) {
   });
   document.getElementById('calcMode').addEventListener('change', calculate);
   ['downType', 'balType'].forEach(id => document.getElementById(id).addEventListener('change', calculate));
+
+  function goToQuotation() {
+
+  // ดึงค่าจากหน้า Calculator
+  const price = uncomma(document.getElementById('carPrice').value);
+  const discount = uncomma(document.getElementById('discount').value);
+  const option = uncomma(document.getElementById('option').value);
+  const net = price - discount + option;
+
+  const downAmt = uncomma(document.getElementById('downIn').value);
+  const downPercent = net > 0 ? (downAmt / net) * 100 : 0;
+
+  const finance = uncomma(document.getElementById('resFinDisplay').value);
+  const flatRate = uncomma(document.getElementById('flatRate').value);
+  const years = parseInt(document.getElementById('termYears').value) || 0;
+  const lease = uncomma(document.getElementById('resLease').innerText);
+
+  const payload = {
+    carInfo: "-", // ถ้ามีช่องรุ่นรถ ใส่ id เพิ่มได้
+    carPrice: price,
+    discount: discount,
+    option: option,
+    totalAmount: net,
+    downAmount: downAmt,
+    downPercent: downPercent,
+    financeAmt: finance,
+    interestRate: flatRate,
+    termYears: years,
+    leaseInVat: lease
+  };
+
+  // เก็บข้อมูลลง localStorage
+  localStorage.setItem('quotationData', JSON.stringify(payload));
+
+  // เปิดหน้าใบเสนอราคา
+  window.open("quotation.html", "_blank"); 
+}
+
 </script>
 </body>
 </html>
