@@ -80,21 +80,29 @@
       </div>
       <hr style="opacity: 0.2;">
       <div class="form-group">
-        <div class="label-row">เงินดาวน์ (Deposit)</div>
+        <div class="label-row">
+  <span>เงินดาวน์ (Deposit)</span>
+  <span id="downMirror" style="color:#6B7280;"></span>
+</div>
         <div class="input-combo">
           <select id="downType" class="w-30"><option value="percent">%</option><option value="amount">บาท</option></select>
           <input id="downIn" type="text" placeholder="0">
         </div>
       </div>
       <div class="form-group">
-        <div class="label-row">ยอดจัด (Finance Amount)</div>
+        <div class="label-row">
+  <span>ยอดจัด (Finance Amount)</span>
+  <span id="finMirror" style="color:#6B7280;"></span>
+</div>
         <input id="resFinDisplay" readonly placeholder="0.00">
       </div>
 
       <div class="form-group">
         <div class="label-row">
-          <label><input type="checkbox" id="hasBalloon"> บอลลูน (Balloon)</label>
-        </div>
+  <label><input type="checkbox" id="hasBalloon"> บอลลูน (Balloon)</label>
+  <span id="balMirror" style="color:#6B7280;"></span>
+</div>
+
         <div id="balRow" class="input-combo" style="display:none; margin-top:8px;">
           <select id="balType" class="w-30"><option value="percent">%</option><option value="amount">บาท</option></select>
           <input id="balIn" type="text" placeholder="0">
@@ -273,6 +281,40 @@
       html += `<tr><td>${r.n}</td><td>${format(r.v/1.07)}</td><td class="highlight">${format(r.v)}</td></tr>`;
     });
     document.getElementById('owsBody').innerHTML = html;
+
+    /* ================= MIRROR ENGINE ================= */
+
+if (net > 0) {
+
+  /* ----- Deposit ----- */
+  if (document.getElementById('downType').value === 'percent') {
+    document.getElementById('downMirror').innerText =
+      downAmt ? `(${format(downAmt, 2)} บาท)` : '';
+  } else {
+    document.getElementById('downMirror').innerText =
+      downAmt ? `(${((downAmt / net) * 100).toFixed(2)}%)` : '';
+  }
+
+  /* ----- Balloon ----- */
+  if (document.getElementById('hasBalloon').checked) {
+
+    if (document.getElementById('balType').value === 'percent') {
+      document.getElementById('balMirror').innerText =
+        balAmt ? `(${format(balAmt, 2)} บาท)` : '';
+    } else {
+      document.getElementById('balMirror').innerText =
+        balAmt ? `(${((balAmt / net) * 100).toFixed(2)}%)` : '';
+    }
+
+  } else {
+    document.getElementById('balMirror').innerText = '';
+  }
+
+  /* ----- Finance ----- */
+  document.getElementById('finMirror').innerText =
+    finance ? `(${((finance / net) * 100).toFixed(2)}%)` : '';
+}
+
     return leaseInVat; // คืนค่าจริงเพื่อใช้ใน solver
   }
 
