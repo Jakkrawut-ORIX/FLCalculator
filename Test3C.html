@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ORIX Lease Calculator - 3 Columns</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#01478c;--blue2:#0158a8;--blue-dim:#e8f0f9;--bg:#eaecf0;--surface:#fff;--surface2:#f4f6fa;--surface3:#f7f9fc;
+  --border:#dde2ea;--border2:#c8d0dc;--txt:#0d1b2e;--muted:#6b7585;--muted2:#475264;--green:#22a37d;--amber:#e8a020;--red:#c0021a;
+  --rad:10px;--rad-sm:6px;--shadow:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);--safe:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:Kanit,Calibri,Arial,sans-serif;font-size:14px;line-height:1.5;padding-bottom:calc(74px + var(--safe))}.app{max-width:1240px;margin:auto;padding:14px}.header{padding:6px 0 12px}.header h1{font-size:18px;margin:0;color:var(--txt);letter-spacing:-.2px}.header h1 span{color:var(--blue)}.header p{margin:2px 0 0;color:var(--muted);font-size:12px}.grid-main{display:grid;grid-template-columns:1fr;gap:12px}.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rad);box-shadow:var(--shadow);overflow:hidden}.card-hdr{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700}.ch-icon{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}.ch-blue{background:#d8e8f6;color:var(--blue)}.ch-green{background:#d4f0e7;color:var(--green)}.ch-amber{background:#fdeec7;color:#a06000}.card-body{padding:12px}.form-row{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:8px}.form-row.c2{grid-template-columns:1fr 1fr}.field{display:flex;flex-direction:column;gap:3px}.field label{font-size:10.5px;color:var(--muted2);font-weight:600;letter-spacing:.2px}.hint{color:var(--muted);font-weight:400}.field input,.field select{width:100%;min-height:38px;background:#fff;color:var(--txt);border:1px solid var(--border);border-radius:var(--rad-sm);padding:7px 9px;font-size:13px;font-family:Kanit,Calibri,Arial,sans-serif;outline:none;text-align:right}.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(1,71,140,.10)}.field input[readonly]{background:#f9fafb;color:#98a2b3}.field select{text-align:left;cursor:pointer}.field input.left{text-align:left}.field.mono input{font-family:Calibri,Consolas,monospace}.field.highlight input{color:var(--blue);font-weight:700}.sect-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);margin:10px 0 8px;padding-bottom:5px;border-bottom:1px dashed var(--border2)}.goal-box{background:linear-gradient(135deg,#fffbf0,#fff8e6);border:1px solid #f0d898;border-radius:var(--rad-sm);padding:12px}.goal-title{font-size:11px;font-weight:700;color:#7a4e00;margin-bottom:7px}.btn{border:0;border-radius:var(--rad-sm);min-height:38px;padding:8px 12px;font-family:Kanit,Calibri,Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer;width:100%;background:var(--blue);color:#fff}.btn:hover{filter:brightness(.95)}.btn-amber{background:var(--amber);color:#3d2600}.btn-ghost{background:#fff;color:var(--muted2);border:1px solid var(--border)}.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+/* Result card style from provided code */
+.pmt-hero{background:linear-gradient(140deg,#0a3a72 0%,#01478c 60%,#0268b8 100%);border-radius:var(--rad);padding:18px 16px;text-align:center;margin-bottom:10px;box-shadow:0 4px 16px rgba(1,71,140,.22)}.pmt-hero .label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.62);margin-bottom:4px;font-weight:600}.pmt-hero .value{font-family:Calibri,Consolas,monospace;font-size:34px;font-weight:500;color:#fff;letter-spacing:-1px;line-height:1}.pmt-hero .sub{font-size:11px;color:rgba(255,255,255,.55);margin-top:5px}.result-grid{display:flex;flex-direction:column;gap:3px}.result-row{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-radius:var(--rad-sm);background:var(--surface3)}.result-row:hover{background:var(--blue-dim)}.result-row .rl{font-size:11px;color:var(--muted2)}.result-row .rv{font-family:Calibri,Consolas,monospace;font-size:13px;font-weight:600;color:var(--txt)}.result-row.key{background:var(--blue-dim)}.result-row.key .rl{color:var(--blue);font-weight:700}.result-row.key .rv{color:var(--blue);font-weight:700;font-size:15px}.result-row.sep{background:none;padding:3px 10px 1px}.result-row.sep .rl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);border-top:1px dashed var(--border2);padding-top:4px;width:100%}.ws-table{width:100%;border-collapse:collapse}.ws-table th{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);padding:5px 8px;text-align:left;border-bottom:1px solid var(--border);background:var(--surface2)}.ws-table td{padding:7px 8px;font-size:12.5px;font-family:Calibri,Consolas,monospace;font-weight:500;border-bottom:1px solid var(--border)}.ws-table td:not(:first-child){text-align:right}details{margin-top:10px}summary{cursor:pointer;color:var(--blue);font-weight:700;font-size:12px}.mobile-actions{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:9px 12px calc(9px + var(--safe));z-index:10}.mobile-actions>div{max-width:1240px;margin:auto;display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px}.mobile-actions .btn{margin:0;min-height:44px}@media(min-width:900px){body{padding-bottom:0}.app{padding:18px}.grid-main{grid-template-columns:minmax(0,1fr) 320px 360px;align-items:start}.form-row{grid-template-columns:1fr 1fr}.form-row.c1{grid-template-columns:1fr}.mobile-actions{position:relative;background:transparent;border:0;padding:12px 0 0}.mobile-actions>div{grid-template-columns:repeat(4,1fr)}}@media(max-width:420px){.form-row.c2{grid-template-columns:1fr}.pmt-hero .value{font-size:30px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header"><h1>Financial <span>Lease</span> Calculator</h1><p>Minimal 3-column layout • Commission & Goal Seek พร้อมกรอก • IRR Mode ซ่อน</p></div>
+  <div class="grid-main">
+    <section class="card">
+      <div class="card-hdr"><span class="ch-icon ch-blue">🚗</span>Input</div>
+      <div class="card-body">
+        <div class="form-row c1"><div class="field"><label>ข้อมูลรถ</label><input id="carInfo" class="left" placeholder="รุ่นรถ / รายละเอียด"></div></div>
+        <div class="form-row">
+          <div class="field mono"><label>ราคารถ <span class="hint">In VAT</span></label><input id="carPrice" inputmode="decimal" value="0.00"></div>
+          <div class="field mono"><label>ส่วนลด</label><input id="discount" inputmode="decimal" value="0.00"></div>
+        </div>
+        <div class="form-row">
+          <div class="field mono"><label>Option</label><input id="option" inputmode="decimal" value="0.00"></div>
+          <div class="field mono"><label>จำนวนปี</label><input id="termYears" inputmode="numeric" value="0"></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>รูปแบบดาวน์</label><select id="downType"><option value="percent">เป็น %</option><option value="amount">เป็นจำนวนเงิน</option></select></div>
+          <div class="field mono highlight"><label>เงินดาวน์</label><input id="downInput" inputmode="decimal" value="0.00"></div>
+        </div>
+        <div class="form-row">
+          <div class="field mono"><label>Flat Rate <span class="hint">% ต่อปี</span></label><input id="interestRate" inputmode="decimal" value="0.00"></div>
+          <div class="field mono"><label>เงินดาวน์ที่คำนวณ</label><input id="downAmount" readonly></div>
+        </div>
+        <input id="totalAmount" type="hidden">
+        <input id="leaseExVat" type="hidden"><input id="financeTotalWithInterest" type="hidden"><input id="intPA" type="hidden"><input id="intTotal" type="hidden"><input id="trRate" type="hidden"><input id="financeAmt" type="hidden"><input id="leaseInVat" type="hidden"><input id="downPercentDisplay" type="hidden">
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-hdr"><span class="ch-icon ch-amber">⚙</span>Commission / Goal Seek</div>
+      <div class="card-body">
+        <div class="sect-label">Commission</div>
+        <div class="form-row c1"><div class="field"><label>คิดค่าคอมจาก</label><select id="comBase"><option value="interest">ดอกเบี้ยรวม</option><option value="finance">ยอดจัด</option></select></div></div>
+        <div class="form-row c2">
+          <div class="field mono"><label>Commission (%)</label><input id="comPercent" inputmode="decimal" value="0.00"></div>
+          <div class="field mono"><label>Extra <span class="hint">Ex VAT</span></label><input id="extra" inputmode="decimal" value="0.00"></div>
+        </div>
+        <div class="form-row c2">
+          <div class="field mono"><label>ค่าคอมที่คำนวณ</label><input id="calculatedCommission" readonly></div>
+          <div class="field mono"><label>QS Extra Cost</label><input id="qsExtra" readonly></div>
+        </div>
+        <div class="sect-label">Goal Seek</div>
+        <div class="goal-box">
+          <div class="goal-title">หาเงินดาวน์จากค่างวดเป้าหมาย</div>
+          <div class="form-row c1"><div class="field mono"><label>ค่างวด/เดือนเป้าหมาย <span class="hint">In VAT</span></label><input id="targetLease" inputmode="decimal" value="0.00" placeholder="เช่น 36,000"></div></div>
+          <button class="btn btn-amber" onclick="goalSeekDown()">คำนวณเงินดาวน์</button>
+        </div>
+        <details>
+          <summary>QS Output</summary>
+          <div class="form-row c2" style="margin-top:8px">
+            <div class="field mono"><label>Down</label><input id="qsDownAmount" readonly></div>
+            <div class="field mono"><label>Down %</label><input id="qsDownPercent" readonly></div>
+          </div>
+          <div class="form-row c2">
+            <div class="field mono"><label>TR</label><input id="qsTrRate" readonly></div>
+            <div class="field mono"><label>Years</label><input id="qsTermYears" readonly></div>
+          </div>
+          <div class="form-row c2">
+            <div class="field mono"><label>Deposit Ex VAT</label><input id="qsDeposit" readonly></div>
+            <div class="field mono"><label>RV</label><input id="qsRV" readonly></div>
+          </div>
+          <div class="form-row c1"><div class="field mono"><label>TR Dep</label><input id="qsTrDep" readonly></div></div>
+        </details>
+      </div>
+    </section>
+
+    <aside class="right-col">
+      <div class="pmt-hero">
+        <div class="label">ค่างวด / เดือน (ปัดขึ้น)</div>
+        <div class="value" id="pmtRounded">—</div>
+        <div class="sub">รวม VAT · <span id="months_hero">— งวด</span></div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><span class="ch-icon ch-green">📊</span>ผลลัพธ์การคำนวณ</div>
+        <div class="card-body" style="padding:10px 12px">
+          <div class="result-grid">
+            <div class="result-row sep"><span class="rl">ราคา & ยอดจัด</span></div>
+            <div class="result-row"><span class="rl">ราคาสุทธิ (Net Price)</span><span class="rv" id="netPrice">—</span></div>
+            <div class="result-row"><span class="rl">เงินดาวน์</span><span class="rv" id="downBaht">—</span></div>
+            <div class="result-row"><span class="rl">เงินดาวน์ (%)</span><span class="rv" id="downPctView">—</span></div>
+            <div class="result-row"><span class="rl">ยอดจัด (Finance)</span><span class="rv" id="finance">—</span></div>
+            <div class="result-row"><span class="rl">จำนวนงวด</span><span class="rv" id="months">—</span></div>
+            <div class="result-row sep"><span class="rl">ค่างวด & ดอกเบี้ย</span></div>
+            <div class="result-row"><span class="rl">ดอกเบี้ยรวม (Flat)</span><span class="rv" id="totalInterest">—</span></div>
+            <div class="result-row key"><span class="rl">ค่างวด/เดือน (รวม VAT) ↑</span><span class="rv" id="pmtInc">—</span></div>
+            <div class="result-row"><span class="rl">ค่างวด/เดือน (Ex VAT)</span><span class="rv" id="pmtEx">—</span></div>
+            <div class="result-row sep"><span class="rl">คอม & ผลตอบแทน</span></div>
+            <div class="result-row"><span class="rl">คอมมิชชั่น</span><span class="rv" id="commission">—</span></div>
+            <div class="result-row"><span class="rl">TR (Effective) ต่อปี</span><span class="rv" id="trCustomer">—</span></div>
+            <div class="result-row"><span class="rl">TR Dep ต่อปี</span><span class="rv" id="trDepView">—</span></div>
+          </div>
+        </div>
+      </div>
+      <details>
+        <summary>OWS Working Sheet</summary>
+        <div class="card" style="margin-top:8px"><div class="card-body" style="padding:8px 12px;overflow:auto">
+          <table class="ws-table">
+            <thead><tr><th>รายการ</th><th>Ex. VAT</th><th>Inc. VAT</th></tr></thead>
+            <tbody>
+              <tr><td>Net Price</td><td id="ws_net_ex">—</td><td id="ws_net_inc">—</td></tr>
+              <tr><td>Deposit</td><td id="ws_dep_ex">—</td><td id="ws_dep_inc">—</td></tr>
+              <tr><td>Finance</td><td id="ws_fin_ex">—</td><td id="ws_fin_inc">—</td></tr>
+              <tr><td>Monthly PMT ↑</td><td id="ws_pmt_ex">—</td><td id="ws_pmt_inc">—</td></tr>
+              <tr><td>Commission</td><td id="ws_comm_ex">—</td><td id="ws_comm_inc">—</td></tr>
+              <tr><td>RV (Deposit)</td><td id="ws_rv_ex">—</td><td id="ws_rv_inc">—</td></tr>
+            </tbody>
+          </table>
+        </div></div>
+      </details>
+    </aside>
+  </div>
+  <div class="mobile-actions"><div>
+    <button class="btn" onclick="calculate()">คำนวณ</button>
+    <button class="btn btn-ghost" onclick="generateQuotation()">Quotation</button>
+    <button class="btn btn-ghost" onclick="sendToQsData()">Send QS</button>
+    <button class="btn btn-ghost" onclick="generateCommissionReport()">Com Report</button>
+  </div></div>
+</div>
+<script>
+const VAT=1.07;
+const $=id=>document.getElementById(id);
+const n=id=>{const el=$(id); const v=parseFloat(String(el?el.value:'').replace(/,/g,'')); return isNaN(v)?0:v;};
+const fmt=(v,d=2)=>isFinite(v)?Number(v).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
+const fmt0=v=>isFinite(v)?Math.round(v).toLocaleString('en-US'):'—';
+const fmt4=v=>isFinite(v)?Number(v).toLocaleString('en-US',{minimumFractionDigits:4,maximumFractionDigits:4}):'—';
+const set=(id,v)=>{const el=$(id); if(el)el.value=v;}; const txt=(id,v)=>{const el=$(id); if(el)el.textContent=v;};
+function irr(nper,pmt,pv,fv=0){if(nper<=0)return NaN;let r=.05/12;for(let i=0;i<300;i++){let f=pv,df=0;for(let t=1;t<=nper;t++){f+=pmt/Math.pow(1+r,t);df+=-t*pmt/Math.pow(1+r,t+1)}f+=fv/Math.pow(1+r,nper);df+=-nper*fv/Math.pow(1+r,nper+1);const nr=r-f/df;if(!isFinite(nr))return NaN;if(Math.abs(nr-r)<1e-7)return nr;r=nr}return NaN}
+function calculate(){
+  const car=n('carPrice'),disc=n('discount'),opt=n('option'),total=car-disc+opt;
+  set('totalAmount',fmt(total));
+  let down=$('downType').value==='percent'?total*n('downInput')/100:n('downInput');
+  down=Math.max(0,Math.min(down,total));
+  const downPct=total>0?down/total*100:0;
+  const finance=total-down,rate=n('interestRate'),years=parseInt(n('termYears'))||0,months=years*12;
+  const intPA=finance*rate/100,intTotal=intPA*years,finTotal=finance+intTotal;
+  const leaseInVat=months>0?Math.ceil(finTotal/months):0,leaseExVat=leaseInVat/VAT;
+  const comBase=$('comBase').value==='finance'?finance:intTotal;
+  const commission=Math.ceil(comBase*n('comPercent')/100),extra=n('extra'),qsExtra=commission+extra;
+  const tr=months>0?irr(months,leaseInVat,-(finance+commission*VAT+extra*VAT))*12*100:NaN;
+  const trDep=months>0?irr(months,leaseInVat,-(total+commission*VAT+extra*VAT),down)*12*100:NaN;
+  set('downAmount',fmt(down)); set('downPercentDisplay',fmt4(downPct)+'%');
+  set('financeAmt',fmt(finance)); set('intPA',fmt(intPA)); set('intTotal',fmt(intTotal)); set('financeTotalWithInterest',fmt(finTotal));
+  set('leaseInVat',fmt(leaseInVat)); set('leaseExVat',fmt(leaseExVat)); set('trRate',isNaN(tr)?'ไม่สามารถคำนวณ':fmt4(tr));
+  set('calculatedCommission',fmt(commission)); set('qsExtra',fmt(qsExtra));
+  set('qsDownAmount',fmt(down)); set('qsDownPercent',fmt4(downPct)+'%'); set('qsTrRate',isNaN(tr)?'ไม่สามารถคำนวณ':fmt4(tr)); set('qsTermYears',years); set('qsDeposit',fmt(down/VAT,4)); set('qsRV',fmt4(downPct)+'%'); set('qsTrDep',isNaN(trDep)?'ไม่สามารถคำนวณ':fmt4(trDep));
+  txt('pmtRounded',fmt0(leaseInVat)); txt('months_hero',months?months+' งวด':'— งวด'); txt('netPrice',fmt(total)); txt('downBaht',fmt(down)); txt('downPctView',fmt4(downPct)+' %'); txt('finance',fmt(finance)); txt('months',months?months+' เดือน':'—'); txt('totalInterest',fmt(intTotal)); txt('pmtInc',fmt0(leaseInVat)); txt('pmtEx',fmt(leaseExVat)); txt('commission',fmt(commission)); txt('trCustomer',isNaN(tr)?'—':fmt4(tr)+' %'); txt('trDepView',isNaN(trDep)?'—':fmt4(trDep)+' %');
+  txt('ws_net_ex',fmt(total/VAT,4)); txt('ws_net_inc',fmt(total)); txt('ws_dep_ex',fmt(down/VAT,4)); txt('ws_dep_inc',fmt(down)); txt('ws_fin_ex',fmt(finance/VAT,4)); txt('ws_fin_inc',fmt(finance)); txt('ws_pmt_ex',fmt(leaseExVat,4)); txt('ws_pmt_inc',fmt0(leaseInVat)); txt('ws_comm_ex',fmt(commission,4)); txt('ws_comm_inc',fmt(commission*VAT)); txt('ws_rv_ex',fmt(down/VAT,4)); txt('ws_rv_inc',fmt(down));
+}
+function goalSeekDown(){const target=n('targetLease'); if(!(target>0)){alert('กรุณากรอกค่างวดเป้าหมาย');return;} const total=n('carPrice')-n('discount')+n('option'),rate=n('interestRate'),years=parseInt(n('termYears'))||0,months=years*12; if(!(total>0&&months>0)){alert('กรุณากรอกราคารถและจำนวนปี');return;} let lo=0,hi=total,best=0,diff=Infinity; for(let i=0;i<240;i++){const d=Math.ceil((lo+hi)/2),fin=total-d,lease=Math.ceil((fin+fin*rate/100*years)/months),di=Math.abs(lease-target); if(di<diff){diff=di;best=d} if(Math.abs(hi-lo)<1||di<.1)break; if(lease>target)lo=d; else hi=d;} $('downType').value='amount'; set('downInput',fmt(best,0)); calculate();}
+function data(){calculate(); return {carInfo:$('carInfo').value,carPrice:n('carPrice'),discount:n('discount'),option:n('option'),totalAmount:n('totalAmount'),downAmount:n('downAmount'),downPercent:parseFloat($('downPercentDisplay').value)||0,interestRate:n('interestRate'),termYears:parseInt(n('termYears'))||0,calculatedCommission:n('calculatedCommission'),extra:n('extra'),qsExtra:n('qsExtra'),financeAmt:n('financeAmt'),leaseInVat:n('leaseInVat'),leaseExVat:n('leaseExVat'),trRate:parseFloat(String($('trRate').value).replace('ไม่สามารถคำนวณ','NaN')),qsDeposit:n('qsDeposit'),qsRV:parseFloat($('qsRV').value)||0,qsTrDep:parseFloat(String($('qsTrDep').value).replace('ไม่สามารถคำนวณ','NaN'))};}
+function generateQuotation(){localStorage.setItem('quotationData',JSON.stringify(data()));window.open('quotation.html','_blank')}
+function sendToQsData(){localStorage.setItem('qsData',JSON.stringify(data()));window.open('qs_data.html','_blank')}
+function generateCommissionReport(){const d=data(),w=window.open('','_blank'); if(!w){alert('กรุณาอนุญาต Pop-up');return;} w.document.write(`<body style="font-family:Kanit,Arial,sans-serif"><h2>Report ค่าคอม</h2><pre>${JSON.stringify(d,null,2)}</pre><button onclick="print()">Print/PDF</button></body>`);w.document.close();}
+function bind(id){const el=$(id); if(!el)return; el.addEventListener('focus',()=>{const v=n(id); el.value=Math.abs(v)<.001?'':String(v)}); el.addEventListener('input',()=>{el.value=el.value.replace(/[^0-9.]/g,'')}); el.addEventListener('blur',()=>{const v=n(id); el.value=id==='termYears'?fmt(v,0):(['interestRate','comPercent'].includes(id)?fmt(v,2):fmt(v)); calculate();});}
+window.onload=()=>{['carPrice','discount','option','downInput','interestRate','termYears','comPercent','extra','targetLease'].forEach(bind); ['downType','comBase'].forEach(id=>$(id).addEventListener('change',calculate)); $('carInfo').addEventListener('blur',calculate); calculate();};
+</script>
+</body>
+</html>
