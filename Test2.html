@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>ORIX Financial Lease Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* ORIX Logo Colors */
+      --orix-logo-blue: #003366; 
+      --orix-logo-red: #E30613;  
+      /* General UI Colors */
+      --orix-white: #FFFFFF;
+      --orix-light-grey: #F0F5F8; 
+      --orix-dark-grey: #333333;
+      --orix-border-color: #B0C4D4; 
+      --input-bg-editable: #FFFFF0; 
+      --input-bg-readonly: #EAEFF3; 
+      --highlight-text-color: var(--orix-logo-blue); 
+
+      /* Button Gradient Start/End Colors */
+      --btn-blue-start: #004080;
+      --btn-blue-end: #00264d;
+      --btn-red-start: #FF3B49;
+      --btn-red-end: #B0050D;
+      --btn-secondary-start: #4A73A2;
+      --btn-secondary-end: #375F8A;
+      --btn-amber-start: #F2B035;
+      --btn-amber-end: #C6820A;
+    }
+
+    body {
+      font-family: 'Kanit', sans-serif;
+      margin: 0; 
+      padding: 2px; 
+      background: var(--orix-light-grey);
+      color: var(--orix-dark-grey);
+      line-height: 1.4; 
+      font-size: 0.9em; 
+    }
+
+    .container {
+      width: 100%; 
+      margin: 5px auto; 
+      background: var(--orix-white);
+      padding: 10px; 
+      border-radius: 6px; 
+      box-shadow: 0 3px 10px rgba(0, 51, 102, 0.1); 
+      transition: box-shadow 0.3s ease;
+      box-sizing: border-box; 
+    }
+    
+    .container:hover {
+        box-shadow: 0 5px 15px rgba(0, 51, 102, 0.15);
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--orix-logo-blue);
+      margin-bottom: 15px; 
+      font-size: 1.5em; 
+      font-weight: 700;
+    }
+
+    h2 {
+      margin-top: 15px; 
+      margin-bottom: 5px; 
+      color: var(--orix-logo-blue);
+      font-size: 1.2em; 
+      font-weight: 600;
+      border-left: 4px solid var(--orix-logo-blue); 
+      padding-left: 6px; 
+    }
+
+    /* ---------------------------------------------------- */
+    /* ** CSS Grid Layout (Mobile Default: Label & Input In-line) ** */
+    /* ---------------------------------------------------- */
+    .data-section {
+        display: grid;
+        grid-template-columns: 45% 55%; 
+        gap: 5px 8px; 
+        align-items: center;
+        padding: 5px 0; 
+        border-bottom: 1px solid var(--orix-light-grey);
+    }
+    
+    .data-section:last-child {
+        border-bottom: none;
+    }
+
+    .data-label {
+      font-weight: 500; 
+      color: var(--orix-dark-grey);
+      margin-bottom: 0; 
+      font-size: 0.95em; 
+    }
+
+    .data-value {
+      display: flex; 
+    }
+
+    .data-value input:not([readonly]),
+    .data-value select {
+      width: 100%;
+      padding: 6px 8px; 
+      border: 1px solid var(--orix-border-color);
+      border-radius: 4px; 
+      background: var(--input-bg-editable);
+      color: var(--orix-dark-grey);
+      box-sizing: border-box;
+      text-align: right;
+      font-size: 0.95em; 
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05); 
+    }
+    
+    .data-value input#carInfo {
+        text-align: left;
+    }
+
+    .data-value input[readonly] {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid var(--orix-border-color);
+      border-radius: 4px;
+      background-color: var(--input-bg-readonly);
+      font-weight: 600; 
+      color: var(--highlight-text-color); 
+      text-align: right;
+      box-sizing: border-box;
+      font-size: 0.95em;
+    }
+    
+    #downPercentDisplay {
+      font-weight: bold;
+      color: var(--highlight-text-color);
+      font-size: 0.95em;
+      padding-left: 8px; 
+    }
+
+    /* ---------------------------------------------------- */
+    /* ** Inline buttons (inside data-sections, e.g. Solve IRR / Goal Seek) ** */
+    /* ---------------------------------------------------- */
+    .btn-full {
+      width: 100%;
+      padding: 8px 10px;
+      border: none;
+      border-radius: 4px;
+      font-family: 'Kanit', sans-serif;
+      font-weight: 600;
+      font-size: 0.9em;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .btn-full.secondary {
+      background: linear-gradient(145deg, var(--btn-secondary-start), var(--btn-secondary-end));
+      box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+    }
+    .btn-full.secondary:hover { background: linear-gradient(145deg, var(--btn-secondary-end), #2C4B6E); }
+    .btn-full.amber {
+      background: linear-gradient(145deg, var(--btn-amber-start), var(--btn-amber-end));
+      color: #3d2600;
+      text-shadow: none;
+      box-shadow: 0 3px 8px rgba(198,130,10,0.35);
+    }
+    .btn-full.amber:hover { background: linear-gradient(145deg, var(--btn-amber-end), #a06800); }
+    .btn-full:active { transform: translateY(1px); }
+
+    .sub-note {
+      font-size: 0.78em;
+      color: #8a8f98;
+      margin-top: -2px;
+      margin-bottom: 6px;
+    }
+
+    /* ---------------------------------------------------- */
+    /* ** OWS Working Sheet table ** */
+    /* ---------------------------------------------------- */
+    .ows-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 4px;
+      font-size: 0.88em;
+    }
+    .ows-table th {
+      text-align: right;
+      padding: 6px 8px;
+      background: var(--orix-light-grey);
+      color: var(--orix-logo-blue);
+      font-weight: 700;
+      border-bottom: 1px solid var(--orix-border-color);
+      font-size: 0.85em;
+    }
+    .ows-table th:first-child { text-align: left; }
+    .ows-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--orix-light-grey);
+      text-align: right;
+      font-weight: 600;
+      color: var(--highlight-text-color);
+    }
+    .ows-table td:first-child {
+      text-align: left;
+      font-weight: 500;
+      color: var(--orix-dark-grey);
+    }
+    .ows-table tr:last-child td { border-bottom: none; }
+
+    /* ---------------------------------------------------- */
+    /* ** Button Group Styles ** */
+    /* ---------------------------------------------------- */
+    .button-group {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 8px; 
+        margin-top: 15px; 
+    }
+
+    .button-group button {
+      padding: 10px 12px; 
+      font-size: 0.9em; 
+      color: var(--orix-white);
+      border: none;
+      border-radius: 4px; 
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.25); 
+    }
+
+    /* ORIX Brand Colors for Buttons */
+    .button-group button:nth-of-type(1) { /* คำนวณ - ORIX Blue */
+      background: linear-gradient(145deg, var(--btn-blue-start), var(--orix-logo-blue));
+      box-shadow: 0 4px 12px rgba(0, 51, 102, 0.35); 
+    }
+    .button-group button:nth-of-type(1):hover {
+      background: linear-gradient(145deg, var(--orix-logo-blue), var(--btn-blue-end));
+      transform: translateY(-2px); 
+      box-shadow: 0 8px 18px rgba(0, 51, 102, 0.45);
+    }
+
+    .button-group button:nth-of-type(2), 
+    .button-group button:nth-of-type(3),
+    .button-group button:nth-of-type(4) { /* ใบเสนอราคา & QS Data & Report ค่าคอม - Secondary Blue */
+        background: linear-gradient(145deg, var(--btn-secondary-start), var(--btn-secondary-end));
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+    .button-group button:nth-of-type(2):hover, 
+    .button-group button:nth-of-type(3):hover,
+    .button-group button:nth-of-type(4):hover {
+        background: linear-gradient(145deg, var(--btn-secondary-end), #2C4B6E);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .button-group button:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); 
+    }
+
+    /* ---------------------------------------------------- */
+    /* ** Desktop/Tablet Adjustments (Min-Width) ** */
+    /* ---------------------------------------------------- */
+    @media screen and (min-width: 601px) {
+      body {
+          padding: 10px; 
+          font-size: 1.05em; 
+      }
+      
+      .container {
+        max-width: 900px; 
+        padding: 20px;
+        border-radius: 12px;
+        margin: 20px auto;
+        box-shadow: 0 10px 30px rgba(0, 51, 102, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
+      }
+      
+      h1 {
+        font-size: 2.2em;
+        margin-bottom: 25px;
+      }
+
+      h2 {
+        font-size: 1.6em;
+        margin-top: 25px; 
+        margin-bottom: 10px;
+        border-left: 5px solid var(--orix-logo-blue); 
+        padding-left: 10px;
+      }
+      
+      .data-section {
+        grid-template-columns: 40% 60%; 
+        gap: 8px 15px;
+        padding: 10px 0;
+      }
+      
+      .data-label {
+          margin-bottom: 0; 
+          font-weight: 600;
+          font-size: 1.0em;
+      }
+      
+      .data-value input:not([readonly]),
+      .data-value select,
+      .data-value input[readonly] {
+          padding: 10px 12px;
+          border-radius: 8px;
+          font-size: 1.0em;
+      }
+      
+      #downPercentDisplay {
+          font-size: 1.05em;
+          padding-left: 10px;
+      }
+
+      .ows-table { font-size: 0.95em; }
+
+      .button-group {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+        gap: 15px;
+        margin-top: 30px;
+      }
+      
+      .button-group button {
+        padding: 15px 20px;
+        font-size: 1.1em;
+        border-radius: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>ORIX Financial Lease Calculator</h1>
+
+  <h2>ข้อมูลเบื้องต้น</h2>
+  
+  <div class="data-section"><div class="data-label">ข้อมูลรถ</div><div class="data-value"><input id="carInfo" type="text" value=""></div></div>
+  <div class="data-section"><div class="data-label">ราคารถ</div><div class="data-value"><input id="carPrice" type="text" value="0.00"></div></div>
+  <div class="data-section"><div class="data-label">ส่วนลด</div><div class="data-value"><input id="discount" type="text" value="0.00"></div></div>
+  <div class="data-section"><div class="data-label">Option</div><div class="data-value"><input id="option" type="text" value="0.00"></div></div>
+  <div class="data-section"><div class="data-label">ราคาสุทธิ</div><div class="data-value"><input id="totalAmount" readonly></div></div>
+
+  <h2>เงินดาวน์</h2>
+  
+  <div class="data-section">
+      <div class="data-label">รูปแบบ</div>
+      <div class="data-value">
+        <select id="downType" onchange="calculate()">
+          <option value="percent">เป็น %</option>
+          <option value="amount">เป็นจำนวนเงิน</option>
+        </select>
+      </div>
+  </div>
+  <div class="data-section"><div class="data-label">กรอก % หรือ จำนวน</div><div class="data-value"><input id="downInput" type="text" value="0.00"></div></div>
+  <div class="data-section"><div class="data-label">เงินดาวน์</div><div class="data-value"><input id="downAmount" readonly></div></div>
+  <div class="data-section"><div class="data-label">เงินดาวน์คิดเป็น</div><div class="data-value"><span id="downPercentDisplay">-</span></div></div>
+
+  <h2>ดอกเบี้ยและระยะเวลา</h2>
+
+  <div class="data-section">
+    <div class="data-label">โหมดคำนวณ</div>
+    <div class="data-value">
+      <select id="calcMode" onchange="toggleMode()">
+        <option value="Flat" selected>Flat Rate</option>
+        <option value="IRR">IRR Mode</option>
+      </select>
+    </div>
+  </div>
+  <div class="data-section"><div class="data-label">อัตราดอกเบี้ย Flat (%)</div><div class="data-value"><input id="interestRate" type="text" value="0.00"></div></div>
+  <div class="data-section"><div class="data-label">จำนวนปี</div><div class="data-value"><input id="termYears" type="number" step="1" value="0"></div></div>
+
+  <div id="irrModeFields" style="display:none">
+    <div class="data-section"><div class="data-label">IRR เป้าหมาย (% ต่อปี)</div><div class="data-value"><input id="irrTargetPct" type="text" value="5.75"></div></div>
+    <div class="data-section">
+      <div class="data-label"></div>
+      <div class="data-value"><button type="button" class="btn-full secondary" onclick="solveFlatFromIRR()">⚡ คำนวณ Flat จาก IRR</button></div>
+    </div>
+    <div class="sub-note">ระบบจะหาอัตราดอกเบี้ย Flat ที่ทำให้ TR (Effective %) ตรงกับ IRR เป้าหมายด้านบน แล้วใส่ค่าลงในช่อง "อัตราดอกเบี้ย Flat" ให้อัตโนมัติ</div>
+  </div>
+
+  <h2>ค่าคอมมิชชั่น</h2>
+  
+  <div class="data-section">
+    <div class="data-label">คิดค่าคอมจาก</div>
+    <div class="data-value">
+      <select id="comBase" onchange="calculate()">
+        <option value="interest">ดอกเบี้ยรวม</option>
+        <option value="finance">ยอดจัด</option>
+      </select>
+    </div>
+  </div>
+  <div class="data-section"><div class="data-label">Commission (%)</div><div class="data-value"><input id="comPercent" type="text" value="0.00"></div></div>
+  <div class="data-section"><div class="data-label">ค่าคอม (ที่คำนวณ)</div><div class="data-value"><input id="calculatedCommission" readonly></div></div>
+  <div class="data-section"><div class="data-label">Extra Commission</div><div class="data-value"><input id="extra" type="text" value="0.00"></div></div>
+  <div class="data-section"><div class="data-label">QS Extra Cost</div><div class="data-value"><input id="qsExtra" readonly></div></div>
+
+  <h2>🎯 Goal Seek หาเงินดาวน์</h2>
+
+  <div class="data-section"><div class="data-label">ค่างวด/เดือนเป้าหมาย (In VAT)</div><div class="data-value"><input id="targetLease" type="text" value="0.00" placeholder="เช่น 36,000"></div></div>
+  <div class="data-section">
+    <div class="data-label"></div>
+    <div class="data-value"><button type="button" class="btn-full amber" onclick="goalSeekDown()">คำนวณเงินดาวน์ให้ตรงค่างวดเป้าหมาย</button></div>
+  </div>
+  <div class="sub-note">ระบบจะหาเงินดาวน์ (Binary Search) ที่ทำให้ค่างวด/เดือนใกล้เคียงค่าที่กรอกไว้มากที่สุด แล้วปรับ "รูปแบบเงินดาวน์" เป็นจำนวนเงินให้อัตโนมัติ</div>
+
+  <h2>ผลลัพธ์</h2>
+  
+  <div class="data-section"><div class="data-label">ยอดจัด</div><div class="data-value"><input id="financeAmt" readonly></div></div>
+  <div class="data-section"><div class="data-label">ดอกเบี้ยต่อปี</div><div class="data-value"><input id="intPA" readonly></div></div>
+  <div class="data-section"><div class="data-label">ดอกเบี้ยรวม</div><div class="data-value"><input id="intTotal" readonly></div></div>
+  <div class="data-section"><div class="data-label">ยอดจัดรวม</div><div class="data-value"><input id="financeTotalWithInterest" readonly></div></div>
+  <div class="data-section"><div class="data-label">ค่างวด (In VAT)</div><div class="data-value"><input id="leaseInVat" readonly></div></div>
+  <div class="data-section"><div class="data-label">ค่างวด (Ex VAT)</div><div class="data-value"><input id="leaseExVat" readonly></div></div>
+  <div class="data-section"><div class="data-label">TR (Effective %)</div><div class="data-value"><input id="trRate" readonly></div></div>
+
+  <h2>📋 OWS Working Sheet</h2>
+
+  <table class="ows-table">
+    <thead>
+      <tr><th>รายการ</th><th>Ex. VAT</th><th>Inc. VAT</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Net Price</td><td id="ws_net_ex">—</td><td id="ws_net_inc">—</td></tr>
+      <tr><td>Deposit</td><td id="ws_dep_ex">—</td><td id="ws_dep_inc">—</td></tr>
+      <tr><td>Finance</td><td id="ws_fin_ex">—</td><td id="ws_fin_inc">—</td></tr>
+      <tr><td>Monthly PMT ↑</td><td id="ws_pmt_ex">—</td><td id="ws_pmt_inc">—</td></tr>
+      <tr><td>Commission</td><td id="ws_comm_ex">—</td><td id="ws_comm_inc">—</td></tr>
+      <tr><td>RV (Deposit)</td><td id="ws_rv_ex">—</td><td id="ws_rv_inc">—</td></tr>
+    </tbody>
+  </table>
+
+  <h2>QS Information</h2>
+  
+  <div class="data-section"><div class="data-label">ข้อมูลรถ</div><div class="data-value"><input id="qsCarInfo" readonly></div></div>
+  <div class="data-section"><div class="data-label">ราคารถ</div><div class="data-value"><input id="qsCarPrice" readonly></div></div>
+  <div class="data-section"><div class="data-label">ส่วนลด</div><div class="data-value"><input id="qsDiscount" readonly></div></div>
+  <div class="data-section"><div class="data-label">Option</div><div class="data-value"><input id="qsOption" readonly></div></div>
+  <div class="data-section"><div class="data-label">เงินดาวน์</div><div class="data-value"><input id="qsDownAmount" readonly></div></div>
+  <div class="data-section"><div class="data-label">เงินดาวน์คิดเป็น %</div><div class="data-value"><input id="qsDownPercent" readonly></div></div>
+  <div class="data-section"><div class="data-label">TR (Effective %)</div><div class="data-value"><input id="qsTrRate" readonly></div></div>
+  <div class="data-section"><div class="data-label">จำนวนปี</div><div class="data-value"><input id="qsTermYears" readonly></div></div>
+  <div class="data-section"><div class="data-label">Deposit</div><div class="data-value"><input id="qsDeposit" readonly></div></div>
+  <div class="data-section"><div class="data-label">RV</div><div class="data-value"><input id="qsRV" readonly></div></div>
+  <div class="data-section"><div class="data-label">TR Dep</div><div class="data-value"><input id="qsTrDep" readonly></div></div>
+
+  <div class="button-group">
+    <button onclick="calculate()">คำนวณ</button>
+    <button onclick="generateQuotation()">ใบเสนอราคา</button>
+    <button onclick="sendToQsData()">ส่งข้อมูล QS</button>
+    <button onclick="generateCommissionReport()">Report ค่าคอม</button>
+  </div>
+</div>
+
+<script>
+// Helper functions for number formatting
+function format(n, decimals = 2) {
+  if (isNaN(n) || n === null) return "0.00";
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  }).format(parseFloat(n));
+}
+
+function formatNoDecimal(n) {
+  return format(n, 0);
+}
+
+function format4(n) {
+  if (isNaN(n) || n === null) return "0.0000";
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 4,
+    maximumFractionDigits: 4
+  }).format(parseFloat(n));
+}
+
+function uncomma(s) {
+  const cleaned = String(s).replace(/,/g, '');
+  const num = parseFloat(cleaned);
+  return isNaN(num) ? 0 : num;
+}
+
+function toggleMode() {
+  const mode = document.getElementById('calcMode').value;
+  document.getElementById('irrModeFields').style.display = mode === 'IRR' ? '' : 'none';
+}
+
+// Function to calculate IRR (Effective Interest Rate per period)
+function calculateIRR(nper, pmt, pv, fv = 0, type = 0) {
+  if (pmt === 0 && pv === 0) return NaN;
+  if (nper <= 0) return NaN;
+
+  let guess = 0.05 / 12; // Initial guess for monthly rate
+  let rate = guess;
+  const maxIter = 500;
+  const tol = 1e-7;
+
+  for (let i = 0; i < maxIter; i++) {
+    let f = pv;
+    let df = 0;
+
+    for (let t = 1; t <= nper; t++) {
+      const discountFactor = Math.pow(1 + rate, t - (type === 1 ? 1 : 0));
+      f += pmt / discountFactor;
+      df += -(t - (type === 1 ? 1 : 0)) * pmt / Math.pow(1 + rate, t + 1 - (type === 1 ? 1 : 0));
+    }
+    f += fv / Math.pow(1 + rate, nper);
+    df += -nper * fv / Math.pow(1 + rate, nper + 1);
+
+    if (Math.abs(f) < tol) return rate;
+
+    const newRate = rate - f / df;
+    if (Math.abs(newRate - rate) < tol) return newRate;
+    if (isNaN(newRate) || !isFinite(newRate)) return NaN;
+
+    rate = newRate;
+  }
+  return NaN;
+}
+
+function showDownPercent() {
+  const total = uncomma(document.getElementById("totalAmount").value);
+  const down = uncomma(document.getElementById("downAmount").value);
+  const result = total > 0 ? (down / total * 100) : 0;
+  document.getElementById("downPercentDisplay").innerText = `(${format4(result)}%)`;
+  document.getElementById("qsDownPercent").value = format4(result) + '%';
+}
+
+function updateOwsSheet(total, down, finance, leaseInVat, leaseExVat, commissionExVat) {
+  const netEx = total / 1.07;
+  const depEx = down / 1.07;
+  const finEx = finance / 1.07;
+  const commInVat = commissionExVat * 1.07;
+
+  document.getElementById('ws_net_ex').innerText = format4(netEx);
+  document.getElementById('ws_net_inc').innerText = format(total);
+  document.getElementById('ws_dep_ex').innerText = format4(depEx);
+  document.getElementById('ws_dep_inc').innerText = format(down);
+  document.getElementById('ws_fin_ex').innerText = format4(finEx);
+  document.getElementById('ws_fin_inc').innerText = format(finance);
+  document.getElementById('ws_pmt_ex').innerText = format4(leaseExVat);
+  document.getElementById('ws_pmt_inc').innerText = format(leaseInVat);
+  document.getElementById('ws_comm_ex').innerText = format4(commissionExVat);
+  document.getElementById('ws_comm_inc').innerText = format(commInVat);
+  document.getElementById('ws_rv_ex').innerText = format4(depEx);
+  document.getElementById('ws_rv_inc').innerText = format(down);
+}
+
+function calculate() {
+  const getVal = id => uncomma(document.getElementById(id).value);
+  const getIntVal = id => parseInt(uncomma(document.getElementById(id).value)) || 0; 
+  const getComPercent = id => uncomma(document.getElementById(id).value);
+
+  const carInfo = document.getElementById('carInfo').value;
+  const car = getVal('carPrice');
+  const discount = getVal('discount');
+  const option = getVal('option');
+  const total = car - discount + option;
+  document.getElementById('totalAmount').value = format(total);
+
+  const downType = document.getElementById('downType').value;
+  const downInput = getVal('downInput');
+  let down = 0;
+  if (downType === 'percent') {
+    down = total * (downInput / 100);
+  } else {
+    down = downInput;
+  }
+  document.getElementById('downAmount').value = format(down);
+
+  const finance = total - down;
+  const rate = getVal('interestRate');
+  const years = getIntVal('termYears');
+  const months = years * 12;
+
+  if (months === 0) {
+      document.getElementById('financeAmt').value = format(finance);
+      document.getElementById('intPA').value = format(0);
+      document.getElementById('intTotal').value = format(0);
+      document.getElementById('financeTotalWithInterest').value = format(finance);
+      document.getElementById('calculatedCommission').value = format(0);
+      document.getElementById('qsExtra').value = format(0);
+      document.getElementById('leaseInVat').value = format(0);
+      document.getElementById('leaseExVat').value = format(0);
+      document.getElementById('trRate').value = 'ไม่สามารถคำนวณ';
+      document.getElementById('qsTrDep').value = 'ไม่สามารถคำนวณ';
+      showDownPercent();
+      updateQsInfo(carInfo, car, discount, option, down, years, 0, 0, 0); 
+      updateOwsSheet(total, down, finance, 0, 0, 0);
+      return;
+  }
+
+  const intPA = finance * (rate / 100);
+  const intTotal = intPA * years;
+  const financeTotalWithInterest = finance + intTotal;
+  document.getElementById('financeTotalWithInterest').value = format(financeTotalWithInterest);
+
+  const comBase = document.getElementById('comBase').value;
+  const comPercent = getComPercent('comPercent');
+  const extra = getVal('extra');
+  const comBaseVal = comBase === "finance" ? finance : intTotal;
+  const commission = Math.ceil(comBaseVal * (comPercent / 100));
+  const qsExtraCost = commission + extra;
+
+  const leaseInVat = Math.ceil(financeTotalWithInterest / months);
+  const leaseExVat = leaseInVat / 1.07;
+
+  // TR Calculation (Effective %)
+  const pvForIRR = -(finance + (commission * 1.07) + (extra * 1.07));
+  const tr = calculateIRR(months, leaseInVat, pvForIRR, 0, 0) * 12 * 100;
+
+  // TR Dep Calculation (ปรับปรุงตามสูตรใหม่ล่าสุด)
+  const pvForTRDep = -(total + (commission * 1.07) + (extra * 1.07));
+  const trDep = calculateIRR(months, leaseInVat, pvForTRDep, down, 0) * 12 * 100;
+
+
+  document.getElementById('financeAmt').value = format(finance);
+  document.getElementById('intPA').value = format(intPA);
+  document.getElementById('intTotal').value = format(intTotal);
+  document.getElementById('calculatedCommission').value = format(commission);
+  document.getElementById('qsExtra').value = format(qsExtraCost); 
+  document.getElementById('leaseInVat').value = format(leaseInVat);
+  document.getElementById('leaseExVat').value = format(leaseExVat);
+  document.getElementById('trRate').value = isNaN(tr) ? 'ไม่สามารถคำนวณ' : format4(tr);
+  document.getElementById('qsTrDep').value = isNaN(trDep) ? 'ไม่สามารถคำนวณ' : format4(trDep);
+
+  updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep, qsExtraCost);
+  updateOwsSheet(total, down, finance, leaseInVat, leaseExVat, commission);
+  showDownPercent();
+}
+
+function updateQsInfo(carInfo, car, discount, option, down, years, tr, trDep, qsExtraCost) {
+    document.getElementById('qsCarInfo').value = carInfo;
+    document.getElementById('qsCarPrice').value = format(car);
+    document.getElementById('qsDiscount').value = format(discount);
+    document.getElementById('qsOption').value = format(option);
+    document.getElementById('qsDownAmount').value = format(down);
+    document.getElementById('qsTrRate').value = isNaN(tr) ? 'ไม่สามารถคำนวณ' : format4(tr);
+    document.getElementById('qsTermYears').value = years;
+    document.getElementById('qsDeposit').value = format(down / 1.07, 4); 
+    const totalAmount = uncomma(document.getElementById('totalAmount').value);
+    document.getElementById('qsRV').value = format4(totalAmount > 0 ? (down / totalAmount * 100) : 0) + '%';
+    document.getElementById('qsTrDep').value = isNaN(trDep) ? 'ไม่สามารถคำนวณ' : format4(trDep);
+    document.getElementById('qsExtra').value = format(qsExtraCost);
+}
+
+function calculateDownForTargetLease(targetLease) {
+  const getVal = id => uncomma(document.getElementById(id).value);
+  const getIntVal = id => parseInt(uncomma(document.getElementById(id).value)) || 0;
+
+  const car = getVal('carPrice');
+  const discount = getVal('discount');
+  const option = getVal('option');
+  const total = car - discount + option;
+  document.getElementById('totalAmount').value = format(total);
+
+  const rate = getVal('interestRate');
+  const years = getIntVal('termYears');
+  const months = years * 12;
+
+  if (months === 0 || rate === 0) {
+      alert("กรุณาระบุจำนวนปีและอัตราดอกเบี้ยก่อนคำนวณเงินดาวน์สำหรับค่างวดเป้าหมาย.");
+      return;
+  }
+  if (total <= 0) {
+      alert("กรุณาระบุราคารถให้ถูกต้อง (มากกว่า 0) เพื่อคำนวณเงินดาวน์.");
+      return;
+  }
+
+  // 1. ลองคำนวณที่เงินดาวน์เป็น 0 (ดาวน์ต่ำสุดที่เป็นไปได้)
+  const financeZeroDown = total;
+  const intTotalZeroDown = financeZeroDown * (rate / 100) * years;
+  const leaseInVatZeroDown = months > 0 ? Math.ceil((financeZeroDown + intTotalZeroDown) / months) : 0;
+
+  if (leaseInVatZeroDown < targetLease) {
+    // 2. ถ้าค่างวดที่เงินดาวน์ 0 ยังไม่ถึงเป้าหมาย
+    document.getElementById('downType').value = 'amount';
+    document.getElementById('downInput').value = formatNoDecimal(0); // กำหนดเงินดาวน์เป็น 0
+    calculate(); // คำนวณอีกครั้งเพื่อแสดงผลลัพธ์ค่างวดที่ไม่ถึงเป้าหมาย
+    alert(`ไม่สามารถคำนวณให้ค่างวดถึง ${formatNoDecimal(targetLease)} บาทได้ แม้จะดาวน์ 0 บาท ค่างวดที่ได้คือ ${formatNoDecimal(leaseInVatZeroDown)} บาท จึงกำหนดให้เงินดาวน์เป็น 0`);
+  } else {
+    // 3. ถ้าค่างวดที่เงินดาวน์ 0 ถึงเป้าหมาย (หรือมากกว่า) ให้ใช้ Binary Search หาเงินดาวน์ที่เหมาะสม
+
+    let low = 0;
+    let high = total;
+    let bestDown = 0;
+    let minDiff = Infinity;
+
+    const maxIter = 500;
+
+    for (let i = 0; i < maxIter; i++) {
+        let currentDown = Math.ceil((low + high) / 2); 
+
+        if (currentDown < 0) currentDown = 0;
+        if (currentDown > total) currentDown = total;
+
+        const finance = total - currentDown;
+        const intTotal = finance * (rate / 100) * years;
+        const currentLease = months > 0 ? Math.ceil((finance + intTotal) / months) : 0;
+
+        const diff = Math.abs(currentLease - targetLease);
+
+        if (diff < minDiff) {
+            minDiff = diff;
+            bestDown = currentDown;
+        }
+
+        if (Math.abs(high - low) < 1 || diff < 0.1) {
+            break;
+        }
+
+        if (currentLease > targetLease) {
+          low = currentDown; // ต้องเพิ่มเงินดาวน์
+        } else {
+          high = currentDown; // สามารถลดเงินดาวน์ได้
+        }
+    }
+
+    document.getElementById('downType').value = 'amount';
+    document.getElementById('downInput').value = formatNoDecimal(bestDown);
+    calculate();
+  }
+}
+
+function goalSeekDown() {
+  const target = uncomma(document.getElementById('targetLease').value);
+  if (!(target > 0)) {
+    alert('กรุณากรอกค่างวด/เดือนเป้าหมายให้ถูกต้อง (มากกว่า 0)');
+    return;
+  }
+  calculateDownForTargetLease(target);
+}
+
+function solveFlatFromIRR() {
+  const getVal = id => uncomma(document.getElementById(id).value);
+  const getIntVal = id => parseInt(uncomma(document.getElementById(id).value)) || 0;
+
+  const car = getVal('carPrice');
+  const discount = getVal('discount');
+  const option = getVal('option');
+  const total = car - discount + option;
+
+  const downType = document.getElementById('downType').value;
+  const downInput = getVal('downInput');
+  const down = downType === 'percent' ? total * (downInput / 100) : downInput;
+
+  const finance = total - down;
+  const years = getIntVal('termYears');
+  const months = years * 12;
+
+  if (months === 0 || total <= 0 || finance <= 0) {
+    alert('กรุณาระบุราคารถ, เงินดาวน์ และจำนวนปีให้ถูกต้องก่อนคำนวณ Flat Rate จาก IRR');
+    return;
+  }
+
+  const comBase = document.getElementById('comBase').value;
+  const comPercent = getVal('comPercent');
+  const extra = getVal('extra');
+  const irrTarget = getVal('irrTargetPct') / 100; // ทศนิยม ต่อปี
+
+  function irrFromFlat(flatPercent) {
+    const intPA = finance * (flatPercent / 100);
+    const intTotal = intPA * years;
+    const financeTotalWithInterest = finance + intTotal;
+    const comBaseVal = comBase === 'finance' ? finance : intTotal;
+    const commission = Math.ceil(comBaseVal * (comPercent / 100));
+    const leaseInVat = Math.ceil(financeTotalWithInterest / months);
+    const pvForIRR = -(finance + (commission * 1.07) + (extra * 1.07));
+    const rMonthly = calculateIRR(months, leaseInVat, pvForIRR, 0, 0);
+    return isNaN(rMonthly) ? NaN : rMonthly * 12;
+  }
+
+  let lo = 0, hi = 40; // ช่วงค้นหา Flat Rate 0% - 40% ต่อปี
+  const loIrr = irrFromFlat(lo);
+  const hiIrr = irrFromFlat(hi);
+
+  if (isNaN(loIrr) || isNaN(hiIrr)) {
+    alert('ไม่สามารถคำนวณ Flat Rate จาก IRR เป้าหมายนี้ได้ กรุณาตรวจสอบข้อมูล');
+    return;
+  }
+
+  let mid = (lo + hi) / 2;
+  for (let i = 0; i < 100; i++) {
+    mid = (lo + hi) / 2;
+    const irrMid = irrFromFlat(mid);
+    if (isNaN(irrMid)) break;
+    if (Math.abs(irrMid - irrTarget) < 1e-7) break;
+    // IRR จะเพิ่มขึ้นตาม Flat Rate ที่เพิ่มขึ้น (monotonic increasing)
+    if (irrMid > irrTarget) {
+      hi = mid;
+    } else {
+      lo = mid;
+    }
+  }
+
+  document.getElementById('interestRate').value = format(mid, 4);
+  calculate();
+  alert(`✅ Flat Rate = ${format(mid, 4)}% ต่อปี (ได้ IRR ≈ ${format(irrTarget * 100, 4)}% ตามเป้าหมาย)`);
+}
+
+function generateQuotation() {
+    calculate(); 
+
+    const data = {
+        carInfo: document.getElementById('carInfo').value,
+        carPrice: uncomma(document.getElementById('carPrice').value),
+        discount: uncomma(document.getElementById('discount').value),
+        option: uncomma(document.getElementById('option').value),
+        totalAmount: uncomma(document.getElementById('totalAmount').value),
+        downAmount: uncomma(document.getElementById('downAmount').value),
+        downPercent: parseFloat(document.getElementById('downPercentDisplay').innerText.replace(/[()%]/g, '')),
+        
+        interestRate: uncomma(document.getElementById('interestRate').value),
+        termYears: parseInt(document.getElementById('termYears').value) || 0,
+        
+        comBase: document.getElementById('comBase').value,
+        comPercent: uncomma(document.getElementById('comPercent').value),
+        calculatedCommission: uncomma(document.getElementById('calculatedCommission').value),
+        extra: uncomma(document.getElementById('extra').value),
+        qsExtra: uncomma(document.getElementById('qsExtra').value), 
+
+        financeAmt: uncomma(document.getElementById('financeAmt').value),
+        intPA: uncomma(document.getElementById('intPA').value),
+        intTotal: uncomma(document.getElementById('intTotal').value),
+        financeTotalWithInterest: uncomma(document.getElementById('financeTotalWithInterest').value),
+        leaseInVat: uncomma(document.getElementById('leaseInVat').value),
+        leaseExVat: uncomma(document.getElementById('leaseExVat').value),
+        trRate: parseFloat(document.getElementById('trRate').value.replace('ไม่สามารถคำนวณ', 'NaN')),
+        
+        // QS Information fields
+        qsCarInfo: document.getElementById('qsCarInfo').value,
+        qsCarPrice: uncomma(document.getElementById('qsCarPrice').value),
+        qsDiscount: uncomma(document.getElementById('qsDiscount').value),
+        qsOption: uncomma(document.getElementById('qsOption').value),
+        qsDownAmount: uncomma(document.getElementById('qsDownAmount').value),
+        qsDownPercent: parseFloat(document.getElementById('qsDownPercent').value.replace(/[()%]/g, '')),
+        qsTrRate: parseFloat(document.getElementById('qsTrRate').value.replace('ไม่สามารถคำนวณ', 'NaN')),
+        qsTermYears: parseInt(document.getElementById('qsTermYears').value) || 0,
+        qsDeposit: uncomma(document.getElementById('qsDeposit').value),
+        qsRV: parseFloat(document.getElementById('qsRV').value.replace('%', '')),
+        qsTrDep: parseFloat(document.getElementById('qsTrDep').value.replace('ไม่สามารถคำนวณ', 'NaN')),
+    };
+
+    localStorage.setItem('quotationData', JSON.stringify(data));
+    window.open('quotation.html', '_blank');
+}
+
+
+function sendToQsData() {
+    calculate();
+
+    const qsExtraCost = uncomma(document.getElementById('qsExtra').value);
+    const downAmount = uncomma(document.getElementById('downAmount').value);
+    const totalAmount = uncomma(document.getElementById('totalAmount').value);
+    const trRateEffective = parseFloat(document.getElementById('trRate').value.replace('ไม่สามารถคำนวณ', 'NaN'));
+    const termYears = parseInt(document.getElementById('termYears').value) || 0;
+    const deposit = uncomma(document.getElementById('qsDeposit').value);
+    const rv = parseFloat(document.getElementById('qsRV').value.replace('%', ''));
+    const trDep = parseFloat(document.getElementById('qsTrDep').value.replace('ไม่สามารถคำนวณ', 'NaN'));
+    const downPercent = parseFloat(document.getElementById('downPercentDisplay').innerText.replace(/[()%]/g, ''));
+    const leaseExVat = uncomma(document.getElementById('leaseExVat').value);
+
+
+    const dataForQs = {
+        // Basic Info
+        carInfo: document.getElementById('carInfo').value,
+        carPrice: uncomma(document.getElementById('carPrice').value),
+        discount: uncomma(document.getElementById('discount').value),
+        option: uncomma(document.getElementById('option').value),
+        totalAmount: totalAmount,
+
+        // QS specific values
+        qsExtraCost: qsExtraCost,
+        downAmount: downAmount,
+        qsDownPercent: downPercent,
+        trRateEffective: trRateEffective,
+        termYears: termYears,
+        deposit: deposit,
+        rv: rv,
+        trDep: trDep,
+        leaseExVat: leaseExVat
+    };
+
+    localStorage.setItem('qsData', JSON.stringify(dataForQs));
+    window.open('qs_data.html', '_blank');
+}
+
+function generateCommissionReport() {
+    calculate();
+
+    const carInfo = document.getElementById('carInfo').value || '-';
+    const carPrice = uncomma(document.getElementById('carPrice').value);       // In VAT
+    const discount = uncomma(document.getElementById('discount').value);       // In VAT
+    const option = uncomma(document.getElementById('option').value);           // In VAT
+    const totalAmount = uncomma(document.getElementById('totalAmount').value); // In VAT
+    const downAmount = uncomma(document.getElementById('downAmount').value);   // In VAT
+    const downPercentText = document.getElementById('downPercentDisplay').innerText; // e.g. (12.3456%)
+    const interestRate = uncomma(document.getElementById('interestRate').value);
+    const termYears = parseInt(document.getElementById('termYears').value) || 0;
+    const leaseInVat = uncomma(document.getElementById('leaseInVat').value);
+
+    // ค่าคอมและ Extra ที่เก็บในระบบเป็น Ex VAT อยู่แล้ว (ดูสูตร IRR ที่ใช้ commission*1.07)
+    const commissionExVat = uncomma(document.getElementById('calculatedCommission').value);
+    const extraExVat = uncomma(document.getElementById('extra').value);
+    const commissionInVat = commissionExVat * 1.07;
+    const extraInVat = extraExVat * 1.07;
+    const totalExVat = commissionExVat + extraExVat;
+    const totalInVat = commissionInVat + extraInVat;
+
+    const reportDate = new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    const reportWindow = window.open('', '_blank');
+    if (!reportWindow) {
+        alert('กรุณาอนุญาต Pop-up เพื่อดู Report ค่าคอม');
+        return;
+    }
+
+    const html = `
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Report ค่าคอม - ${carInfo}</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orix-logo-blue: #003366;
+    --orix-logo-red: #E30613;
+    --orix-light-grey: #F0F5F8;
+  }
+  body {
+    font-family: 'Kanit', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: var(--orix-light-grey);
+    color: #333;
+  }
+  .sheet {
+    max-width: 720px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,51,102,0.1);
+  }
+  h1 {
+    color: var(--orix-logo-blue);
+    text-align: center;
+    margin: 0 0 4px 0;
+    font-size: 1.6em;
+  }
+  .subtitle {
+    text-align: center;
+    color: #777;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+  }
+  h2 {
+    color: var(--orix-logo-blue);
+    font-size: 1.1em;
+    border-left: 4px solid var(--orix-logo-blue);
+    padding-left: 8px;
+    margin: 20px 0 8px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  table td, table th {
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95em;
+  }
+  td.label { color: #555; }
+  td.value { text-align: right; font-weight: 600; color: var(--orix-logo-blue); }
+  th.value { text-align: right; }
+  .highlight-row td {
+    background: #F0F5F8;
+    font-weight: 700;
+    color: var(--orix-logo-red);
+  }
+  .btn-row {
+    text-align: center;
+    margin-top: 25px;
+  }
+  .btn-row button {
+    font-family: 'Kanit', sans-serif;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 6px;
+    background: var(--orix-logo-blue);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 0 5px;
+  }
+  .btn-row button.secondary {
+    background: #6c8aab;
+  }
+  @media print {
+    body { background: #fff; padding: 0; }
+    .sheet { box-shadow: none; padding: 0; }
+    .btn-row { display: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <h1>Report ค่าคอม</h1>
+    <div class="subtitle">ข้อมูลรถ: ${carInfo} | วันที่ออกรายงาน: ${reportDate}</div>
+
+    <h2>ข้อมูลรถและราคา (In VAT)</h2>
+    <table>
+      <tr><td class="label">ราคารถ (In VAT)</td><td class="value">${format(carPrice)}</td></tr>
+      <tr><td class="label">ส่วนลด (In VAT)</td><td class="value">${format(discount)}</td></tr>
+      <tr><td class="label">Option (In VAT)</td><td class="value">${format(option)}</td></tr>
+      <tr><td class="label">ราคาสุทธิ (In VAT)</td><td class="value">${format(totalAmount)}</td></tr>
+      <tr><td class="label">เงินดาวน์ (In VAT)</td><td class="value">${format(downAmount)} ${downPercentText}</td></tr>
+    </table>
+
+    <h2>เงื่อนไขไฟแนนซ์</h2>
+    <table>
+      <tr><td class="label">อัตราดอกเบี้ย (%)</td><td class="value">${format(interestRate)}%</td></tr>
+      <tr><td class="label">จำนวนปี</td><td class="value">${termYears}</td></tr>
+      <tr><td class="label">ค่างวด (In VAT)</td><td class="value">${format(leaseInVat)}</td></tr>
+    </table>
+
+    <h2>ค่าคอมมิชชั่น</h2>
+    <table>
+      <tr>
+        <th class="label"></th>
+        <th class="value">Ex VAT</th>
+        <th class="value">In VAT</th>
+      </tr>
+      <tr>
+        <td class="label">ค่าคอม (ที่คำนวณ)</td>
+        <td class="value">${format(commissionExVat)}</td>
+        <td class="value">${format(commissionInVat)}</td>
+      </tr>
+      <tr>
+        <td class="label">Extra</td>
+        <td class="value">${format(extraExVat)}</td>
+        <td class="value">${format(extraInVat)}</td>
+      </tr>
+      <tr class="highlight-row">
+        <td>รวมค่าคอม + Extra</td>
+        <td class="value">${format(totalExVat)}</td>
+        <td class="value">${format(totalInVat)}</td>
+      </tr>
+    </table>
+
+    <div class="btn-row">
+      <button onclick="window.print()">พิมพ์ / บันทึก PDF</button>
+      <button class="secondary" onclick="window.close()">ปิดหน้าต่าง</button>
+    </div>
+  </div>
+</body>
+</html>`;
+
+    reportWindow.document.open();
+    reportWindow.document.write(html);
+    reportWindow.document.close();
+}
+
+
+// Event Listeners for input fields
+function addInputListeners(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  if (id === 'carInfo') {
+      el.addEventListener('blur', calculate);
+  } else { // All other number/percent inputs
+      el.addEventListener('focus', () => {
+          let currentVal = uncomma(el.value);
+          if (Math.abs(currentVal) < 0.001) {
+              el.value = '';
+          } else {
+              el.value = String(currentVal);
+          }
+      });
+      el.addEventListener('blur', () => {
+          let val = uncomma(el.value);
+          if (id === 'termYears') {
+              el.value = formatNoDecimal(val);
+          } else if (id === 'interestRate' || id === 'comPercent' || id === 'irrTargetPct') {
+              el.value = format(val, 2);
+          }
+          else {
+              el.value = format(val);
+          }
+          if (id !== 'targetLease' && id !== 'irrTargetPct') calculate();
+      });
+      el.addEventListener('input', () => {
+          let sanitizedValue = el.value.replace(/[^0-9.]/g, '');
+          const parts = sanitizedValue.split('.');
+          if (parts.length > 2) {
+              sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
+          }
+          el.value = sanitizedValue;
+      });
+  }
+}
+
+window.onload = () => {
+  ['carPrice', 'discount', 'option', 'downInput', 'interestRate', 'extra', 'termYears', 'comPercent', 'carInfo', 'irrTargetPct', 'targetLease'].forEach(addInputListeners);
+  document.getElementById('downType').addEventListener('change', calculate);
+  document.getElementById('comBase').addEventListener('change', calculate);
+  toggleMode();
+  calculate(); // Initial calculation on load
+};
+</script>
+
+</body>
+</html>
