@@ -1,746 +1,2307 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Quick Lease Calculator</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#01478c">
+<title>Quick Lease Calculator | Thai ORIX</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap">
 
 <style>
-*{box-sizing:border-box}
+:root{
+  --blue:#01478c;
+  --blue-dark:#003669;
+  --blue-soft:#eaf3fc;
+  --ink:#14213a;
+  --muted:#66728a;
+  --line:#dce3ed;
+  --paper:#f3f5f9;
+  --card:#fff;
+  --amber:#ad6900;
+  --red:#b42318;
+  --red-soft:#fff0ee;
+  --green:#087443;
+  --green-soft:#eaf8f1;
+  --radius:12px;
+  --control-h:48px;
+}
+
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html{
+  -webkit-text-size-adjust:100%;
+  scroll-behavior:smooth;
+  scroll-padding-top:104px;
+}
+
 body{
-  font-family:Arial,"Tahoma",sans-serif;
-  max-width:900px;
+  margin:0;
+  color:var(--ink);
+  background:var(--paper);
+  font:400 15px/1.45 "IBM Plex Sans Thai","Segoe UI",Tahoma,sans-serif;
+  padding-bottom:calc(82px + env(safe-area-inset-bottom));
+}
+
+button,input,select{
+  font:inherit;
+}
+
+button{
+  touch-action:manipulation;
+}
+
+.num,
+.money-input,
+.result-value{
+  font-variant-numeric:tabular-nums;
+}
+
+/* ===== Sticky top summary ===== */
+
+.top{
+  position:sticky;
+  top:0;
+  z-index:30;
+  color:#fff;
+  background:var(--blue);
+  padding:
+    calc(8px + env(safe-area-inset-top))
+    12px
+    9px;
+  box-shadow:0 2px 10px rgba(0,35,74,.24);
+}
+
+.top-in{
+  max-width:1000px;
   margin:auto;
-  padding:15px;
-  color:#222;
-  background:#f4f6f8
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto;
+  align-items:center;
+  gap:12px;
 }
-h1{font-size:22px;margin:0 0 12px}
-h2{font-size:16px;margin:0 0 10px}
+
+.pay{
+  min-width:0;
+}
+
+.pay small{
+  display:block;
+  overflow:hidden;
+  color:#fff;
+  font-size:11px;
+  opacity:.82;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.pay .v{
+  font-size:32px;
+  font-weight:700;
+  letter-spacing:-.02em;
+  line-height:1.08;
+}
+
+.pay .m{
+  font-size:12px;
+  opacity:.8;
+}
+
+.chips{
+  display:grid;
+  grid-template-columns:repeat(2,auto);
+  gap:12px;
+  text-align:right;
+}
+
+.chips span{
+  display:block;
+  font-size:10px;
+  opacity:.75;
+}
+
+.chips b{
+  display:block;
+  color:#fff;
+  font-size:14px;
+  white-space:nowrap;
+}
+
+.icon-btn{
+  display:grid;
+  place-items:center;
+  width:42px;
+  height:42px;
+  padding:0;
+  border:0;
+  border-radius:10px;
+  color:#fff;
+  background:rgba(255,255,255,.15);
+  cursor:pointer;
+}
+
+.icon-btn:active{
+  transform:scale(.97);
+  background:rgba(255,255,255,.25);
+}
+
+/* ===== Layout ===== */
+
+.wrap{
+  width:100%;
+  max-width:1000px;
+  margin:auto;
+  padding:12px 12px 32px;
+  display:grid;
+  gap:12px;
+}
+
+.col{
+  display:grid;
+  gap:10px;
+  min-width:0;
+}
+
+.card,
+details{
+  overflow:hidden;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+}
+
 .card{
-  background:#fff;
-  border:1px solid #dfe3e8;
-  border-radius:8px;
-  padding:12px;
-  margin-bottom:12px
+  padding:14px;
 }
-.grid,.kpi,.buttons{
+
+.card h2,
+details > summary{
+  margin:0;
+  color:var(--ink);
+  font-size:15px;
+  font-weight:600;
+}
+
+.card h2{
+  margin-bottom:11px;
+}
+
+details > summary{
+  min-height:50px;
+  padding:13px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  list-style:none;
+  cursor:pointer;
+  user-select:none;
+}
+
+details > summary::-webkit-details-marker{
+  display:none;
+}
+
+details > summary::after{
+  content:"";
+  flex:0 0 auto;
+  width:8px;
+  height:8px;
+  margin-right:4px;
+  border:solid var(--muted);
+  border-width:0 2px 2px 0;
+  transform:rotate(45deg);
+  transition:transform .15s ease;
+}
+
+details[open] > summary{
+  border-bottom:1px solid var(--line);
+}
+
+details[open] > summary::after{
+  transform:rotate(-135deg);
+}
+
+details > .in{
+  padding:14px;
+}
+
+/* ===== Forms ===== */
+
+.row{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:10px
+  gap:10px;
+  margin-bottom:10px;
 }
-.field label{
-  display:block;
-  font-size:12px;
-  font-weight:bold;
-  margin-bottom:4px
-}
-input,select,button{
-  width:100%;
-  min-height:40px;
-  padding:8px;
-  border:1px solid #aeb7c2;
-  border-radius:5px;
-  background:#fff;
-  font-size:15px
-}
-input:focus,select:focus,button:focus{
-  outline:3px solid rgba(0,70,140,.18);
-  border-color:#00468c
-}
-button{
-  cursor:pointer;
-  font-weight:bold
-}
-.primary{background:#003b70;color:#fff;border-color:#003b70}
-.secondary{background:#fff;color:#003b70;border-color:#003b70}
-.danger{background:#fff;color:#b00020;border-color:#b00020}
-.kpi{grid-template-columns:repeat(4,minmax(0,1fr))}
-.kpi-box{
-  background:#003b70;
-  color:#fff;
-  padding:12px 8px;
-  border-radius:7px;
-  text-align:center
-}
-.kpi-label{font-size:12px;opacity:.85}
-.kpi-value{
-  margin-top:5px;
-  font-size:21px;
-  font-weight:bold;
-  overflow-wrap:anywhere
-}
-.result{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) auto;
-  gap:0 15px
-}
-.result div{
-  padding:7px 0;
-  border-bottom:1px solid #eee
-}
-.result .value{text-align:right;font-weight:bold}
-.message{
-  display:none;
-  margin-bottom:12px;
-  padding:9px;
-  border-radius:5px;
-  font-size:13px
-}
-.message.error{display:block;background:#ffe8e8;color:#8b0000}
-.message.success{display:block;background:#e8f7ed;color:#075b25}
-.hint{font-size:12px;color:#666;margin:7px 0 0}
-.full{grid-column:1/-1}
 
-@media(max-width:650px){
-  .grid,.buttons{grid-template-columns:1fr}
-  .kpi{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .kpi-value{font-size:18px}
+.row.one{
+  grid-template-columns:1fr;
+}
+
+.row.c3{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+}
+
+.row:last-child{
+  margin-bottom:0;
+}
+
+.field,
+.row > div{
+  min-width:0;
+}
+
+label{
+  display:block;
+  margin-bottom:5px;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:500;
+}
+
+label small{
+  color:#8d98aa;
+  font-weight:400;
+}
+
+.input-wrap{
+  position:relative;
+}
+
+input,
+select{
+  display:block;
+  width:100%;
+  min-width:0;
+  min-height:var(--control-h);
+  padding:9px 11px;
+  border:1px solid #c7d1df;
+  border-radius:10px;
+  color:var(--ink);
+  background:#fff;
+  font-size:16px;
+  appearance:none;
+  -webkit-appearance:none;
+}
+
+input.n{
+  padding-right:42px;
+  text-align:right;
+}
+
+input.big{
+  min-height:54px;
+  font-size:21px;
+  font-weight:600;
+}
+
+input[readonly]{
+  color:var(--blue);
+  background:#eef3f8;
+  cursor:not-allowed;
+}
+
+select{
+  padding-right:34px;
+  background:
+    #fff
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2366728a' stroke-width='2'/%3E%3C/svg%3E")
+    no-repeat right 12px center;
+}
+
+input:focus,
+select:focus,
+button:focus-visible,
+summary:focus-visible{
+  outline:3px solid rgba(1,71,140,.20);
+  outline-offset:1px;
+  border-color:var(--blue);
+}
+
+input.invalid,
+select.invalid{
+  border-color:var(--red);
+  background:var(--red-soft);
+}
+
+.clear-input{
+  position:absolute;
+  right:4px;
+  top:50%;
+  z-index:2;
+  width:36px;
+  height:36px;
+  padding:0;
+  border:0;
+  border-radius:8px;
+  color:#7c8799;
+  background:transparent;
+  font-size:20px;
+  line-height:1;
+  transform:translateY(-50%);
+  cursor:pointer;
+}
+
+.clear-input:active{
+  color:var(--red);
+  background:#f0f3f7;
+}
+
+.pair{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 94px;
+  gap:8px;
+}
+
+.btn{
+  min-height:48px;
+  padding:8px 16px;
+  border:0;
+  border-radius:10px;
+  color:#fff;
+  background:var(--blue);
+  font-weight:600;
+  font-size:15px;
+  cursor:pointer;
+}
+
+.btn:active{
+  transform:scale(.985);
+}
+
+.btn.amber{
+  background:var(--amber);
+}
+
+.btn.secondary{
+  color:var(--blue);
+  background:#fff;
+  border:1px solid var(--blue);
+}
+
+.btn:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+.goal-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+
+.quick-values{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:9px;
+}
+
+.quick-value{
+  min-height:38px;
+  padding:6px 12px;
+  border:1px solid #cbd6e4;
+  border-radius:999px;
+  color:var(--blue);
+  background:#fff;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.quick-value:active{
+  color:#fff;
+  background:var(--blue);
+}
+
+.hint{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.warn{
+  display:none;
+  margin-top:9px;
+  padding:9px 10px;
+  border-radius:9px;
+  color:var(--red);
+  background:var(--red-soft);
+  font-size:13px;
+}
+
+.warn.show{
+  display:block;
+}
+
+/* ===== Mobile result KPI ===== */
+
+.mobile-kpis{
+  display:none;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+}
+
+.mobile-kpi{
+  min-width:0;
+  padding:11px;
+  border:1px solid #d5e0ec;
+  border-radius:11px;
+  background:#fff;
+}
+
+.mobile-kpi.primary{
+  color:#fff;
+  border-color:var(--blue);
+  background:var(--blue);
+}
+
+.mobile-kpi small{
+  display:block;
+  overflow:hidden;
+  color:var(--muted);
+  font-size:11px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.mobile-kpi.primary small{
+  color:rgba(255,255,255,.78);
+}
+
+.mobile-kpi b{
+  display:block;
+  margin-top:2px;
+  overflow:hidden;
+  font-size:18px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* ===== Result table ===== */
+
+.side{
+  min-width:0;
+}
+
+.result-table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.result-table th,
+.result-table td{
+  padding:9px 0;
+  border-bottom:1px solid #edf1f6;
+  vertical-align:top;
+}
+
+.result-table tr:last-child th,
+.result-table tr:last-child td{
+  border-bottom:0;
+}
+
+.result-table th{
+  color:var(--muted);
+  font-weight:400;
+  text-align:left;
+}
+
+.result-table td{
+  color:var(--ink);
+  font-weight:600;
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+
+.result-table .group th{
+  padding:14px 0 4px;
+  border:0;
+  color:var(--blue);
+  font-size:13px;
+  font-weight:600;
+}
+
+.result-table .group:first-child th{
+  padding-top:0;
+}
+
+.result-table .key th,
+.result-table .key td{
+  padding:9px 7px;
+  color:var(--blue);
+  background:var(--blue-soft);
+}
+
+.result-table .key th{
+  border-radius:7px 0 0 7px;
+}
+
+.result-table .key td{
+  border-radius:0 7px 7px 0;
+}
+
+.result-table .sub-group th{
+  color:var(--green);
+}
+
+.result-note{
+  margin-top:11px;
+  padding:9px 10px;
+  border-radius:9px;
+  color:var(--green);
+  background:var(--green-soft);
+  font-size:12px;
+}
+
+.hide{
+  display:none!important;
+}
+
+/* ===== Mobile bottom bar ===== */
+
+.mobile-bottom{
+  display:none;
+  position:fixed;
+  z-index:40;
+  left:0;
+  right:0;
+  bottom:0;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:8px;
+  padding:
+    8px
+    10px
+    calc(8px + env(safe-area-inset-bottom));
+  border-top:1px solid #ccd7e5;
+  background:rgba(255,255,255,.97);
+  box-shadow:0 -4px 16px rgba(10,31,56,.12);
+  backdrop-filter:blur(8px);
+}
+
+.mobile-bottom-result{
+  min-width:0;
+}
+
+.mobile-bottom-result small{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+}
+
+.mobile-bottom-result b{
+  display:block;
+  overflow:hidden;
+  color:var(--blue);
+  font-size:20px;
+  line-height:1.15;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.mobile-bottom .btn{
+  min-height:46px;
+  padding:8px 14px;
+}
+
+/* ===== Toast ===== */
+
+#toast{
+  position:fixed;
+  z-index:60;
+  left:12px;
+  right:12px;
+  bottom:calc(82px + env(safe-area-inset-bottom));
+  max-width:480px;
+  margin:auto;
+  padding:12px 14px;
+  border-radius:12px;
+  color:#fff;
+  background:var(--ink);
+  text-align:center;
+  opacity:0;
+  transform:translateY(8px);
+  transition:.2s;
+  pointer-events:none;
+  box-shadow:0 8px 24px rgba(0,0,0,.2);
+}
+
+#toast.show{
+  opacity:1;
+  transform:none;
+}
+
+@media(min-width:860px){
+  body{
+    padding-bottom:24px;
+  }
+
+  .wrap{
+    grid-template-columns:minmax(0,1fr) 355px;
+    align-items:start;
+  }
+
+  .side{
+    position:sticky;
+    top:100px;
+  }
+}
+
+@media(max-width:600px){
+  :root{
+    --control-h:50px;
+  }
+
+  html{
+    scroll-padding-top:90px;
+  }
+
+  .top{
+    padding-left:10px;
+    padding-right:10px;
+  }
+
+  .top-in{
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:8px;
+  }
+
+  .chips{
+    display:none;
+  }
+
+  .pay .v{
+    font-size:29px;
+  }
+
+  .wrap{
+    padding:9px 8px 24px;
+    gap:9px;
+  }
+
+  .card{
+    padding:12px;
+  }
+
+  .row,
+  .row.c3{
+    grid-template-columns:1fr;
+    gap:9px;
+  }
+
+  .pair{
+    grid-template-columns:minmax(0,1fr) 96px;
+  }
+
+  input,
+  select{
+    font-size:17px;
+  }
+
+  input.big{
+    font-size:22px;
+  }
+
+  .goal-actions{
+    grid-template-columns:1fr;
+  }
+
+  .goal-actions .btn{
+    min-height:52px;
+  }
+
+  .mobile-kpis{
+    display:grid;
+  }
+
+  .mobile-bottom{
+    display:grid;
+  }
+
+  .side .card{
+    padding:0;
+    border-color:#c8d8e9;
+  }
+
+  .side .card > h2{
+    padding:14px 12px 10px;
+    margin:0;
+  }
+
+  .result-table,
+  .result-table tbody{
+    display:block;
+    width:100%;
+  }
+
+  .result-table tr:not(.group){
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:12px;
+    padding:10px 12px;
+    border-top:1px solid #edf1f6;
+  }
+
+  .result-table tr:not(.group) th,
+  .result-table tr:not(.group) td{
+    display:block;
+    padding:0;
+    border:0;
+  }
+
+  .result-table tr:not(.group) th{
+    align-self:center;
+  }
+
+  .result-table tr:not(.group) td{
+    align-self:center;
+    max-width:48vw;
+    overflow:hidden;
+    color:var(--ink);
+    font-size:16px;
+    text-overflow:ellipsis;
+  }
+
+  .result-table .group{
+    display:block;
+  }
+
+  .result-table .group th{
+    display:block;
+    padding:12px 12px 5px;
+    background:#f7f9fc;
+  }
+
+  .result-table .group:first-child th{
+    padding-top:10px;
+  }
+
+  .result-table .key{
+    margin:6px 8px;
+    padding:11px 8px!important;
+    border:1px solid #d5e3f2;
+    border-radius:9px;
+    background:var(--blue-soft);
+  }
+
+  .result-table .key th,
+  .result-table .key td{
+    padding:0;
+    background:transparent;
+    border-radius:0;
+  }
+
+  .result-note{
+    margin:10px 12px 12px;
+  }
+}
+
+@media(max-width:360px){
+  .pay .v{
+    font-size:26px;
+  }
+
+  .pair{
+    grid-template-columns:minmax(0,1fr) 86px;
+  }
+
+  .mobile-kpi b{
+    font-size:16px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  *{
+    scroll-behavior:auto!important;
+    transition:none!important;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<h1>Quick Lease Calculator</h1>
-
-<div id="message" class="message" role="status" aria-live="polite"></div>
-
-<div class="card">
-  <h2>ข้อมูลสัญญา</h2>
-
-  <div class="grid">
-    <div class="field full">
-      <label for="carName">รุ่นรถ</label>
-      <input id="carName" type="text" placeholder="ระบุรุ่นรถ">
+<header class="top">
+  <div class="top-in">
+    <div class="pay">
+      <small>ค่างวด/เดือน รวม VAT ปัดขึ้น</small>
+      <div class="v num" id="pmt">—</div>
+      <div class="m" id="monthsHero">— งวด</div>
     </div>
 
-    <div class="field">
-      <label for="price">ราคารถ รวม VAT (บาท)</label>
-      <input id="price" type="number" min="0" step="1" value="0">
+    <div class="chips">
+      <div>
+        <span>OWS IRR</span>
+        <b id="irrH">—</b>
+      </div>
+      <div>
+        <span>Effective</span>
+        <b id="trH">—</b>
+      </div>
     </div>
 
-    <div class="field">
-      <label for="discount">ส่วนลด (บาท)</label>
-      <input id="discount" type="number" min="0" step="1" value="0">
-    </div>
-
-    <div class="field">
-      <label for="option">Option เพิ่ม (บาท)</label>
-      <input id="option" type="number" min="0" step="1" value="0">
-    </div>
-
-    <div class="field">
-      <label for="term">จำนวนงวด (เดือน)</label>
-      <input id="term" type="number" min="1" max="360" step="1" value="60">
-    </div>
-
-    <div class="field">
-      <label for="annualRate">อัตราดอกเบี้ยลดต้นลดดอก (% ต่อปี)</label>
-      <input id="annualRate" type="number" min="0" step="0.0001" value="3.5">
-    </div>
-
-    <div class="field">
-      <label for="vatPct">VAT (%)</label>
-      <input id="vatPct" type="number" min="0" step="0.01" value="7">
-    </div>
-
-    <div class="field">
-      <label for="paymentType">กำหนดชำระ</label>
-      <select id="paymentType">
-        <option value="0">ปลายงวด</option>
-        <option value="1">ต้นงวด</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label for="downType">ประเภทเงินดาวน์</label>
-      <select id="downType">
-        <option value="percent">เปอร์เซ็นต์ (%)</option>
-        <option value="amount">จำนวนเงิน (บาท)</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label for="down">เงินดาวน์</label>
-      <input id="down" type="number" min="0" step="0.01" value="20">
-    </div>
-
-    <div class="field">
-      <label for="balloonType">ประเภท Balloon</label>
-      <select id="balloonType">
-        <option value="percent">เปอร์เซ็นต์ของราคาสุทธิ (%)</option>
-        <option value="amount">จำนวนเงิน (บาท)</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label for="balloon">Balloon</label>
-      <input id="balloon" type="number" min="0" step="0.01" value="0">
-    </div>
-
-    <div class="field">
-      <label for="subsidy">Subsidy ไม่รวม VAT (บาท)</label>
-      <input id="subsidy" type="number" min="0" step="1" value="0">
-    </div>
-
-    <div class="field">
-      <label for="commissionPct">ค่าคอมจากยอดจัด (%)</label>
-      <input id="commissionPct" type="number" min="0" step="0.01" value="0">
-    </div>
-
-    <div class="field">
-      <label for="commissionExtra">Extra commission (บาท)</label>
-      <input id="commissionExtra" type="number" min="0" step="1" value="0">
-    </div>
-
-    <div class="field">
-      <label for="targetPmt">ค่างวดเป้าหมาย รวม VAT (บาท)</label>
-      <input id="targetPmt" type="number" min="1" step="1" value="36000">
-    </div>
+    <button class="icon-btn" id="btnReset" type="button"
+      aria-label="ล้างข้อมูลทั้งหมด" title="ล้างข้อมูลทั้งหมด">↺</button>
   </div>
+</header>
 
-  <p class="hint">
-    ต้นงวดหมายถึงชำระงวดแรกทันที ณ วันเริ่มสัญญา ส่วน Balloon ชำระเมื่อสิ้นสุดสัญญา
-  </p>
+<main class="wrap">
+
+<div class="col">
+
+  <section class="mobile-kpis" aria-label="ผลลัพธ์สำคัญ">
+    <div class="mobile-kpi primary">
+      <small>ค่างวดรวม VAT</small>
+      <b id="mobilePmt">—</b>
+    </div>
+    <div class="mobile-kpi">
+      <small>ยอดจัด</small>
+      <b id="mobileFinance">—</b>
+    </div>
+    <div class="mobile-kpi">
+      <small>OWS IRR</small>
+      <b id="mobileIrr">—</b>
+    </div>
+    <div class="mobile-kpi">
+      <small>Effective Rate</small>
+      <b id="mobileEffective">—</b>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>ราคารถ</h2>
+
+    <div class="row one">
+      <div>
+        <label for="gross">ราคารถ รวม VAT</label>
+        <div class="input-wrap">
+          <input id="gross" class="n big money-input"
+            type="text" inputmode="decimal" enterkeyhint="next"
+            autocomplete="off" placeholder="เช่น 1,149,000">
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="discount">ส่วนลด (−)</label>
+        <div class="input-wrap">
+          <input id="discount" class="n money-input"
+            type="text" inputmode="decimal" enterkeyhint="next"
+            autocomplete="off" placeholder="0">
+        </div>
+      </div>
+
+      <div>
+        <label for="option">Option (+)</label>
+        <div class="input-wrap">
+          <input id="option" class="n money-input"
+            type="text" inputmode="decimal" enterkeyhint="next"
+            autocomplete="off" placeholder="0">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>เงินดาวน์และระยะเวลา</h2>
+
+    <div class="row">
+      <div>
+        <label for="downType">ประเภทเงินดาวน์</label>
+        <select id="downType">
+          <option value="amount">จำนวนเงิน (บาท)</option>
+          <option value="percent">เปอร์เซ็นต์ (%)</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="down">เงินดาวน์</label>
+        <div class="input-wrap">
+          <input id="down" class="n"
+            type="text" inputmode="decimal" enterkeyhint="next"
+            autocomplete="off" placeholder="0">
+        </div>
+      </div>
+    </div>
+
+    <div class="quick-values" aria-label="เลือกเงินดาวน์แบบเร็ว">
+      <button class="quick-value" type="button" data-down-pct="10">10%</button>
+      <button class="quick-value" type="button" data-down-pct="20">20%</button>
+      <button class="quick-value" type="button" data-down-pct="25">25%</button>
+      <button class="quick-value" type="button" data-down-pct="30">30%</button>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <div>
+        <label for="term">ระยะเวลา</label>
+        <div class="pair">
+          <div class="input-wrap">
+            <input id="term" class="n"
+              type="text" inputmode="decimal" enterkeyhint="next"
+              autocomplete="off" value="5">
+          </div>
+
+          <select id="termUnit" aria-label="หน่วยระยะเวลา">
+            <option value="years">ปี</option>
+            <option value="months">เดือน</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label for="vat">VAT (%)</label>
+        <div class="input-wrap">
+          <input id="vat" class="n"
+            type="text" inputmode="decimal" enterkeyhint="next"
+            autocomplete="off" value="7">
+        </div>
+      </div>
+    </div>
+
+    <div id="warns" class="warn" role="alert"></div>
+  </section>
+
+  <section class="card">
+    <h2>ดอกเบี้ย</h2>
+
+    <div class="row">
+      <div>
+        <label for="mode">โหมดคำนวณ</label>
+        <select id="mode">
+          <option value="Flat">Flat Rate</option>
+          <option value="IRR">หา Flat จาก OWS IRR</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="flat">Flat Rate (% ต่อปี)</label>
+        <div class="input-wrap">
+          <input id="flat" class="n"
+            type="text" inputmode="decimal" enterkeyhint="next"
+            autocomplete="off" placeholder="เช่น 1.49">
+        </div>
+      </div>
+    </div>
+
+    <div class="row hide" id="irrRow">
+      <div>
+        <label for="irrTarget">OWS IRR เป้าหมาย (% ต่อปี)</label>
+        <div class="input-wrap">
+          <input id="irrTarget" class="n"
+            type="text" inputmode="decimal" enterkeyhint="next"
+            autocomplete="off" value="5.75">
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="timing">การชำระค่างวด</label>
+        <select id="timing">
+          <option value="0">ปลายงวด</option>
+          <option value="1">ต้นงวด</option>
+        </select>
+      </div>
+      <div></div>
+    </div>
+
+    <div class="hint">
+      ต้นงวด/ปลายงวดมีผลกับ RATE และ IRR ส่วนค่างวดใช้สูตร Flat ตาม Working Sheet
+    </div>
+  </section>
+
+  <details>
+    <summary>Balloon</summary>
+    <div class="in">
+      <div class="row">
+        <div>
+          <label for="balloonOn">ใช้งาน Balloon</label>
+          <select id="balloonOn">
+            <option value="0">ไม่มี Balloon</option>
+            <option value="1">มี Balloon</option>
+          </select>
+        </div>
+
+        <div id="balloonBox" class="hide">
+          <label for="balloon">ค่า Balloon</label>
+          <div class="pair">
+            <div class="input-wrap">
+              <input id="balloon" class="n"
+                type="text" inputmode="decimal" enterkeyhint="next"
+                autocomplete="off" placeholder="0">
+            </div>
+
+            <select id="balloonType" aria-label="ประเภท Balloon">
+              <option value="amount">บาท</option>
+              <option value="percent">%</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-values">
+        <button class="quick-value" type="button" data-balloon-pct="20">20%</button>
+        <button class="quick-value" type="button" data-balloon-pct="25">25%</button>
+        <button class="quick-value" type="button" data-balloon-pct="30">30%</button>
+      </div>
+    </div>
+  </details>
+
+  <details>
+    <summary>คอมมิชชั่นและ Subsidy</summary>
+    <div class="in">
+      <div class="row c3">
+        <div>
+          <label for="commBase">ฐานค่าคอม</label>
+          <select id="commBase">
+            <option value="interest">ดอกเบี้ยรวม</option>
+            <option value="finance" selected>ยอดจัด</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="commPct">% คอม</label>
+          <div class="input-wrap">
+            <input id="commPct" class="n"
+              type="text" inputmode="decimal" enterkeyhint="next"
+              autocomplete="off" placeholder="0">
+          </div>
+        </div>
+
+        <div>
+          <label for="commExtra">Extra (บาท)</label>
+          <div class="input-wrap">
+            <input id="commExtra" class="n"
+              type="text" inputmode="decimal" enterkeyhint="next"
+              autocomplete="off" placeholder="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="subsidy">Subsidy <small>ไม่รวม VAT</small></label>
+          <div class="input-wrap">
+            <input id="subsidy" class="n"
+              type="text" inputmode="decimal" enterkeyhint="done"
+              autocomplete="off" placeholder="0">
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </details>
+
+  <details open>
+    <summary>Goal Seek ค่างวดเป้าหมาย</summary>
+    <div class="in">
+      <div class="row one">
+        <div>
+          <label for="target">ค่างวด/เดือนที่ต้องการ รวม VAT</label>
+          <div class="input-wrap">
+            <input id="target" class="n big money-input"
+              type="text" inputmode="decimal" enterkeyhint="done"
+              autocomplete="off" value="36,000">
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-values" aria-label="เลือกค่างวดเป้าหมายแบบเร็ว">
+        <button class="quick-value" type="button" data-target="30000">30,000</button>
+        <button class="quick-value" type="button" data-target="36000">36,000</button>
+        <button class="quick-value" type="button" data-target="40000">40,000</button>
+        <button class="quick-value" type="button" data-target="50000">50,000</button>
+      </div>
+
+      <div class="goal-actions">
+        <button class="btn amber" id="btnGoal" type="button">หาเงินดาวน์</button>
+        <button class="btn secondary" id="btnBalloonGoal" type="button">หา Balloon</button>
+      </div>
+
+      <div class="hint">
+        ระบบจะหาค่าต่ำสุดเป็นหน่วยสตางค์ที่ทำให้ค่างวดไม่เกินเป้าหมาย
+      </div>
+    </div>
+  </details>
+
 </div>
 
-<div class="card">
-  <div class="buttons">
-    <button id="btnDownSeek" class="primary" type="button">หาเงินดาวน์จากค่างวด</button>
-    <button id="btnBalloonSeek" class="secondary" type="button">หา Balloon จากค่างวด</button>
-    <button id="btnCopy" class="secondary" type="button">Copy สรุป</button>
-    <button id="btnReset" class="danger" type="button">รีเซ็ต</button>
+<aside class="side" id="resultSection">
+  <section class="card">
+    <h2>ผลลัพธ์การคำนวณ</h2>
+
+    <table class="result-table">
+      <tbody>
+        <tr class="group"><th colspan="2">ราคาและยอดจัด</th></tr>
+        <tr><th>ราคาสุทธิ</th><td id="net">—</td></tr>
+        <tr><th>เงินดาวน์</th><td id="downBaht">—</td></tr>
+        <tr><th>เงินดาวน์ (%)</th><td id="downPctShow">—</td></tr>
+        <tr><th>Balloon</th><td id="balloonBaht">—</td></tr>
+        <tr><th>ยอดจัด</th><td id="finance">—</td></tr>
+        <tr><th>ยอดจัด − Balloon</th><td id="finMinus">—</td></tr>
+
+        <tr class="group"><th colspan="2">ค่างวดและดอกเบี้ย</th></tr>
+        <tr><th>Flat Rate ต่อปี</th><td id="flatShow">—</td></tr>
+        <tr><th>ดอกเบี้ยรวม</th><td id="interest">—</td></tr>
+        <tr><th>ค่างวดก่อนปัด</th><td id="pmtRawShow">—</td></tr>
+        <tr><th>ค่างวดปัดขึ้น</th><td id="pmtRoundedShow">—</td></tr>
+
+        <tr class="group"><th colspan="2">คอมและผลตอบแทน</th></tr>
+        <tr><th>ฐานค่าคอม</th><td id="commBaseShow">—</td></tr>
+        <tr><th>คอมมิชชั่น</th><td id="comm">—</td></tr>
+        <tr class="key"><th>OWS IRR</th><td id="irr">—</td></tr>
+
+        <tr class="group sub-group" id="subGroup">
+          <th colspan="2">ผลหลังหัก Subsidy</th>
+        </tr>
+        <tr id="subsidyExRow"><th>Subsidy ไม่รวม VAT</th><td id="subsidyExShow">—</td></tr>
+        <tr id="subsidyIncRow"><th>Subsidy รวม VAT</th><td id="subsidyIncShow">—</td></tr>
+        <tr id="financeSubRow"><th>ยอดจัดหลัง Subsidy</th><td id="financeSubShow">—</td></tr>
+        <tr id="interestSubRow"><th>ดอกเบี้ยหลัง Subsidy</th><td id="interestSubShow">—</td></tr>
+        <tr id="commSubRow"><th>คอมหลัง Subsidy</th><td id="commSubShow">—</td></tr>
+        <tr class="key" id="subRows"><th>IRR Subsidy</th><td id="irrSub">—</td></tr>
+        <tr class="key"><th>Effective Rate ลูกค้า</th><td id="effective">—</td></tr>
+        <tr><th>Flat Rate ลูกค้า</th><td id="customerFlat">—</td></tr>
+      </tbody>
+    </table>
+
+    <div class="result-note">
+      ค่างวดคำนวณจาก Flat Rate ส่วน OWS IRR และ Effective Rate คำนวณจากกระแสเงินสดด้วย RATE
+    </div>
+  </section>
+</aside>
+
+</main>
+
+<div class="mobile-bottom">
+  <div class="mobile-bottom-result">
+    <small>ค่างวด/เดือน รวม VAT</small>
+    <b id="bottomPmt">—</b>
   </div>
+  <button class="btn" id="btnShowResult" type="button">ดูผลลัพธ์</button>
 </div>
 
-<div class="kpi">
-  <div class="kpi-box">
-    <div class="kpi-label">ค่างวดรวม VAT</div>
-    <div id="kPmt" class="kpi-value">0</div>
-  </div>
-
-  <div class="kpi-box">
-    <div class="kpi-label">IRR รวมคอม</div>
-    <div id="kIrr" class="kpi-value">0%</div>
-  </div>
-
-  <div class="kpi-box">
-    <div class="kpi-label">IRR Subsidy</div>
-    <div id="kIrrSubsidy" class="kpi-value">0%</div>
-  </div>
-
-  <div class="kpi-box">
-    <div class="kpi-label">Effective Rate ลูกค้า</div>
-    <div id="kEffective" class="kpi-value">0%</div>
-  </div>
-</div>
-
-<div class="card">
-  <h2>ผลการคำนวณ</h2>
-
-  <div class="result">
-    <div>ราคาสุทธิ</div><div id="rNet" class="value">0.00</div>
-    <div>เงินดาวน์</div><div id="rDown" class="value">0.00</div>
-    <div>เงินดาวน์ (%)</div><div id="rDownPct" class="value">0.0000%</div>
-    <div>Balloon</div><div id="rBalloon" class="value">0.00</div>
-    <div>Balloon (%)</div><div id="rBalloonPct" class="value">0.0000%</div>
-    <div>ยอดจัด</div><div id="rFinance" class="value">0.00</div>
-    <div>Subsidy รวม VAT</div><div id="rSubsidyInc" class="value">0.00</div>
-    <div>ยอดจัดหลัง Subsidy</div><div id="rFinanceSubsidy" class="value">0.00</div>
-    <div>ดอกเบี้ยรวมตามกระแสเงินสด</div><div id="rInterest" class="value">0.00</div>
-    <div>ค่าคอมมิชชั่น</div><div id="rCommission" class="value">0.00</div>
-    <div>ค่างวดก่อนปัด</div><div id="rPmtRaw" class="value">0.00</div>
-    <div>ค่างวดปัดขึ้น</div><div id="rPmtRounded" class="value">0</div>
-  </div>
-</div>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script>
 "use strict";
 
 const $ = id => document.getElementById(id);
+const IRR_USE_ROUNDED_PMT = true;
 
-const DEFAULTS = {
-  carName: "",
-  price: 0,
-  discount: 0,
-  option: 0,
-  term: 60,
-  annualRate: 3.5,
-  vatPct: 7,
-  paymentType: "0",
-  downType: "percent",
-  down: 20,
-  balloonType: "percent",
-  balloon: 0,
-  subsidy: 0,
-  commissionPct: 0,
-  commissionExtra: 0,
-  targetPmt: 36000
-};
+function num(id){
+  const element = $(id);
+  if(!element) return 0;
 
-function num(id) {
-  const value = Number($(id).value);
+  const value = parseFloat(
+    String(element.value || "").replace(/,/g,"")
+  );
+
   return Number.isFinite(value) ? value : 0;
 }
 
-function amountOrPercent(typeId, valueId, base) {
-  const value = Math.max(0, num(valueId));
-  return $(typeId).value === "percent"
-    ? base * value / 100
-    : value;
-}
-
-function money(value, decimals = 2) {
-  if (!Number.isFinite(value)) return "—";
-
-  return value.toLocaleString("th-TH", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals
-  });
-}
-
-function percent(value, decimals = 4) {
+function f2(value){
   return Number.isFinite(value)
-    ? value.toFixed(decimals) + "%"
+    ? value.toLocaleString("th-TH",{
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+      })
     : "—";
 }
 
-function showMessage(text = "", type = "") {
-  const box = $("message");
-  box.textContent = text;
-  box.className = text ? "message " + type : "message";
+function f0(value){
+  return Number.isFinite(value)
+    ? Math.round(value).toLocaleString("th-TH")
+    : "—";
 }
 
-/*
-  PMT:
-  pv   = ยอดจัด ณ วันเริ่มสัญญา
-  fv   = Balloon ที่ต้องชำระ ณ สิ้นสุดสัญญา
-  type = 0 ปลายงวด, 1 ต้นงวด
-*/
-function calculatePMT(pv, fv, annualRatePct, months, type) {
-  if (!(pv >= 0) || !(months > 0) || !(fv >= 0)) return NaN;
-
-  const r = annualRatePct / 100 / 12;
-
-  if (Math.abs(r) < 1e-14) {
-    return Math.max(0, (pv - fv) / months);
-  }
-
-  const discount = Math.pow(1 + r, -months);
-  const annuityFactor = (1 - discount) / r;
-  const dueFactor = type === 1 ? 1 + r : 1;
-  const balloonPV = fv * discount;
-
-  return Math.max(0, (pv - balloonPV) / (annuityFactor * dueFactor));
+function pct(value,digits = 4){
+  return Number.isFinite(value)
+    ? value.toFixed(digits) + " %"
+    : "—";
 }
 
-/*
-  NPV ของกระแสเงินสดสำหรับหา RATE
-  pv เป็นค่าลบ, pmt และ fv เป็นค่าบวก
-*/
-function rateNPV(rate, nper, pmt, pv, fv, type) {
-  if (rate <= -1) return NaN;
-
-  if (Math.abs(rate) < 1e-10) {
-    return pv + pmt * nper + fv;
-  }
-
-  const factor = Math.pow(1 + rate, -nper);
-  const annuity = (1 - factor) / rate;
-  const timing = type === 1 ? 1 + rate : 1;
-
-  return pv + pmt * timing * annuity + fv * factor;
+function setT(id,value){
+  const element = $(id);
+  if(element) element.textContent = value;
 }
 
-/*
-  RATE แบบ bracket + bisection
-  เสถียรกว่า Newton-Raphson สำหรับข้อมูลที่ใกล้ศูนย์
-*/
-function calculateRate(nper, pmt, pv, fv = 0, type = 0) {
-  if (!(nper > 0) || ![pmt, pv, fv].every(Number.isFinite)) return NaN;
+function roundUp(value){
+  return Math.ceil(
+    Math.round(value * 100) / 100
+  );
+}
 
-  const zeroNPV = rateNPV(0, nper, pmt, pv, fv, type);
-  if (Math.abs(zeroNPV) < 1e-8) return 0;
+function formatInput(value){
+  if(!Number.isFinite(value)) return "";
 
-  let low = -0.9999;
-  let high = 1;
-  let fLow = rateNPV(low, nper, pmt, pv, fv, type);
-  let fHigh = rateNPV(high, nper, pmt, pv, fv, type);
+  return value.toLocaleString("th-TH",{
+    minimumFractionDigits:0,
+    maximumFractionDigits:2
+  });
+}
 
-  for (let i = 0; i < 30 && fLow * fHigh > 0; i++) {
-    high *= 2;
-    fHigh = rateNPV(high, nper, pmt, pv, fv, type);
-  }
+function toast(message){
+  const element = $("toast");
 
-  if (!Number.isFinite(fLow) || !Number.isFinite(fHigh) || fLow * fHigh > 0) {
+  element.textContent = message;
+  element.className = "show";
+
+  clearTimeout(toast.timer);
+
+  toast.timer = setTimeout(() => {
+    element.className = "";
+  },3000);
+}
+
+/* ===== RATE ===== */
+
+function rateEquation(rateValue,nper,pmt,pv,fv,type){
+  if(!Number.isFinite(rateValue) || rateValue <= -1){
     return NaN;
   }
 
-  for (let i = 0; i < 150; i++) {
-    const mid = (low + high) / 2;
-    const fMid = rateNPV(mid, nper, pmt, pv, fv, type);
+  if(Math.abs(rateValue) < 1e-10){
+    return pv + pmt * nper + fv;
+  }
 
-    if (!Number.isFinite(fMid)) return NaN;
-    if (Math.abs(fMid) < 1e-10) return mid;
+  const power = Math.pow(1 + rateValue,nper);
+  const annuity = (power - 1) / rateValue;
 
-    if (fLow * fMid <= 0) {
-      high = mid;
-      fHigh = fMid;
-    } else {
-      low = mid;
-      fLow = fMid;
+  return (
+    pv * power +
+    pmt * (1 + rateValue * type) * annuity +
+    fv
+  );
+}
+
+function rate(nper,pmt,pv,fv = 0,type = 0,guess = 0.01){
+  if(
+    !(nper > 0) ||
+    ![pmt,pv,fv].every(Number.isFinite)
+  ){
+    return NaN;
+  }
+
+  let current = guess;
+
+  for(let i = 0; i < 100; i++){
+    if(current <= -0.999999) break;
+
+    const onePlus = 1 + current;
+    const power = Math.pow(onePlus,nper);
+
+    if(!Number.isFinite(power)) break;
+
+    let value;
+    let derivative;
+
+    if(Math.abs(current) < 1e-8){
+      value = rateEquation(
+        current,nper,pmt,pv,fv,type
+      );
+
+      const h = 1e-6;
+
+      derivative = (
+        rateEquation(h,nper,pmt,pv,fv,type) -
+        rateEquation(-h,nper,pmt,pv,fv,type)
+      ) / (2 * h);
+    }else{
+      const annuity = (power - 1) / current;
+
+      const annuityDerivative = (
+        nper *
+        Math.pow(onePlus,nper - 1) *
+        current -
+        (power - 1)
+      ) / (current * current);
+
+      value =
+        pv * power +
+        pmt *
+        (1 + current * type) *
+        annuity +
+        fv;
+
+      derivative =
+        pv *
+        nper *
+        Math.pow(onePlus,nper - 1) +
+        pmt *
+        (
+          type * annuity +
+          (1 + current * type) *
+          annuityDerivative
+        );
+    }
+
+    if(
+      !Number.isFinite(value) ||
+      !Number.isFinite(derivative) ||
+      Math.abs(derivative) < 1e-14
+    ){
+      break;
+    }
+
+    const next = current - value / derivative;
+
+    if(!Number.isFinite(next) || next <= -1){
+      break;
+    }
+
+    if(Math.abs(next - current) < 1e-12){
+      return next;
+    }
+
+    current = next;
+  }
+
+  let low = -0.9999;
+  let high = 1;
+
+  let lowValue = rateEquation(
+    low,nper,pmt,pv,fv,type
+  );
+
+  let highValue = rateEquation(
+    high,nper,pmt,pv,fv,type
+  );
+
+  for(
+    let i = 0;
+    i < 30 && lowValue * highValue > 0;
+    i++
+  ){
+    high *= 2;
+
+    highValue = rateEquation(
+      high,nper,pmt,pv,fv,type
+    );
+  }
+
+  if(
+    !Number.isFinite(lowValue) ||
+    !Number.isFinite(highValue) ||
+    lowValue * highValue > 0
+  ){
+    return NaN;
+  }
+
+  for(let i = 0; i < 150; i++){
+    const middle = (low + high) / 2;
+
+    const middleValue = rateEquation(
+      middle,nper,pmt,pv,fv,type
+    );
+
+    if(!Number.isFinite(middleValue)){
+      return NaN;
+    }
+
+    if(Math.abs(middleValue) < 1e-12){
+      return middle;
+    }
+
+    if(lowValue * middleValue <= 0){
+      high = middle;
+    }else{
+      low = middle;
+      lowValue = middleValue;
     }
   }
 
   return (low + high) / 2;
 }
 
-function getState(overrides = {}) {
-  const net = Math.max(0, num("price") - num("discount") + num("option"));
+/* ===== Input model ===== */
 
-  const down = overrides.down !== undefined
-    ? overrides.down
-    : amountOrPercent("downType", "down", net);
+function readInputs(){
+  const unit = $("termUnit").value;
+  const termValue = Math.max(0,num("term"));
 
-  const balloon = overrides.balloon !== undefined
-    ? overrides.balloon
-    : amountOrPercent("balloonType", "balloon", net);
-
-  const months = Math.trunc(num("term"));
-  const annualRatePct = Math.max(0, num("annualRate"));
-  const vatFactor = 1 + Math.max(0, num("vatPct")) / 100;
-  const paymentType = Number($("paymentType").value) === 1 ? 1 : 0;
-  const finance = net - down;
+  const months =
+    unit === "months"
+      ? Math.trunc(termValue)
+      : Math.trunc(termValue * 12);
 
   return {
-    net,
-    down,
-    balloon,
+    gross:num("gross"),
+    discount:num("discount"),
+    option:num("option"),
+
+    vat:Math.max(0,num("vat")) / 100,
+
     months,
-    annualRatePct,
-    vatFactor,
-    paymentType,
-    finance
+    years:months / 12,
+
+    downType:$("downType").value,
+    down:Math.max(0,num("down")),
+
+    balloonOn:$("balloonOn").value === "1",
+    balloonType:$("balloonType").value,
+    balloon:Math.max(0,num("balloon")),
+
+    timing:$("timing").value === "1" ? 1 : 0,
+
+    mode:$("mode").value,
+    flat:Math.max(0,num("flat")) / 100,
+    irrTarget:Math.max(0,num("irrTarget")) / 100,
+
+    subsidy:Math.max(0,num("subsidy")),
+
+    commBase:$("commBase").value,
+    commPct:Math.max(0,num("commPct")) / 100,
+    commExtra:Math.max(0,num("commExtra"))
   };
 }
 
-function compute(overrides = {}) {
-  const s = getState(overrides);
+/* ===== Calculation ===== */
 
-  if (!(s.net > 0)) {
-    return { valid: false, error: "กรุณาระบุราคารถสุทธิให้มากกว่า 0", ...s };
+function calc(input,downOverride = null,balloonOverride = null){
+  const vatFactor = 1 + input.vat;
+
+  const net =
+    input.gross -
+    input.discount +
+    input.option;
+
+  const downBaht =
+    downOverride !== null
+      ? downOverride
+      : (
+          input.downType === "percent"
+            ? net * input.down / 100
+            : input.down
+        );
+
+  const balloonBaht =
+    balloonOverride !== null
+      ? balloonOverride
+      : (
+          input.balloonOn
+            ? (
+                input.balloonType === "percent"
+                  ? net * input.balloon / 100
+                  : input.balloon
+              )
+            : 0
+        );
+
+  const finance = net - downBaht;
+  const finMinus = finance - balloonBaht;
+  const subsidyInc = input.subsidy * vatFactor;
+  const financeAfterSubsidy = finance - subsidyInc;
+
+  let error = "";
+
+  if(!(net > 0)){
+    error = "กรุณาระบุราคารถสุทธิให้มากกว่า 0";
+  }else if(!(input.months > 0)){
+    error = "จำนวนงวดต้องมากกว่า 0";
+  }else if(downBaht < 0 || downBaht > net){
+    error = "เงินดาวน์ต้องไม่เกินราคาสุทธิ";
+  }else if(!(finance > 0)){
+    error = "ยอดจัดต้องมากกว่า 0";
+  }else if(balloonBaht < 0 || balloonBaht > finance){
+    error = "Balloon ต้องไม่เกินยอดจัด";
+  }else if(financeAfterSubsidy < 0){
+    error = "Subsidy รวม VAT ต้องไม่เกินยอดจัด";
   }
 
-  if (!(s.months > 0)) {
-    return { valid: false, error: "จำนวนงวดต้องมากกว่า 0", ...s };
+  if(error){
+    return {
+      valid:false,
+      error,
+      net,
+      downBaht,
+      balloonBaht,
+      finance,
+      finMinus,
+      subsidyInc,
+      financeAfterSubsidy
+    };
   }
 
-  if (s.down < 0 || s.down > s.net) {
-    return { valid: false, error: "เงินดาวน์ต้องไม่เกินราคาสุทธิ", ...s };
-  }
+  function resultFromFlat(flatRate){
+    const interest =
+      finMinus *
+      flatRate *
+      input.years;
 
-  if (!(s.finance > 0)) {
-    return { valid: false, error: "ยอดจัดต้องมากกว่า 0", ...s };
-  }
+    const pmtRaw =
+      (finMinus + interest) /
+      input.months;
 
-  if (s.balloon < 0 || s.balloon > s.finance) {
-    return { valid: false, error: "Balloon ต้องไม่เกินยอดจัดหลังหักเงินดาวน์", ...s };
-  }
+    const pmtRounded = roundUp(pmtRaw);
 
-  const pmtRaw = calculatePMT(
-    s.finance,
-    s.balloon,
-    s.annualRatePct,
-    s.months,
-    s.paymentType
-  );
+    const commissionBase =
+      input.commBase === "interest"
+        ? interest
+        : finance;
 
-  if (!Number.isFinite(pmtRaw)) {
-    return { valid: false, error: "ไม่สามารถคำนวณค่างวดได้", ...s };
-  }
-
-  const pmtRounded = Math.ceil(pmtRaw);
-
-  const commission =
-    Math.round(
-      s.finance * Math.max(0, num("commissionPct")) / 100 +
-      Math.max(0, num("commissionExtra"))
+    const commission = Math.round(
+      commissionBase *
+      input.commPct +
+      input.commExtra
     );
 
-  const subsidyEx = Math.max(0, num("subsidy"));
-  const subsidyInc = subsidyEx * s.vatFactor;
-  const financeAfterSubsidy = Math.max(0, s.finance - subsidyInc);
+    const pmtForRate =
+      IRR_USE_ROUNDED_PMT
+        ? pmtRounded
+        : pmtRaw;
 
-  /*
-    ดอกเบี้ยรวมตามกระแสเงินจริง:
-    PMT x จำนวนงวด + Balloon - Finance
-  */
-  const totalInterest = Math.max(
-    0,
-    pmtRaw * s.months + s.balloon - s.finance
+    const owsIrr = rate(
+      input.months,
+      pmtForRate / vatFactor,
+      -(finance + commission) / vatFactor,
+      balloonBaht / vatFactor,
+      input.timing,
+      0.01
+    ) * 12;
+
+    return {
+      interest,
+      pmtRaw,
+      pmtRounded,
+      commissionBase,
+      commission,
+      owsIrr
+    };
+  }
+
+  let flatRate = input.flat;
+  let irrTargetReached = true;
+
+  if(input.mode === "IRR"){
+    let low = 0;
+    let high = 1;
+
+    const lowResult = resultFromFlat(low);
+    let highResult = resultFromFlat(high);
+
+    for(
+      let i = 0;
+      i < 12 &&
+      Number.isFinite(highResult.owsIrr) &&
+      highResult.owsIrr < input.irrTarget;
+      i++
+    ){
+      high *= 2;
+      highResult = resultFromFlat(high);
+    }
+
+    if(
+      Number.isFinite(lowResult.owsIrr) &&
+      Number.isFinite(highResult.owsIrr) &&
+      input.irrTarget >= lowResult.owsIrr &&
+      input.irrTarget <= highResult.owsIrr
+    ){
+      for(let i = 0; i < 100; i++){
+        const middle = (low + high) / 2;
+        const middleResult = resultFromFlat(middle);
+
+        if(!Number.isFinite(middleResult.owsIrr)){
+          break;
+        }
+
+        if(middleResult.owsIrr >= input.irrTarget){
+          high = middle;
+        }else{
+          low = middle;
+        }
+      }
+
+      flatRate = (low + high) / 2;
+    }else{
+      irrTargetReached = false;
+    }
+  }
+
+  const base = resultFromFlat(flatRate);
+
+  const interestSubsidy =
+    Math.max(
+      0,
+      financeAfterSubsidy - balloonBaht
+    ) *
+    flatRate *
+    input.years;
+
+  const commissionBaseSubsidy =
+    input.commBase === "interest"
+      ? interestSubsidy
+      : financeAfterSubsidy;
+
+  const commissionSubsidy = Math.round(
+    commissionBaseSubsidy *
+    input.commPct +
+    input.commExtra
   );
 
-  const pmtEx = pmtRounded / s.vatFactor;
-  const balloonEx = s.balloon / s.vatFactor;
+  const pmtForRate =
+    IRR_USE_ROUNDED_PMT
+      ? base.pmtRounded
+      : base.pmtRaw;
 
-  const companyPV = -(s.finance + commission) / s.vatFactor;
-  const subsidyPV = -(financeAfterSubsidy + commission) / s.vatFactor;
-  const customerPV = -financeAfterSubsidy / s.vatFactor;
+  const irrSubsidy =
+    financeAfterSubsidy > 0
+      ? rate(
+          input.months,
+          pmtForRate / vatFactor,
+          -(financeAfterSubsidy + commissionSubsidy) / vatFactor,
+          balloonBaht / vatFactor,
+          input.timing,
+          0.01
+        ) * 12
+      : NaN;
 
-  const monthlyIRR = calculateRate(
-    s.months,
-    pmtEx,
-    companyPV,
-    balloonEx,
-    s.paymentType
-  );
+  const effective =
+    financeAfterSubsidy > 0
+      ? rate(
+          input.months,
+          base.pmtRounded / vatFactor,
+          -financeAfterSubsidy / vatFactor,
+          balloonBaht / vatFactor,
+          0,
+          0.01
+        ) * 12
+      : NaN;
 
-  const monthlyIRRSubsidy = calculateRate(
-    s.months,
-    pmtEx,
-    subsidyPV,
-    balloonEx,
-    s.paymentType
-  );
-
-  const monthlyEffective = calculateRate(
-    s.months,
-    pmtEx,
-    customerPV,
-    balloonEx,
-    s.paymentType
-  );
+  const customerFlat =
+    finance > 0 && input.months > 0
+      ? base.interest /
+        (finance * input.months) *
+        12
+      : NaN;
 
   return {
-    valid: true,
-    ...s,
-    pmtRaw,
-    pmtRounded,
-    commission,
-    subsidyEx,
+    valid:true,
+    net,
+    downBaht,
+    balloonBaht,
+    finance,
+    finMinus,
+    flatRate,
+    irrTargetReached,
+
+    interest:base.interest,
+    pmtRaw:base.pmtRaw,
+    pmtRounded:base.pmtRounded,
+
+    commissionBase:base.commissionBase,
+    commission:base.commission,
+    owsIrr:base.owsIrr,
+
+    subsidyEx:input.subsidy,
     subsidyInc,
     financeAfterSubsidy,
-    totalInterest,
-    irrAnnualPct: monthlyIRR * 12 * 100,
-    irrSubsidyAnnualPct: monthlyIRRSubsidy * 12 * 100,
-    effectiveAnnualPct: monthlyEffective * 12 * 100
+    interestSubsidy,
+    commissionSubsidy,
+    irrSubsidy,
+    effective,
+    customerFlat
   };
 }
 
-function render(result = compute(), quiet = false) {
-  if (!result.valid) {
-    if (!quiet) showMessage(result.error, "error");
+/* ===== Render ===== */
 
-    [
-      "kPmt", "kIrr", "kIrrSubsidy", "kEffective",
-      "rNet", "rDown", "rDownPct", "rBalloon",
-      "rBalloonPct", "rFinance", "rSubsidyInc",
-      "rFinanceSubsidy", "rInterest", "rCommission",
-      "rPmtRaw", "rPmtRounded"
-    ].forEach(id => $(id).textContent = "—");
+const resultIds = [
+  "pmt","irrH","trH","mobilePmt","mobileFinance",
+  "mobileIrr","mobileEffective","bottomPmt",
+  "net","downBaht","downPctShow","balloonBaht",
+  "finance","finMinus","flatShow","interest",
+  "pmtRawShow","pmtRoundedShow","commBaseShow",
+  "comm","irr","subsidyExShow","subsidyIncShow",
+  "financeSubShow","interestSubShow","commSubShow",
+  "irrSub","effective","customerFlat"
+];
+
+function clearResult(){
+  resultIds.forEach(id => setT(id,"—"));
+}
+
+function render(){
+  const input = readInputs();
+  const result = calc(input);
+
+  setT("monthsHero",input.months + " งวด");
+
+  if(!result.valid){
+    clearResult();
+    setT("monthsHero",input.months + " งวด");
+
+    $("warns").textContent = result.error;
+    $("warns").classList.add("show");
 
     return result;
   }
 
-  if (!quiet) showMessage();
+  $("warns").textContent = "";
+  $("warns").classList.remove("show");
 
-  $("kPmt").textContent = money(result.pmtRounded, 0);
-  $("kIrr").textContent = percent(result.irrAnnualPct);
-  $("kIrrSubsidy").textContent = percent(result.irrSubsidyAnnualPct);
-  $("kEffective").textContent = percent(result.effectiveAnnualPct);
+  const pmtText = f0(result.pmtRounded);
+  const financeText = f2(result.finance);
+  const irrText = pct(result.owsIrr * 100,5);
+  const effectiveText = pct(result.effective * 100,4);
 
-  $("rNet").textContent = money(result.net);
-  $("rDown").textContent = money(result.down);
-  $("rDownPct").textContent = percent(result.down / result.net * 100);
-  $("rBalloon").textContent = money(result.balloon);
-  $("rBalloonPct").textContent = percent(result.balloon / result.net * 100);
-  $("rFinance").textContent = money(result.finance);
-  $("rSubsidyInc").textContent = money(result.subsidyInc);
-  $("rFinanceSubsidy").textContent = money(result.financeAfterSubsidy);
-  $("rInterest").textContent = money(result.totalInterest);
-  $("rCommission").textContent = money(result.commission);
-  $("rPmtRaw").textContent = money(result.pmtRaw);
-  $("rPmtRounded").textContent = money(result.pmtRounded, 0);
+  setT("pmt",pmtText);
+  setT("bottomPmt",pmtText + " บาท");
+  setT("mobilePmt",pmtText);
+  setT("mobileFinance",financeText);
+  setT("mobileIrr",irrText);
+  setT("mobileEffective",effectiveText);
+
+  setT("net",f2(result.net));
+  setT("downBaht",f2(result.downBaht));
+  setT(
+    "downPctShow",
+    result.net > 0
+      ? pct(result.downBaht / result.net * 100,4)
+      : "—"
+  );
+
+  setT("balloonBaht",f2(result.balloonBaht));
+  setT("finance",financeText);
+  setT("finMinus",f2(result.finMinus));
+  setT("flatShow",pct(result.flatRate * 100,4));
+  setT("interest",f2(result.interest));
+  setT("pmtRawShow",f2(result.pmtRaw));
+  setT("pmtRoundedShow",pmtText);
+  setT("commBaseShow",f2(result.commissionBase));
+  setT("comm",f2(result.commission));
+  setT("irr",irrText);
+
+  setT("subsidyExShow",f2(result.subsidyEx));
+  setT("subsidyIncShow",f2(result.subsidyInc));
+  setT("financeSubShow",f2(result.financeAfterSubsidy));
+  setT("interestSubShow",f2(result.interestSubsidy));
+  setT("commSubShow",f2(result.commissionSubsidy));
+  setT("irrSub",pct(result.irrSubsidy * 100,5));
+  setT("effective",effectiveText);
+  setT("customerFlat",pct(result.customerFlat * 100,2));
+
+  setT("irrH",pct(result.owsIrr * 100,4));
+  setT("trH",effectiveText);
+
+  const hasSubsidy = input.subsidy > 0;
+
+  [
+    "subGroup",
+    "subsidyExRow",
+    "subsidyIncRow",
+    "financeSubRow",
+    "interestSubRow",
+    "commSubRow",
+    "subRows"
+  ].forEach(id => {
+    $(id).classList.toggle("hide",!hasSubsidy);
+  });
+
+  if(
+    input.mode === "IRR" &&
+    document.activeElement !== $("flat")
+  ){
+    $("flat").value =
+      (result.flatRate * 100).toFixed(4);
+  }
+
+  const warnings = [];
+
+  if(
+    result.net > 0 &&
+    result.balloonBaht / result.net > .30
+  ){
+    warnings.push(
+      "⚠ Balloon มากกว่า 30% ของราคาสุทธิ"
+    );
+  }
+
+  if(
+    result.net > 0 &&
+    (
+      result.downBaht +
+      result.balloonBaht
+    ) / result.net > 1
+  ){
+    warnings.push(
+      "⛔ เงินดาวน์ + Balloon มากกว่า 100% ของราคาสุทธิ"
+    );
+  }
+
+  if(
+    input.mode === "IRR" &&
+    !result.irrTargetReached
+  ){
+    warnings.push(
+      "⚠ ไม่สามารถหา Flat ที่ตรงกับ OWS IRR เป้าหมายได้"
+    );
+  }
+
+  if(warnings.length){
+    $("warns").innerHTML =
+      warnings.join("<br>");
+
+    $("warns").classList.add("show");
+  }
 
   return result;
 }
 
-function findClosestValue(kind) {
-  const target = num("targetPmt");
-  const base = compute();
+/* ===== Goal Seek ===== */
 
-  if (!(target > 0)) {
-    showMessage("ค่างวดเป้าหมายต้องมากกว่า 0", "error");
+function targetPayment(){
+  return Math.max(0,num("target"));
+}
+
+function goalSeekDown(){
+  const target = targetPayment();
+
+  if(!(target > 0)){
+    toast("กรุณากรอกค่างวดเป้าหมาย");
+    $("target").focus();
     return;
   }
 
-  if (!base.valid) {
-    showMessage(base.error, "error");
+  const input = readInputs();
+  const base = calc(input);
+
+  if(!base.valid){
+    toast(base.error);
     return;
   }
 
-  /*
-    หา Down:
-    ช่วง 0 ถึง Net - Balloon
-
-    หา Balloon:
-    ช่วง 0 ถึง Finance
-  */
-  let low = 0;
-  let high = kind === "down"
-    ? Math.max(0, base.net - base.balloon)
-    : Math.max(0, base.finance);
-
-  const pmtAtLow = compute({ low });
-  const pmtAtHigh = compute({ high });
-
-  if (!pmtAtLow.valid || !pmtAtHigh.valid) {
-    showMessage("ไม่สามารถกำหนดช่วง Goal Seek ได้", "error");
-    return;
-  }
-
-  const maxPayment = pmtAtLow.pmtRounded;
-  const minPayment = pmtAtHigh.pmtRounded;
-
-  if (target > maxPayment || target < minPayment) {
-    showMessage(
-      `ค่างวดเป้าหมายอยู่นอกช่วงที่ทำได้ (${money(minPayment, 0)} ถึง ${money(maxPayment, 0)} บาท)`,
-      "error"
-    );
-    return;
-  }
-
-  let bestValue = low;
-  let bestResult = pmtAtLow;
-  let bestDiff = Math.abs(pmtAtLow.pmtRounded - target);
-
-  for (let i = 0; i < 80; i++) {
-    const mid = (low + high) / 2;
-    const result = compute({ mid });
-
-    if (!result.valid) {
-      high = mid;
-      continue;
-    }
-
-    const diff = Math.abs(result.pmtRounded - target);
-
-    if (diff < bestDiff || (diff === bestDiff && mid < bestValue)) {
-      bestDiff = diff;
-      bestValue = mid;
-      bestResult = result;
-    }
-
-    /*
-      Down/Balloon เพิ่มขึ้น ทำให้ PMT ลดลง
-    */
-    if (result.pmtRounded > target) {
-      low = mid;
-    } else {
-      high = mid;
-    }
-  }
-
-  /*
-    ตรวจสอบเลขจำนวนเต็มใกล้จุดที่หาได้
-  */
-  const candidates = new Set([
-    Math.max(0, Math.floor(bestValue)),
-    Math.max(0, Math.ceil(bestValue)),
-    Math.max(0, Math.floor(low)),
-    Math.max(0, Math.ceil(low)),
-    Math.max(0, Math.floor(high)),
-    Math.max(0, Math.ceil(high))
-  ]);
-
-  for (const candidate of candidates) {
-    const result = compute({ candidate });
-    if (!result.valid) continue;
-
-    const diff = Math.abs(result.pmtRounded - target);
-
-    if (diff < bestDiff || (diff === bestDiff && candidate < bestValue)) {
-      bestDiff = diff;
-      bestValue = candidate;
-      bestResult = result;
-    }
-  }
-
-  if (kind === "down") {
-    $("downType").value = "amount";
-    $("down").value = Math.round(bestValue);
-  } else {
-    $("balloonType").value = "amount";
-    $("balloon").value = Math.round(bestValue);
-  }
-
-  const finalResult = render(compute(), true);
-
-  showMessage(
-    `${kind === "down" ? "เงินดาวน์" : "Balloon"} ${money(bestValue, 0)} บาท ` +
-    `ได้ค่างวด ${money(finalResult.pmtRounded, 0)} บาท` +
-    (bestDiff === 0 ? "" : ` ใกล้เป้าหมายต่าง ${money(bestDiff, 0)} บาท`),
-    bestDiff === 0 ? "success" : "error"
+  const maxDown = Math.max(
+    0,
+    base.net - base.balloonBaht - .01
   );
 
-  return bestResult;
-}
+  const paymentAtZero = calc(input,0,null);
+  const paymentAtMax = calc(input,maxDown,null);
 
-async function copySummary() {
-  const r = compute();
+  if(target >= paymentAtZero.pmtRounded){
+    $("downType").value = "amount";
+    $("down").value = "0";
+    render();
 
-  if (!r.valid) {
-    showMessage(r.error, "error");
+    toast(
+      `ไม่ต้องดาวน์ ค่างวด ${f0(paymentAtZero.pmtRounded)} บาท`
+    );
+
     return;
   }
 
-  const text = [
-    `🚗 ${$("carName").value.trim() || "Lease Calculation"}`,
-    `ราคาสุทธิ ${money(r.net)} บาท`,
-    `เงินดาวน์ ${money(r.down)} บาท (${percent(r.down / r.net * 100, 2)})`,
-    `Balloon ${money(r.balloon)} บาท (${percent(r.balloon / r.net * 100, 2)})`,
-    `ยอดจัด ${money(r.finance)} บาท`,
-    `${r.months} งวด / ${r.paymentType === 1 ? "ต้นงวด" : "ปลายงวด"}`,
-    `ค่างวด ${money(r.pmtRounded, 0)} บาท`,
-    `IRR ${percent(r.irrAnnualPct)}`,
-    `IRR Subsidy ${percent(r.irrSubsidyAnnualPct)}`,
-    `Effective Rate ${percent(r.effectiveAnnualPct)}`
-  ].join("\n");
+  if(target < paymentAtMax.pmtRounded){
+    toast(
+      `เป้าหมายต่ำกว่าค่างวดขั้นต่ำ ${f0(paymentAtMax.pmtRounded)} บาท`
+    );
 
-  try {
-    await navigator.clipboard.writeText(text);
-    showMessage("Copy สรุปเรียบร้อย", "success");
-  } catch {
-    const area = document.createElement("textarea");
-    area.value = text;
-    document.body.appendChild(area);
-    area.select();
-    document.execCommand("copy");
-    area.remove();
-    showMessage("Copy สรุปเรียบร้อย", "success");
+    return;
   }
+
+  let low = 0;
+  let high = Math.round(maxDown * 100);
+
+  while(low < high){
+    const middle = Math.floor((low + high) / 2);
+    const candidate = middle / 100;
+    const result = calc(input,candidate,null);
+
+    if(result.valid && result.pmtRounded <= target){
+      high = middle;
+    }else{
+      low = middle + 1;
+    }
+  }
+
+  const down = low / 100;
+
+  $("downType").value = "amount";
+  $("down").value = formatInput(down);
+
+  const finalResult = render();
+
+  toast(
+    `ดาวน์ ${f2(down)} บาท • ค่างวด ${f0(finalResult.pmtRounded)} บาท`
+  );
 }
 
-function resetAll() {
-  Object.entries(DEFAULTS).forEach(([id, value]) => {
-    if ($(id)) $(id).value = value;
+function goalSeekBalloon(){
+  const target = targetPayment();
+
+  if(!(target > 0)){
+    toast("กรุณากรอกค่างวดเป้าหมาย");
+    $("target").focus();
+    return;
+  }
+
+  const input = readInputs();
+  const base = calc(input);
+
+  if(!base.valid){
+    toast(base.error);
+    return;
+  }
+
+  const searchInput = {
+    ...input,
+    balloonOn:true
+  };
+
+  const paymentAtZero = calc(searchInput,null,0);
+  const maxBalloon = Math.max(0,base.finance - .01);
+  const paymentAtMax = calc(searchInput,null,maxBalloon);
+
+  if(target >= paymentAtZero.pmtRounded){
+    $("balloonOn").value = "0";
+    $("balloon").value = "0";
+
+    syncUI();
+    render();
+
+    toast(
+      `ไม่ต้องใช้ Balloon ค่างวด ${f0(paymentAtZero.pmtRounded)} บาท`
+    );
+
+    return;
+  }
+
+  if(
+    !paymentAtMax.valid ||
+    target < paymentAtMax.pmtRounded
+  ){
+    toast(
+      `เป้าหมายต่ำกว่าค่างวดขั้นต่ำ ${f0(paymentAtMax.pmtRounded)} บาท`
+    );
+
+    return;
+  }
+
+  let low = 0;
+  let high = Math.round(maxBalloon * 100);
+
+  while(low < high){
+    const middle = Math.floor((low + high) / 2);
+    const candidate = middle / 100;
+    const result = calc(searchInput,null,candidate);
+
+    if(result.valid && result.pmtRounded <= target){
+      high = middle;
+    }else{
+      low = middle + 1;
+    }
+  }
+
+  const balloon = low / 100;
+
+  $("balloonOn").value = "1";
+  $("balloonType").value = "amount";
+  $("balloon").value = formatInput(balloon);
+
+  syncUI();
+
+  const finalResult = render();
+
+  toast(
+    `Balloon ${f2(balloon)} บาท • ค่างวด ${f0(finalResult.pmtRounded)} บาท`
+  );
+}
+
+/* ===== Mobile number entry ===== */
+
+function addClearButton(input){
+  if(
+    input.readOnly ||
+    input.parentElement.querySelector(".clear-input")
+  ){
+    return;
+  }
+
+  const button = document.createElement("button");
+
+  button.type = "button";
+  button.className = "clear-input";
+  button.setAttribute(
+    "aria-label",
+    "ล้างค่า " +
+    (
+      input.closest("div")
+        ?.querySelector("label")
+        ?.textContent || ""
+    )
+  );
+
+  button.textContent = "×";
+
+  button.addEventListener("pointerdown",event => {
+    event.preventDefault();
   });
 
-  render();
-  showMessage("รีเซ็ตข้อมูลเรียบร้อย", "success");
+  button.addEventListener("click",() => {
+    input.value = "";
+    input.focus();
+    input.dispatchEvent(
+      new Event("input",{bubbles:true})
+    );
+  });
+
+  input.parentElement.appendChild(button);
 }
 
-document.querySelectorAll("input,select").forEach(element => {
-  element.addEventListener("input", () => render());
-  element.addEventListener("change", () => render());
+function setupNumericInputs(){
+  document
+    .querySelectorAll("input.n")
+    .forEach(input => {
+      if(!input.parentElement.classList.contains("input-wrap")){
+        const wrap = document.createElement("div");
+        wrap.className = "input-wrap";
+
+        input.parentNode.insertBefore(wrap,input);
+        wrap.appendChild(input);
+      }
+
+      addClearButton(input);
+
+      input.addEventListener("focus",() => {
+        input.value =
+          input.value.replace(/,/g,"");
+
+        requestAnimationFrame(() => {
+          try{
+            input.select();
+          }catch(error){}
+        });
+      });
+
+      input.addEventListener("input",() => {
+        let value = input.value.replace(
+          /[^0-9.]/g,
+          ""
+        );
+
+        const firstDot = value.indexOf(".");
+
+        if(firstDot !== -1){
+          value =
+            value.slice(0,firstDot + 1) +
+            value
+              .slice(firstDot + 1)
+              .replace(/\./g,"");
+        }
+
+        input.value = value;
+      });
+
+      input.addEventListener("blur",() => {
+        if(
+          input.value !== "" &&
+          !input.readOnly
+        ){
+          const value = parseFloat(input.value);
+
+          if(Number.isFinite(value)){
+            input.value = formatInput(value);
+          }
+        }
+      });
+
+      input.addEventListener("keydown",event => {
+        if(event.key === "Enter"){
+          event.preventDefault();
+
+          const controls = Array.from(
+            document.querySelectorAll(
+              "input:not([readonly]),select,button"
+            )
+          ).filter(
+            element =>
+              !element.disabled &&
+              element.offsetParent !== null
+          );
+
+          const index = controls.indexOf(input);
+          const next = controls[index + 1];
+
+          if(next){
+            next.focus();
+          }else{
+            input.blur();
+          }
+        }
+      });
+    });
+}
+
+/* ===== UI ===== */
+
+function syncUI(){
+  const irrMode = $("mode").value === "IRR";
+
+  $("irrRow").classList.toggle(
+    "hide",
+    !irrMode
+  );
+
+  $("flat").readOnly = irrMode;
+
+  $("balloonBox").classList.toggle(
+    "hide",
+    $("balloonOn").value !== "1"
+  );
+}
+
+function resetAll(){
+  const defaults = {
+    gross:"",
+    discount:"",
+    option:"",
+    term:"5",
+    vat:"7",
+    down:"",
+    flat:"",
+    irrTarget:"5.75",
+    balloon:"",
+    commPct:"",
+    commExtra:"",
+    subsidy:"",
+    target:"36,000"
+  };
+
+  Object.entries(defaults)
+    .forEach(([id,value]) => {
+      $(id).value = value;
+    });
+
+  $("termUnit").value = "years";
+  $("downType").value = "amount";
+  $("balloonOn").value = "0";
+  $("balloonType").value = "amount";
+  $("mode").value = "Flat";
+  $("timing").value = "0";
+  $("commBase").value = "finance";
+
+  previousTermUnit = "years";
+
+  syncUI();
+  render();
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+  setTimeout(() => $("gross").focus(),350);
+
+  toast("ล้างข้อมูลเรียบร้อย");
+}
+
+/* ===== Events ===== */
+
+let previousTermUnit = "years";
+
+$("termUnit").addEventListener("change",event => {
+  const value = num("term");
+  const newUnit = event.target.value;
+
+  if(value > 0){
+    if(
+      previousTermUnit === "years" &&
+      newUnit === "months"
+    ){
+      $("term").value =
+        Math.round(value * 12);
+    }else if(
+      previousTermUnit === "months" &&
+      newUnit === "years"
+    ){
+      $("term").value =
+        Number((value / 12).toFixed(2));
+    }
+  }
+
+  previousTermUnit = newUnit;
 });
 
-$("btnDownSeek").addEventListener("click", () => findClosestValue("down"));
-$("btnBalloonSeek").addEventListener("click", () => findClosestValue("balloon"));
-$("btnCopy").addEventListener("click", copySummary);
-$("btnReset").addEventListener("click", resetAll);
+document.addEventListener("input",event => {
+  if(event.target.matches("input,select")){
+    render();
+  }
+});
 
+document.addEventListener("change",event => {
+  if(
+    event.target.id === "balloonOn" &&
+    event.target.value === "0"
+  ){
+    $("balloon").value = "";
+  }
+
+  syncUI();
+  render();
+});
+
+document.querySelectorAll("[data-down-pct]")
+  .forEach(button => {
+    button.addEventListener("click",() => {
+      $("downType").value = "percent";
+      $("down").value = button.dataset.downPct;
+      render();
+      toast(`ตั้งเงินดาวน์ ${button.dataset.downPct}%`);
+    });
+  });
+
+document.querySelectorAll("[data-balloon-pct]")
+  .forEach(button => {
+    button.addEventListener("click",() => {
+      $("balloonOn").value = "1";
+      $("balloonType").value = "percent";
+      $("balloon").value = button.dataset.balloonPct;
+      syncUI();
+      render();
+      toast(`ตั้ง Balloon ${button.dataset.balloonPct}%`);
+    });
+  });
+
+document.querySelectorAll("[data-target]")
+  .forEach(button => {
+    button.addEventListener("click",() => {
+      $("target").value =
+        Number(button.dataset.target)
+          .toLocaleString("th-TH");
+
+      render();
+    });
+  });
+
+$("btnGoal").addEventListener("click",goalSeekDown);
+$("btnBalloonGoal").addEventListener("click",goalSeekBalloon);
+$("btnReset").addEventListener("click",resetAll);
+
+$("btnShowResult").addEventListener("click",() => {
+  $("resultSection").scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+});
+
+document.addEventListener("keydown",event => {
+  if(event.ctrlKey && event.key === "Enter"){
+    event.preventDefault();
+    goalSeekDown();
+  }
+});
+
+setupNumericInputs();
+syncUI();
 render();
 </script>
 
