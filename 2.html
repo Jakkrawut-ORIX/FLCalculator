@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quick Lease Calculator</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  font-family:Arial,"Tahoma",sans-serif;
+  max-width:900px;
+  margin:auto;
+  padding:15px;
+  color:#222;
+  background:#f4f6f8
+}
+h1{font-size:22px;margin:0 0 12px}
+h2{font-size:16px;margin:0 0 10px}
+.card{
+  background:#fff;
+  border:1px solid #dfe3e8;
+  border-radius:8px;
+  padding:12px;
+  margin-bottom:12px
+}
+.grid,.kpi,.buttons{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px
+}
+.field label{
+  display:block;
+  font-size:12px;
+  font-weight:bold;
+  margin-bottom:4px
+}
+input,select,button{
+  width:100%;
+  min-height:40px;
+  padding:8px;
+  border:1px solid #aeb7c2;
+  border-radius:5px;
+  background:#fff;
+  font-size:15px
+}
+input:focus,select:focus,button:focus{
+  outline:3px solid rgba(0,70,140,.18);
+  border-color:#00468c
+}
+button{
+  cursor:pointer;
+  font-weight:bold
+}
+.primary{background:#003b70;color:#fff;border-color:#003b70}
+.secondary{background:#fff;color:#003b70;border-color:#003b70}
+.danger{background:#fff;color:#b00020;border-color:#b00020}
+.kpi{grid-template-columns:repeat(4,minmax(0,1fr))}
+.kpi-box{
+  background:#003b70;
+  color:#fff;
+  padding:12px 8px;
+  border-radius:7px;
+  text-align:center
+}
+.kpi-label{font-size:12px;opacity:.85}
+.kpi-value{
+  margin-top:5px;
+  font-size:21px;
+  font-weight:bold;
+  overflow-wrap:anywhere
+}
+.result{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:0 15px
+}
+.result div{
+  padding:7px 0;
+  border-bottom:1px solid #eee
+}
+.result .value{text-align:right;font-weight:bold}
+.message{
+  display:none;
+  margin-bottom:12px;
+  padding:9px;
+  border-radius:5px;
+  font-size:13px
+}
+.message.error{display:block;background:#ffe8e8;color:#8b0000}
+.message.success{display:block;background:#e8f7ed;color:#075b25}
+.hint{font-size:12px;color:#666;margin:7px 0 0}
+.full{grid-column:1/-1}
+
+@media(max-width:650px){
+  .grid,.buttons{grid-template-columns:1fr}
+  .kpi{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kpi-value{font-size:18px}
+}
+</style>
+</head>
+
+<body>
+
+<h1>Quick Lease Calculator</h1>
+
+<div id="message" class="message" role="status" aria-live="polite"></div>
+
+<div class="card">
+  <h2>ข้อมูลสัญญา</h2>
+
+  <div class="grid">
+    <div class="field full">
+      <label for="carName">รุ่นรถ</label>
+      <input id="carName" type="text" placeholder="ระบุรุ่นรถ">
+    </div>
+
+    <div class="field">
+      <label for="price">ราคารถ รวม VAT (บาท)</label>
+      <input id="price" type="number" min="0" step="1" value="0">
+    </div>
+
+    <div class="field">
+      <label for="discount">ส่วนลด (บาท)</label>
+      <input id="discount" type="number" min="0" step="1" value="0">
+    </div>
+
+    <div class="field">
+      <label for="option">Option เพิ่ม (บาท)</label>
+      <input id="option" type="number" min="0" step="1" value="0">
+    </div>
+
+    <div class="field">
+      <label for="term">จำนวนงวด (เดือน)</label>
+      <input id="term" type="number" min="1" max="360" step="1" value="60">
+    </div>
+
+    <div class="field">
+      <label for="annualRate">อัตราดอกเบี้ยลดต้นลดดอก (% ต่อปี)</label>
+      <input id="annualRate" type="number" min="0" step="0.0001" value="3.5">
+    </div>
+
+    <div class="field">
+      <label for="vatPct">VAT (%)</label>
+      <input id="vatPct" type="number" min="0" step="0.01" value="7">
+    </div>
+
+    <div class="field">
+      <label for="paymentType">กำหนดชำระ</label>
+      <select id="paymentType">
+        <option value="0">ปลายงวด</option>
+        <option value="1">ต้นงวด</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="downType">ประเภทเงินดาวน์</label>
+      <select id="downType">
+        <option value="percent">เปอร์เซ็นต์ (%)</option>
+        <option value="amount">จำนวนเงิน (บาท)</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="down">เงินดาวน์</label>
+      <input id="down" type="number" min="0" step="0.01" value="20">
+    </div>
+
+    <div class="field">
+      <label for="balloonType">ประเภท Balloon</label>
+      <select id="balloonType">
+        <option value="percent">เปอร์เซ็นต์ของราคาสุทธิ (%)</option>
+        <option value="amount">จำนวนเงิน (บาท)</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="balloon">Balloon</label>
+      <input id="balloon" type="number" min="0" step="0.01" value="0">
+    </div>
+
+    <div class="field">
+      <label for="subsidy">Subsidy ไม่รวม VAT (บาท)</label>
+      <input id="subsidy" type="number" min="0" step="1" value="0">
+    </div>
+
+    <div class="field">
+      <label for="commissionPct">ค่าคอมจากยอดจัด (%)</label>
+      <input id="commissionPct" type="number" min="0" step="0.01" value="0">
+    </div>
+
+    <div class="field">
+      <label for="commissionExtra">Extra commission (บาท)</label>
+      <input id="commissionExtra" type="number" min="0" step="1" value="0">
+    </div>
+
+    <div class="field">
+      <label for="targetPmt">ค่างวดเป้าหมาย รวม VAT (บาท)</label>
+      <input id="targetPmt" type="number" min="1" step="1" value="36000">
+    </div>
+  </div>
+
+  <p class="hint">
+    ต้นงวดหมายถึงชำระงวดแรกทันที ณ วันเริ่มสัญญา ส่วน Balloon ชำระเมื่อสิ้นสุดสัญญา
+  </p>
+</div>
+
+<div class="card">
+  <div class="buttons">
+    <button id="btnDownSeek" class="primary" type="button">หาเงินดาวน์จากค่างวด</button>
+    <button id="btnBalloonSeek" class="secondary" type="button">หา Balloon จากค่างวด</button>
+    <button id="btnCopy" class="secondary" type="button">Copy สรุป</button>
+    <button id="btnReset" class="danger" type="button">รีเซ็ต</button>
+  </div>
+</div>
+
+<div class="kpi">
+  <div class="kpi-box">
+    <div class="kpi-label">ค่างวดรวม VAT</div>
+    <div id="kPmt" class="kpi-value">0</div>
+  </div>
+
+  <div class="kpi-box">
+    <div class="kpi-label">IRR รวมคอม</div>
+    <div id="kIrr" class="kpi-value">0%</div>
+  </div>
+
+  <div class="kpi-box">
+    <div class="kpi-label">IRR Subsidy</div>
+    <div id="kIrrSubsidy" class="kpi-value">0%</div>
+  </div>
+
+  <div class="kpi-box">
+    <div class="kpi-label">Effective Rate ลูกค้า</div>
+    <div id="kEffective" class="kpi-value">0%</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>ผลการคำนวณ</h2>
+
+  <div class="result">
+    <div>ราคาสุทธิ</div><div id="rNet" class="value">0.00</div>
+    <div>เงินดาวน์</div><div id="rDown" class="value">0.00</div>
+    <div>เงินดาวน์ (%)</div><div id="rDownPct" class="value">0.0000%</div>
+    <div>Balloon</div><div id="rBalloon" class="value">0.00</div>
+    <div>Balloon (%)</div><div id="rBalloonPct" class="value">0.0000%</div>
+    <div>ยอดจัด</div><div id="rFinance" class="value">0.00</div>
+    <div>Subsidy รวม VAT</div><div id="rSubsidyInc" class="value">0.00</div>
+    <div>ยอดจัดหลัง Subsidy</div><div id="rFinanceSubsidy" class="value">0.00</div>
+    <div>ดอกเบี้ยรวมตามกระแสเงินสด</div><div id="rInterest" class="value">0.00</div>
+    <div>ค่าคอมมิชชั่น</div><div id="rCommission" class="value">0.00</div>
+    <div>ค่างวดก่อนปัด</div><div id="rPmtRaw" class="value">0.00</div>
+    <div>ค่างวดปัดขึ้น</div><div id="rPmtRounded" class="value">0</div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+const DEFAULTS = {
+  carName: "",
+  price: 0,
+  discount: 0,
+  option: 0,
+  term: 60,
+  annualRate: 3.5,
+  vatPct: 7,
+  paymentType: "0",
+  downType: "percent",
+  down: 20,
+  balloonType: "percent",
+  balloon: 0,
+  subsidy: 0,
+  commissionPct: 0,
+  commissionExtra: 0,
+  targetPmt: 36000
+};
+
+function num(id) {
+  const value = Number($(id).value);
+  return Number.isFinite(value) ? value : 0;
+}
+
+function amountOrPercent(typeId, valueId, base) {
+  const value = Math.max(0, num(valueId));
+  return $(typeId).value === "percent"
+    ? base * value / 100
+    : value;
+}
+
+function money(value, decimals = 2) {
+  if (!Number.isFinite(value)) return "—";
+
+  return value.toLocaleString("th-TH", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  });
+}
+
+function percent(value, decimals = 4) {
+  return Number.isFinite(value)
+    ? value.toFixed(decimals) + "%"
+    : "—";
+}
+
+function showMessage(text = "", type = "") {
+  const box = $("message");
+  box.textContent = text;
+  box.className = text ? "message " + type : "message";
+}
+
+/*
+  PMT:
+  pv   = ยอดจัด ณ วันเริ่มสัญญา
+  fv   = Balloon ที่ต้องชำระ ณ สิ้นสุดสัญญา
+  type = 0 ปลายงวด, 1 ต้นงวด
+*/
+function calculatePMT(pv, fv, annualRatePct, months, type) {
+  if (!(pv >= 0) || !(months > 0) || !(fv >= 0)) return NaN;
+
+  const r = annualRatePct / 100 / 12;
+
+  if (Math.abs(r) < 1e-14) {
+    return Math.max(0, (pv - fv) / months);
+  }
+
+  const discount = Math.pow(1 + r, -months);
+  const annuityFactor = (1 - discount) / r;
+  const dueFactor = type === 1 ? 1 + r : 1;
+  const balloonPV = fv * discount;
+
+  return Math.max(0, (pv - balloonPV) / (annuityFactor * dueFactor));
+}
+
+/*
+  NPV ของกระแสเงินสดสำหรับหา RATE
+  pv เป็นค่าลบ, pmt และ fv เป็นค่าบวก
+*/
+function rateNPV(rate, nper, pmt, pv, fv, type) {
+  if (rate <= -1) return NaN;
+
+  if (Math.abs(rate) < 1e-10) {
+    return pv + pmt * nper + fv;
+  }
+
+  const factor = Math.pow(1 + rate, -nper);
+  const annuity = (1 - factor) / rate;
+  const timing = type === 1 ? 1 + rate : 1;
+
+  return pv + pmt * timing * annuity + fv * factor;
+}
+
+/*
+  RATE แบบ bracket + bisection
+  เสถียรกว่า Newton-Raphson สำหรับข้อมูลที่ใกล้ศูนย์
+*/
+function calculateRate(nper, pmt, pv, fv = 0, type = 0) {
+  if (!(nper > 0) || ![pmt, pv, fv].every(Number.isFinite)) return NaN;
+
+  const zeroNPV = rateNPV(0, nper, pmt, pv, fv, type);
+  if (Math.abs(zeroNPV) < 1e-8) return 0;
+
+  let low = -0.9999;
+  let high = 1;
+  let fLow = rateNPV(low, nper, pmt, pv, fv, type);
+  let fHigh = rateNPV(high, nper, pmt, pv, fv, type);
+
+  for (let i = 0; i < 30 && fLow * fHigh > 0; i++) {
+    high *= 2;
+    fHigh = rateNPV(high, nper, pmt, pv, fv, type);
+  }
+
+  if (!Number.isFinite(fLow) || !Number.isFinite(fHigh) || fLow * fHigh > 0) {
+    return NaN;
+  }
+
+  for (let i = 0; i < 150; i++) {
+    const mid = (low + high) / 2;
+    const fMid = rateNPV(mid, nper, pmt, pv, fv, type);
+
+    if (!Number.isFinite(fMid)) return NaN;
+    if (Math.abs(fMid) < 1e-10) return mid;
+
+    if (fLow * fMid <= 0) {
+      high = mid;
+      fHigh = fMid;
+    } else {
+      low = mid;
+      fLow = fMid;
+    }
+  }
+
+  return (low + high) / 2;
+}
+
+function getState(overrides = {}) {
+  const net = Math.max(0, num("price") - num("discount") + num("option"));
+
+  const down = overrides.down !== undefined
+    ? overrides.down
+    : amountOrPercent("downType", "down", net);
+
+  const balloon = overrides.balloon !== undefined
+    ? overrides.balloon
+    : amountOrPercent("balloonType", "balloon", net);
+
+  const months = Math.trunc(num("term"));
+  const annualRatePct = Math.max(0, num("annualRate"));
+  const vatFactor = 1 + Math.max(0, num("vatPct")) / 100;
+  const paymentType = Number($("paymentType").value) === 1 ? 1 : 0;
+  const finance = net - down;
+
+  return {
+    net,
+    down,
+    balloon,
+    months,
+    annualRatePct,
+    vatFactor,
+    paymentType,
+    finance
+  };
+}
+
+function compute(overrides = {}) {
+  const s = getState(overrides);
+
+  if (!(s.net > 0)) {
+    return { valid: false, error: "กรุณาระบุราคารถสุทธิให้มากกว่า 0", ...s };
+  }
+
+  if (!(s.months > 0)) {
+    return { valid: false, error: "จำนวนงวดต้องมากกว่า 0", ...s };
+  }
+
+  if (s.down < 0 || s.down > s.net) {
+    return { valid: false, error: "เงินดาวน์ต้องไม่เกินราคาสุทธิ", ...s };
+  }
+
+  if (!(s.finance > 0)) {
+    return { valid: false, error: "ยอดจัดต้องมากกว่า 0", ...s };
+  }
+
+  if (s.balloon < 0 || s.balloon > s.finance) {
+    return { valid: false, error: "Balloon ต้องไม่เกินยอดจัดหลังหักเงินดาวน์", ...s };
+  }
+
+  const pmtRaw = calculatePMT(
+    s.finance,
+    s.balloon,
+    s.annualRatePct,
+    s.months,
+    s.paymentType
+  );
+
+  if (!Number.isFinite(pmtRaw)) {
+    return { valid: false, error: "ไม่สามารถคำนวณค่างวดได้", ...s };
+  }
+
+  const pmtRounded = Math.ceil(pmtRaw);
+
+  const commission =
+    Math.round(
+      s.finance * Math.max(0, num("commissionPct")) / 100 +
+      Math.max(0, num("commissionExtra"))
+    );
+
+  const subsidyEx = Math.max(0, num("subsidy"));
+  const subsidyInc = subsidyEx * s.vatFactor;
+  const financeAfterSubsidy = Math.max(0, s.finance - subsidyInc);
+
+  /*
+    ดอกเบี้ยรวมตามกระแสเงินจริง:
+    PMT x จำนวนงวด + Balloon - Finance
+  */
+  const totalInterest = Math.max(
+    0,
+    pmtRaw * s.months + s.balloon - s.finance
+  );
+
+  const pmtEx = pmtRounded / s.vatFactor;
+  const balloonEx = s.balloon / s.vatFactor;
+
+  const companyPV = -(s.finance + commission) / s.vatFactor;
+  const subsidyPV = -(financeAfterSubsidy + commission) / s.vatFactor;
+  const customerPV = -financeAfterSubsidy / s.vatFactor;
+
+  const monthlyIRR = calculateRate(
+    s.months,
+    pmtEx,
+    companyPV,
+    balloonEx,
+    s.paymentType
+  );
+
+  const monthlyIRRSubsidy = calculateRate(
+    s.months,
+    pmtEx,
+    subsidyPV,
+    balloonEx,
+    s.paymentType
+  );
+
+  const monthlyEffective = calculateRate(
+    s.months,
+    pmtEx,
+    customerPV,
+    balloonEx,
+    s.paymentType
+  );
+
+  return {
+    valid: true,
+    ...s,
+    pmtRaw,
+    pmtRounded,
+    commission,
+    subsidyEx,
+    subsidyInc,
+    financeAfterSubsidy,
+    totalInterest,
+    irrAnnualPct: monthlyIRR * 12 * 100,
+    irrSubsidyAnnualPct: monthlyIRRSubsidy * 12 * 100,
+    effectiveAnnualPct: monthlyEffective * 12 * 100
+  };
+}
+
+function render(result = compute(), quiet = false) {
+  if (!result.valid) {
+    if (!quiet) showMessage(result.error, "error");
+
+    [
+      "kPmt", "kIrr", "kIrrSubsidy", "kEffective",
+      "rNet", "rDown", "rDownPct", "rBalloon",
+      "rBalloonPct", "rFinance", "rSubsidyInc",
+      "rFinanceSubsidy", "rInterest", "rCommission",
+      "rPmtRaw", "rPmtRounded"
+    ].forEach(id => $(id).textContent = "—");
+
+    return result;
+  }
+
+  if (!quiet) showMessage();
+
+  $("kPmt").textContent = money(result.pmtRounded, 0);
+  $("kIrr").textContent = percent(result.irrAnnualPct);
+  $("kIrrSubsidy").textContent = percent(result.irrSubsidyAnnualPct);
+  $("kEffective").textContent = percent(result.effectiveAnnualPct);
+
+  $("rNet").textContent = money(result.net);
+  $("rDown").textContent = money(result.down);
+  $("rDownPct").textContent = percent(result.down / result.net * 100);
+  $("rBalloon").textContent = money(result.balloon);
+  $("rBalloonPct").textContent = percent(result.balloon / result.net * 100);
+  $("rFinance").textContent = money(result.finance);
+  $("rSubsidyInc").textContent = money(result.subsidyInc);
+  $("rFinanceSubsidy").textContent = money(result.financeAfterSubsidy);
+  $("rInterest").textContent = money(result.totalInterest);
+  $("rCommission").textContent = money(result.commission);
+  $("rPmtRaw").textContent = money(result.pmtRaw);
+  $("rPmtRounded").textContent = money(result.pmtRounded, 0);
+
+  return result;
+}
+
+function findClosestValue(kind) {
+  const target = num("targetPmt");
+  const base = compute();
+
+  if (!(target > 0)) {
+    showMessage("ค่างวดเป้าหมายต้องมากกว่า 0", "error");
+    return;
+  }
+
+  if (!base.valid) {
+    showMessage(base.error, "error");
+    return;
+  }
+
+  /*
+    หา Down:
+    ช่วง 0 ถึง Net - Balloon
+
+    หา Balloon:
+    ช่วง 0 ถึง Finance
+  */
+  let low = 0;
+  let high = kind === "down"
+    ? Math.max(0, base.net - base.balloon)
+    : Math.max(0, base.finance);
+
+  const pmtAtLow = compute({ low });
+  const pmtAtHigh = compute({ high });
+
+  if (!pmtAtLow.valid || !pmtAtHigh.valid) {
+    showMessage("ไม่สามารถกำหนดช่วง Goal Seek ได้", "error");
+    return;
+  }
+
+  const maxPayment = pmtAtLow.pmtRounded;
+  const minPayment = pmtAtHigh.pmtRounded;
+
+  if (target > maxPayment || target < minPayment) {
+    showMessage(
+      `ค่างวดเป้าหมายอยู่นอกช่วงที่ทำได้ (${money(minPayment, 0)} ถึง ${money(maxPayment, 0)} บาท)`,
+      "error"
+    );
+    return;
+  }
+
+  let bestValue = low;
+  let bestResult = pmtAtLow;
+  let bestDiff = Math.abs(pmtAtLow.pmtRounded - target);
+
+  for (let i = 0; i < 80; i++) {
+    const mid = (low + high) / 2;
+    const result = compute({ mid });
+
+    if (!result.valid) {
+      high = mid;
+      continue;
+    }
+
+    const diff = Math.abs(result.pmtRounded - target);
+
+    if (diff < bestDiff || (diff === bestDiff && mid < bestValue)) {
+      bestDiff = diff;
+      bestValue = mid;
+      bestResult = result;
+    }
+
+    /*
+      Down/Balloon เพิ่มขึ้น ทำให้ PMT ลดลง
+    */
+    if (result.pmtRounded > target) {
+      low = mid;
+    } else {
+      high = mid;
+    }
+  }
+
+  /*
+    ตรวจสอบเลขจำนวนเต็มใกล้จุดที่หาได้
+  */
+  const candidates = new Set([
+    Math.max(0, Math.floor(bestValue)),
+    Math.max(0, Math.ceil(bestValue)),
+    Math.max(0, Math.floor(low)),
+    Math.max(0, Math.ceil(low)),
+    Math.max(0, Math.floor(high)),
+    Math.max(0, Math.ceil(high))
+  ]);
+
+  for (const candidate of candidates) {
+    const result = compute({ candidate });
+    if (!result.valid) continue;
+
+    const diff = Math.abs(result.pmtRounded - target);
+
+    if (diff < bestDiff || (diff === bestDiff && candidate < bestValue)) {
+      bestDiff = diff;
+      bestValue = candidate;
+      bestResult = result;
+    }
+  }
+
+  if (kind === "down") {
+    $("downType").value = "amount";
+    $("down").value = Math.round(bestValue);
+  } else {
+    $("balloonType").value = "amount";
+    $("balloon").value = Math.round(bestValue);
+  }
+
+  const finalResult = render(compute(), true);
+
+  showMessage(
+    `${kind === "down" ? "เงินดาวน์" : "Balloon"} ${money(bestValue, 0)} บาท ` +
+    `ได้ค่างวด ${money(finalResult.pmtRounded, 0)} บาท` +
+    (bestDiff === 0 ? "" : ` ใกล้เป้าหมายต่าง ${money(bestDiff, 0)} บาท`),
+    bestDiff === 0 ? "success" : "error"
+  );
+
+  return bestResult;
+}
+
+async function copySummary() {
+  const r = compute();
+
+  if (!r.valid) {
+    showMessage(r.error, "error");
+    return;
+  }
+
+  const text = [
+    `🚗 ${$("carName").value.trim() || "Lease Calculation"}`,
+    `ราคาสุทธิ ${money(r.net)} บาท`,
+    `เงินดาวน์ ${money(r.down)} บาท (${percent(r.down / r.net * 100, 2)})`,
+    `Balloon ${money(r.balloon)} บาท (${percent(r.balloon / r.net * 100, 2)})`,
+    `ยอดจัด ${money(r.finance)} บาท`,
+    `${r.months} งวด / ${r.paymentType === 1 ? "ต้นงวด" : "ปลายงวด"}`,
+    `ค่างวด ${money(r.pmtRounded, 0)} บาท`,
+    `IRR ${percent(r.irrAnnualPct)}`,
+    `IRR Subsidy ${percent(r.irrSubsidyAnnualPct)}`,
+    `Effective Rate ${percent(r.effectiveAnnualPct)}`
+  ].join("\n");
+
+  try {
+    await navigator.clipboard.writeText(text);
+    showMessage("Copy สรุปเรียบร้อย", "success");
+  } catch {
+    const area = document.createElement("textarea");
+    area.value = text;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand("copy");
+    area.remove();
+    showMessage("Copy สรุปเรียบร้อย", "success");
+  }
+}
+
+function resetAll() {
+  Object.entries(DEFAULTS).forEach(([id, value]) => {
+    if ($(id)) $(id).value = value;
+  });
+
+  render();
+  showMessage("รีเซ็ตข้อมูลเรียบร้อย", "success");
+}
+
+document.querySelectorAll("input,select").forEach(element => {
+  element.addEventListener("input", () => render());
+  element.addEventListener("change", () => render());
+});
+
+$("btnDownSeek").addEventListener("click", () => findClosestValue("down"));
+$("btnBalloonSeek").addEventListener("click", () => findClosestValue("balloon"));
+$("btnCopy").addEventListener("click", copySummary);
+$("btnReset").addEventListener("click", resetAll);
+
+render();
+</script>
+
+</body>
+</html>
